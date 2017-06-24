@@ -4,7 +4,12 @@ from . import views
 
 urlpatterns = [
 
-    url(r'^accueil$', views.home),
+    url(r'^home$', views.home),
     url(r'^date$', views.date_actuelle),
     url(r'^addition/(?P<nombre1>\d+)/(?P<nombre2>\d+)/$', views.addition),
+    url(r'^accueil$', views.accueil, name = 'accueil'),
+    url(r'^article/(?P<id>\d+)-(?P<slug>.+)$', views.lire, name = 'lire'),
+	url(r'^contact/$', views.contact, name='contact'),
+	url(r'^article_form/$', views.article_form, name='article_form'),
+
 ]
