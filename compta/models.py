@@ -1,13 +1,10 @@
 from django.db import models
-from binets.models import Eleve, Binet
 
 # modèles pour l'application de comptabilité partagée
 # en ligne Balise
 
 
 ################################################
-#ces classes sont génériques pour tout le site, elles ont
-#vocation à être dans la racine
 class TypeBinet(models.Model):
 	"""types de binets
 	ces types peuvent être
@@ -18,27 +15,14 @@ class TypeBinet(models.Model):
 		return self.nom
 
 
-class Binet(models.Model):
-	"""table dans la BDD représentant l'ensemble des binets"""
-	nom = models.CharField(max_length=100)
-	description = models.TextField(null=True) # facultatif
-	type_binet = models.ForeignKey('TypeBinet')
-	remarques_admins = models.TextField(null=True) # facultatif
-	is_active = models.BooleanField()
-
-	def __str__(self):
-		return self.nom
-
-
-
-class Mandats(models.Model):
+class Mandat(models.Model):
 	"""correspondance entre le binet et ses membres"""
 	binet = models.ForeignKey('Binet')
-	#president = models.ForeignKey('Eleve')
-	tresorier = models.ForeignKey('Eleve')
+	president = models.ForeignKey('Eleve', related_name = "president")
+	tresorier = models.ForeignKey('Eleve', related_name = "tresorier")
 
 	def __str__(self):
-		return (self.binet, self.president.promotion)
+		return str(self.id)
 
 
 class Promotion(models.Model):
@@ -55,10 +39,24 @@ class Eleve(models.Model):
 	prenom = models.CharField(max_length=100)
 	promotion = models.ForeignKey('Promotion')
 
+	def __str__(self):
+		return self.nom
 
 
-##################################################
-#ces classes sont spécifiques au module compta
+class Binet(models.Model):
+	"""table dans la BDD représentant l'ensemble des binets"""
+	nom = models.CharField(max_length=100)
+	description = models.TextField(blank=True) # facultatif
+	type_binet = models.ForeignKey('TypeBinet', verbose_name = "chéquier")
+	remarques_admins = models.TextField(blank=True) # facultatif
+	is_active = models.BooleanField(verbose_name = "Actif")
+	current_president = models.ForeignKey('Eleve', verbose_name = "Président", related_name = "current_president")
+	current_tresorier = models.ForeignKey('Eleve', verbose_name = "Trésorier", related_name = "current_tresorier")
+	current_promotion = models.ForeignKey('Promotion', verbose_name = "Promo")
+
+	def __str__(self):
+		return self.nom
+
 
 class LigneCompta(models.Model):
 	"""opérations comptables"""
@@ -68,5 +66,8 @@ class LigneCompta(models.Model):
 	binet = models.ForeignKey('Binet')
 	auteur = models.ForeignKey('Eleve')
 	description = models.CharField(max_length=200)
-	debit = models.FloatField()
-	credit = models.FloatField()
+	debit = models.FloatField(null = True)
+	credit = models.FloatField(null = True)
+
+	def __str__(self):
+		return self.description
