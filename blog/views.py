@@ -5,7 +5,7 @@ from blog.models import Article
 # Il faut ajouter l'import get_object_or_404, attention !
 from django.shortcuts import render, get_object_or_404
 from .forms import ContactForm, ArticleForm
-
+from django.views.generic import TemplateView
 
 # Create your views here.
 
@@ -13,13 +13,9 @@ def home(request):
 
     return render(request, 'blog/home.html')
 
-
-
 def date_actuelle(request):
 
     return render(request, 'blog/date.html', {'date': datetime.now()})
-
-
 
 def addition(request, nombre1, nombre2):    
 
@@ -28,8 +24,6 @@ def addition(request, nombre1, nombre2):
     # Retourne nombre1, nombre2 et la somme des deux au tpl
 
     return render(request, 'blog/addition.html', locals())
-
-
 
 
 def accueil(request):
@@ -42,8 +36,6 @@ def lire(request, id, slug):
     article = get_object_or_404(Article, id=id, slug = slug)
 
     return render(request, 'blog/lire.html', {'article':article})
-
-
 
 def contact(request):
     # Construire le formulaire, soit avec les données postées,
@@ -77,3 +69,7 @@ def article_form(request):
         # que nous venons de récupérer
         envoi = True
     return render(request, 'blog/article_form.html', locals())
+
+class FAQView(TemplateView):
+
+   template_name = "blog/faq.html"  # chemin vers le template à afficher
