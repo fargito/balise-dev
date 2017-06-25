@@ -13,7 +13,7 @@ class LigneComptaAdmin(admin.ModelAdmin):
 
 
 class PromotionAdmin(admin.ModelAdmin):
-	ordering = ('nom', )
+	ordering = ('-nom', )
 
 
 class BinetAdmin(admin.ModelAdmin):

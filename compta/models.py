@@ -1,6 +1,8 @@
 from django.db import models
 # import pour avoir la base de donnees d'users
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # modèles pour l'application de comptabilité partagée
 # en ligne Balise
@@ -40,11 +42,22 @@ class Eleve(models.Model):
 	user = models.OneToOneField(User)
 	nom = models.CharField(max_length=100)
 	prenom = models.CharField(max_length=100)
-	promotion = models.ForeignKey('Promotion')
+	promotion = models.ForeignKey('Promotion', null = True, blank = True)
 
 	def __str__(self):
-		return "{0} {1} X{2}".format(self.user.username, self.promotion)
+		return "{0} {1} X{2}".format(self.nom, self.prenom, self.promotion)
 
+"""
+#ces deux fonctions servent à créer automatiquement un Eleve quand un User est créé
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Eleve.objects.create(user=instance, nom=instance.last_name, prenom=instance.first_name)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.eleve.save()
+"""
 
 class Binet(models.Model):
 	"""table dans la BDD représentant l'ensemble des binets"""
