@@ -47,17 +47,6 @@ class Eleve(models.Model):
 	def __str__(self):
 		return "{0} {1} X{2}".format(self.nom, self.prenom, self.promotion)
 
-"""
-#ces deux fonctions servent à créer automatiquement un Eleve quand un User est créé
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Eleve.objects.create(user=instance, nom=instance.last_name, prenom=instance.first_name)
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.eleve.save()
-"""
 
 class Binet(models.Model):
 	"""table dans la BDD représentant l'ensemble des binets"""
