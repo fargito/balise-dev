@@ -15,6 +15,7 @@ def create_account(request):
 		#to be changed
 		username = form.cleaned_data["nom"]
 		password = form.cleaned_data["password1"]
+		print(username, password)
 			
 		sent = True
 	return render(request, 'accounts/create_account.html', locals())
