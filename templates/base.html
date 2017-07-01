@@ -8,41 +8,43 @@
 
    <link rel="stylesheet" href="/media/css/style.css" />
 
-   <title>{% block title %}Mon blog sur les crêpes bretonnes{% endblock %}</title>
+   <title>{% block title %}Balise{% endblock %}</title>
 
 </head>
 
 <body>
 
-<header>Crêpes bretonnes</header>
+  <header>
+    <img src="{% static 'img/Balise_1.jpg' %}" alt="Logo Balise" />
+  </header>
+  <nav>
 
-    <img src="{% static 'blog/crepes.jpg' %}" alt="Mon image" />
+     {% block nav %}
 
-    <nav>
+     <ul>
+          <li><a href="/">Accueil</a></li>
 
-       {% block nav %}
+          {% if user.is_authenticated %}
+            <li><a href="/compta">Compta</a></li>
+            <li><a href="/accounts/logout">Déconnexion</a></li>
+          {% else %}
+            <li><a href="/accounts/login">Connexion</a></li>
+          {% endif %}
 
-       <ul>
 
-            <li><a href="/">Accueil</a></li>
+     </ul>
 
-            <li><a href="/blog/">Blog</a></li>
+     {% endblock %}
 
-            <li><a href="/contact/">Contact</a></li>
+ </nav>
 
-       </ul>
+ <section id="content">
 
-       {% endblock %}
+     {% block content %}{% endblock %}
 
-   </nav>
+ </section>
 
-   <section id="content">
-
-       {% block content %}{% endblock %}
-
-   </section>
-
-<footer>&copy; Crêpes bretonnes</footer>
+<footer>&copy; Balise 2017</footer>
 
 </body>
 

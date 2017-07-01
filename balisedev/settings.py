@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'compta',
-    'blog',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -121,9 +121,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-LOGIN_URL = '/compta/login'
+LOGIN_URL = '/accounts/login'
 
-LOGIN_REDIRECT_URL = '/compta'
+LOGIN_REDIRECT_URL = '/'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
