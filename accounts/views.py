@@ -10,17 +10,13 @@ def home(request):
 def create_account(request):
 	"""users can register here to create an account.
 	At first it is linked with no Binet"""
+	sent = False
 	form = CreateAccountForm(request.POST or None)
 	if form.is_valid():
 		#to be changed
 		username = form.cleaned_data["nom"]
 		password = form.cleaned_data["password1"]
 			
+		print(username, password)
 		sent = True
 	return render(request, 'accounts/create_account.html', locals())
-
-
-def account_created(request):
-	"""once an account is created, the user sees this page
-	explaining the nexts steps to follow"""
-	return render(request, 'accounts/account_created.html')

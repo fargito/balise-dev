@@ -5,28 +5,23 @@
 <html lang="fr">
 
 <head>
-
    <link rel="stylesheet" href="/media/css/style.css" />
-
    <title>{% block title %}Balise{% endblock %}</title>
-
 </head>
 
 <body>
-
   <header>
     <img src="{% static 'img/Balise_1.jpg' %}" alt="Logo Balise" />
   </header>
   <nav>
-
      {% block nav %}
-
      <ul>
           <li><a href="/">Accueil</a></li>
 
           {% if user.is_authenticated %}
             <li><a href="/compta">Compta</a></li>
             <li><a href="/accounts/logout">Déconnexion</a></li>
+            <p>Connecté en tant que {{ user.username }}</p>
           {% else %}
             <li><a href="/accounts/login">Connexion</a></li>
           {% endif %}
