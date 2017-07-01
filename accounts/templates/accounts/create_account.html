@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<h1>Inscription</h1>
+	<p>Nouveau sur le site ? Entrez vos informations pour créer un compte</p>
+
+	{% if user.is_authenticated %}
+		<p>Vous êtes connecté, {{ user.username }} !</p>
+		<a href="logout">Vous déconnecter</a>
+	{% else %}
+		<form method="post" action=".">
+		    {% csrf_token %}
+		    {{ form.as_p }}
+		    <input type="submit" value="Créer compte" />
+		</form>
+	{% endif %}
+
+
+{% endblock %}

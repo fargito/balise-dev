@@ -7,6 +7,6 @@ urlpatterns = [
     url(r'^compta/', include('compta.urls')),
     url(r'^accounts/', include('accounts.urls')),
     #url(r'^blog/', include('blog.urls')),
-    url(r'^/?$',views.home),
+    url(r'^$', views.home),
 
 ]
