@@ -13,8 +13,14 @@ def create_account(request):
 	form = CreateAccountForm(request.POST or None)
 	if form.is_valid():
 		#to be changed
-		username = form.cleaned_data["username"]
-		password = form.cleaned_data["password"]
+		username = form.cleaned_data["nom"]
+		password = form.cleaned_data["password1"]
 			
 		sent = True
 	return render(request, 'accounts/create_account.html', locals())
+
+
+def account_created(request):
+	"""once an account is created, the user sees this page
+	explaining the nexts steps to follow"""
+	return render(request, 'accounts/account_created.html')
