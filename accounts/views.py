@@ -2,6 +2,8 @@ from django.shortcuts import render
 from .forms import CreateAccountForm, CreateUserForm
 from django.contrib.auth.models import User
 from .models import Eleve
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 
 
 def home(request):
@@ -20,17 +22,19 @@ def create_account(request):
 		username = user_form.cleaned_data['username']
 		password = user_form.cleaned_data['password1']
 		email = username+'@polytechnique.edu'
-		user = User.objects.create_user(username, 
+		# on crée un profil utilisateur
+		new_user = User.objects.create_user(username, 
 			email, password)
 		eleve = account_form.save(commit = False)
-		eleve.user = user
+		eleve.user = new_user
 		eleve.save()
-
-		# Dans ce cas, on crée un profil utilisateur
-
-
-
+		logout(request)
 
 		print("User profile created")
 		sent = True
 	return render(request, 'accounts/create_account.html', locals())
+
+@login_required
+def my_account(request):
+	"""shows the user his infos"""
+	return render(request, 'accounts/my_account.html')
