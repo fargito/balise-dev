@@ -1,5 +1,7 @@
 from django.shortcuts import render
-from .forms import CreateAccountForm
+from .forms import CreateAccountForm, CreateUserForm
+from django.contrib.auth.models import User
+from .models import Eleve
 
 
 def home(request):
@@ -11,12 +13,24 @@ def create_account(request):
 	"""users can register here to create an account.
 	At first it is linked with no Binet"""
 	sent = False
-	form = CreateAccountForm(request.POST or None)
-	if form.is_valid():
-		#to be changed
-		username = form.cleaned_data["nom"]
-		password = form.cleaned_data["password1"]
-			
-		print(username, password)
+	user_form = CreateUserForm(request.POST or None)
+	account_form = CreateAccountForm(request.POST or None)
+	if (account_form.is_valid() and user_form.is_valid()):
+		# on récupère les données du formulaire
+		username = user_form.cleaned_data['username']
+		password = user_form.cleaned_data['password1']
+		email = username+'@polytechnique.edu'
+		user = User.objects.create_user(username, 
+			email, password)
+		eleve = account_form.save(commit = False)
+		eleve.user = user
+		eleve.save()
+
+		# Dans ce cas, on crée un profil utilisateur
+
+
+
+
+		print("User profile created")
 		sent = True
 	return render(request, 'accounts/create_account.html', locals())

@@ -17,18 +17,15 @@
      {% block nav %}
      <ul>
           <li><a href="/">Accueil</a></li>
-
           {% if user.is_authenticated %}
             <li><a href="/compta">Compta</a></li>
+            {% if user.is_staff %}<li><a href="/admin">Administration</a></li>{% endif %}
             <li><a href="/accounts/logout">Déconnexion</a></li>
             <p>Connecté en tant que {{ user.username }}</p>
           {% else %}
             <li><a href="/accounts/login">Connexion</a></li>
           {% endif %}
-
-
      </ul>
-
      {% endblock %}
 
  </nav>
@@ -39,7 +36,7 @@
 
  </section>
 
-<footer>&copy; Balise 2017</footer>
+<footer>&copy; Balise 2017 - Développement François Farge et Jean-Baptiste de Cagny</footer>
 
 </body>
 

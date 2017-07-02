@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Binet, Mandat, LigneCompta, Eleve, Promotion
+from .models import Binet, Mandat, LigneCompta
 
 
 
@@ -11,16 +11,6 @@ class LigneComptaAdmin(admin.ModelAdmin):
 	ordering       = ('-date', )
 	search_fields  = ('binet', 'debit', 'credit')
 
-
-class PromotionAdmin(admin.ModelAdmin):
-	ordering = ('-nom', )
-
-
-class EleveAdmin(admin.ModelAdmin):
-	list_display = ('nom', 'prenom', 'promotion',)
-	list_filter = ('promotion', 'nom', 'prenom',)
-	ordering = ('promotion', 'nom', 'prenom',)
-	search_fields = ('promotion', 'nom', 'prenom',)
 
 
 class BinetAdmin(admin.ModelAdmin):
@@ -41,8 +31,7 @@ class MandatAdmin(admin.ModelAdmin):
 
 
 
-admin.site.register(Promotion, PromotionAdmin)
-admin.site.register(Eleve, EleveAdmin)
+
 
 admin.site.register(Binet, BinetAdmin)
 admin.site.register(Mandat, MandatAdmin)
