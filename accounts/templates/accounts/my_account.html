@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h2>Mon compte</h2>
+	<!--On accède ici aux infos de connexion-->
+	<p>Nom : {{user.eleve.nom}}</p>
+	<p>Prénom : {{user.eleve.prenom}}</p>
+	<p>Promo : {{user.eleve.promotion}}</p>
+	<p><a href="password_change">Changer mon mot de passe</a></p>
+{% endblock %}
