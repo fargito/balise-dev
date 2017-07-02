@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h2>Liste des binets actifs</h2>
+	{# on récupère la vue générée par la vue générique listView #}
+	{% for binet in object_list %}
+		<div class="binet">
+			<h3>{{ binet.nom }}</h3>
+			<p>{{ binet.current_president }}, {{ binet.current_tresorier }}, {{ binet.current_promotion }}</p>
+
+
+		</div>
+	{% endfor %}
+{% endblock %}

@@ -11,13 +11,14 @@
 
 <body>
   <header>
-    <img src="{% static 'img/Balise_1.jpg' %}" alt="Logo Balise" />
+    <img src="{% static 'img/Balise_2.png' %}" alt="Logo Balise" />
   </header>
   <nav>
      {% block nav %}
      <ul>
           <li><a href="/">Accueil</a></li>
           {% if user.is_authenticated %}
+            <li><a href="/binets">Liste des binets</a></li>
             <li><a href="/compta">Compta</a></li>
             {% if user.is_staff %}<li><a href="/admin">Administration</a></li>{% endif %}
             <li><a href="/accounts/logout">Déconnexion</a></li>

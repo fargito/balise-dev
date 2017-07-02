@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'compta',
     'accounts',
+    'binets',
 ]
 
 MIDDLEWARE = [
