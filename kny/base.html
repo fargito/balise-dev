@@ -1,32 +1,54 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
 
-{% block content %}
-<div class='container'>
-<div class='row'>
-<div class = 'col-sm-6 col-sm-offset-3 encadre'>
-<div class = 'row txtcentre'>
-	<h1>Inscription</h1>
-</div>
-	<div class='row'><div class='col-sm-12'>Nouveau sur le site ? Entrez vos informations pour créer un compte :</div></div>
-<div class='row'><br/></div>
+{% load static %}
 
-	{% if user.is_authenticated %}
-		<p>Vous êtes connecté, {{ user.username }} !</p>
-		<a href="logout">Vous déconnecter</a>
-	{% else %}
-		<form method="post" action="/accounts/redirect">
-	<div class='row txtcentre'>
-		    {% csrf_token %}
-		    {{ form.as_p }}
-</div>
-	<div class='row txtcentre'>
-		    <input class='btn btn-default' type="submit" value="Créer compte" />
-</div>
-		</form>
-	{% endif %}
-<div class='row'><br/></div>
-</div>
-</div>
-</div>
+<html lang="fr">
 
-{% endblock %}
+<head>
+
+   <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+   <link rel="stylesheet" href="{% static 'css/dist/css/bootstrap.min.css' %}" />
+
+   <title>{% block title %}Balise{% endblock %}</title>
+
+</head>
+
+<body>
+
+  <header>
+    <img src="{% static 'img/Balise_2.png' %}" alt="Logo Balise" class='centre' />
+  </header>
+  <nav class='navbar navbar-default'>
+	<div class='container-fluid kesdorado'>
+<div class='navbar-header'>
+<a href="/" class='navbar-brand'><p class='kesdorado'>Accueil</p></a>
+</div>
+     {% block nav %}
+<div class='collapse navbar-collapse'>
+     <ul class='nav navbar-nav'>
+
+          {% if user.is_authenticated %}
+            <li><a href="/compta" class='navbar-brand'><p class='kesdorado'>Compta</p></a></li>
+            <li><a href="/accounts/logout" class='navbar-brand'><p class='kesdorado'>Déconnexion</p></a></li>
+          {% else %}
+            <li><a href="/accounts/login" class='navbar-brand'><p class='kesdorado'>Connexion</p></a></li>
+          {% endif %}
+
+
+     </ul>
+</div>
+     {% endblock %}
+	</div>
+ </nav>
+
+ <section id="content">
+
+     {% block content %}{% endblock %}
+
+ </section>
+
+<footer>&copy; Balise 2017</footer>
+
+</body>
+
+</html>
