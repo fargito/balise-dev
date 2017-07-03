@@ -5,35 +5,28 @@
 <html lang="fr">
 
 <head>
-
    <link rel="stylesheet" href="/media/css/style.css" />
-
    <title>{% block title %}Balise{% endblock %}</title>
-
 </head>
 
 <body>
-
   <header>
-    <img src="{% static 'img/Balise_1.jpg' %}" alt="Logo Balise" />
+    <img src="{% static 'img/Balise_2.png' %}" alt="Logo Balise" />
   </header>
   <nav>
-
      {% block nav %}
-
      <ul>
           <li><a href="/">Accueil</a></li>
-
           {% if user.is_authenticated %}
+            <li><a href="/binets">Liste des binets</a></li>
             <li><a href="/compta">Compta</a></li>
+            {% if user.is_staff %}<li><a href="/admin">Administration</a></li>{% endif %}
             <li><a href="/accounts/logout">Déconnexion</a></li>
+            <p>Connecté en tant que <a href="/accounts">{{ user.username }}</a></p>
           {% else %}
             <li><a href="/accounts/login">Connexion</a></li>
           {% endif %}
-
-
      </ul>
-
      {% endblock %}
 
  </nav>
@@ -44,7 +37,7 @@
 
  </section>
 
-<footer>&copy; Balise 2017</footer>
+<footer>&copy; Balise 2017 - Développement François Farge et Jean-Baptiste de Cagny</footer>
 
 </body>
 
