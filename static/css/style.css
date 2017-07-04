@@ -1,0 +1,32 @@
+@include('dist/css/bootstrap.min.css');
+@include('dist/css/bootstrap.css');
+
+img.centre {
+	display: block;
+	margin: auto;
+	height: 150px;
+}
+
+.txtcentre{
+	text-align: center;
+}
+
+.encadre {
+	border: 2px solid black;
+}
+
+.txtdroite{
+	text-align: right;
+}
+
+footer {
+	bottom: 0px;
+	position: absolute;
+	width: 100%;
+	text-align: center;
+}
+
+.kesdorado{
+background-color: green;
+color: yellow;
+}
