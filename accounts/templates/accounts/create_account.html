@@ -5,23 +5,22 @@
 <div class='row'>
 <div class = 'col-sm-6 col-sm-offset-3 encadre'>
 <div class = 'row txtcentre'>
-	<h1>Inscription</h1>
-</div>
-	<div class='row'><div class='col-sm-12'>Nouveau sur le site ? Entrez vos informations pour créer un compte :</div></div>
-<div class='row'><br/></div>
-
-	{% if user.is_authenticated %}
+	{% if sent %}
+		<h1>Compte créé avec succès</h1>
+		<p>Votre compte a été créé et vous y avez accès.</br>
+		Pour avoir accès aux comptes de votre binet, vous devez aller voir les kessiers binets ou le SecGen (pour les VOS) afin qu'ils vous y donnent accès</p>
+	{% elif user.is_authenticated %}
+		{# si l'utilisateur est déjà connecté #}
+		<h1>Déjà connecté</h1>
 		<p>Vous êtes connecté, {{ user.username }} !</p>
-		<a href="logout">Vous déconnecter</a>
 	{% else %}
-		<form method="post" action="/accounts/redirect">
-	<div class='row txtcentre'>
+		<h1>Inscription</h1>
+		<p>Nouveau sur le site ? Entrez vos informations pour créer un compte</p>
+		<form method="post" action="create">
 		    {% csrf_token %}
-		    {{ form.as_p }}
-</div>
-	<div class='row txtcentre'>
-		    <input class='btn btn-default' type="submit" value="Créer compte" />
-</div>
+		    {{ account_form.as_p }}
+		    {{ user_form.as_p }}
+		    <input type="submit" value="Créer compte" />
 		</form>
 	{% endif %}
 <div class='row'><br/></div>

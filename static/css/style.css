@@ -21,12 +21,18 @@ img.centre {
 
 footer {
 	bottom: 0px;
-	position: absolute;
+	position: fixed;
 	width: 100%;
 	text-align: center;
+	z-index: 1;
+	background-color: white;
 }
 
 .kesdorado{
 background-color: green;
 color: yellow;
+}
+
+.marge-bas {
+	margin-bottom: 50px;
 }

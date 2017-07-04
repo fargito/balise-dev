@@ -1,10 +1,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class='container'>
+<div class='row'>
+<div class='col-sm-12 txtcentre'>
 	<h2>Mon compte</h2>
+</div></div>
+<div class='row'><br/></div>
+<div class='row'>
+<div class='col-sm-12'>
 	<!--On accède ici aux infos de connexion-->
 	<p>Nom : {{user.eleve.nom}}</p>
 	<p>Prénom : {{user.eleve.prenom}}</p>
 	<p>Promo : {{user.eleve.promotion}}</p>
 	<p><a href="password_change">Changer mon mot de passe</a></p>
+</div>
+</div></div>
 {% endblock %}
