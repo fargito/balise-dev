@@ -14,15 +14,7 @@ def home(request):
 def create_account(request):
 	"""users can register here to create an account.
 	At first it is linked with no Binet"""
-<<<<<<< HEAD
-	form = CreateAccountForm(request.POST or None)
-	if form.is_valid():
-		#to be changed
-		username = form.cleaned_data["nom"]
-		password = form.cleaned_data["password1"]
-		print(username, password)
-			
-=======
+
 	sent = False
 	user_form = CreateUserForm(request.POST or None)
 	account_form = CreateAccountForm(request.POST or None)
@@ -40,7 +32,6 @@ def create_account(request):
 		logout(request)
 
 		print("User profile created")
->>>>>>> dev
 		sent = True
 	return render(request, 'accounts/create_account.html', locals())
 
