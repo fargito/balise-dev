@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'compta',
     'accounts',
     'binets',
+    'backend',
+    'imports',
 ]
 
 MIDDLEWARE = [

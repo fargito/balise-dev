@@ -1,0 +1,4 @@
+import pandas
+
+df = pandas.read_excel(open('test_import.xls','rb'), sheetname='Sheet1')
+print(df)
