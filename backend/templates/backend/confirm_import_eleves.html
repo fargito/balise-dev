@@ -2,10 +2,16 @@
 
 {% block content %}
 	{% if user.is_staff %}
-		{% for eleve in imported_eleves %}
+		{% for eleve in imported_eleves_html %}
+			{# attention le code html pour les différents items à l'intérieur du eleve est défini dans la vue confirm_import_eleves #}
 			<div class="eleve">
-				{{ eleve['Nom'] }}
+				{{ eleve | safe }}
 			</div>
 		{% endfor %}
+		<form method="post" action=".">
+		    {% csrf_token %}
+		    <input type="submit" value="Valider" />
+		</form>
+	
 	{% endif %}
 {% endblock %}

@@ -31,6 +31,19 @@ def import_eleves(request):
 def confirm_import_eleves(request):
 	"""is called after the import. The admin can validate its 
 	imports"""
+	validated = request.method=='POST'
 	imported_eleves = pandas.read_excel(open('imports/logs/eleves_imports/names.xls', 'rb'), sheetname=0)
-	imported_eleves = imported_eleves.transpose().to_dict().values()
+	imported_eleves = imported_eleves.values.tolist()
+	# On affiche les élèves
+	imported_eleves_html = []
+	for eleve in imported_eleves:
+		imported_eleves_html.append(
+			'<div class="nom">{}</div><div class="prenom">\
+			 {}</div class="promo"X{} ,</div><div class="id">\
+			 identifiant: {}</div>'.format(eleve[0],
+				eleve[1], eleve[2], eleve[3]))
+	if validated:
+		# dans ce cas on crée les objets élèves correspondants
+		print('on a validé les élèves')
+	
 	return render(request, 'backend/confirm_import_eleves.html', locals())
