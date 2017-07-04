@@ -5,19 +5,16 @@
 <html lang="fr">
 
 <head>
-
    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
    <link rel="stylesheet" href="{% static 'css/dist/css/bootstrap.min.css' %}" />
-
    <title>{% block title %}Balise{% endblock %}</title>
-
 </head>
 
 <body>
-
   <header>
     <img src="{% static 'img/Balise_2.png' %}" alt="Logo Balise" class='centre' />
   </header>
+
   <nav class='navbar navbar-default'>
   	<div class='container-fluid kesdorado'>
       <div class='navbar-header'>
@@ -32,10 +29,9 @@
 
               {% if user.is_staff %}<li><a href="/backend" class='navbar-brand'><p class='kesdorado'>Administration</p></a></li>{% endif %}
               
-              <p>Connecté en tant que <a href="/accounts">{{ user.username }}</a></p>
-
               <li><a href="/compta" class='navbar-brand'><p class='kesdorado'>Compta</p></a></li>
               <li><a href="/accounts/logout" class='navbar-brand'><p class='kesdorado'>Déconnexion</p></a></li>
+              <p>Connecté en tant que <a href="/accounts">{{ user.username }}</a></p>
 
             {% else %}
               <li><a href="/accounts/login" class='navbar-brand'><p class='kesdorado'>Connexion</p></a></li>
