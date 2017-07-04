@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	{% if user.is_staff %}
+		{% for eleve in imported_eleves %}
+			<div class="eleve">
+				{{ eleve['Nom'] }}
+			</div>
+		{% endfor %}
+	{% endif %}
+{% endblock %}

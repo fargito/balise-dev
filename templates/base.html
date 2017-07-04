@@ -20,7 +20,7 @@
           {% if user.is_authenticated %}
             <li><a href="/binets">Liste des binets</a></li>
             <li><a href="/compta">Compta</a></li>
-            {% if user.is_staff %}<li><a href="/admin">Administration</a></li>{% endif %}
+            {% if user.is_staff %}<li><a href="/backend">Administration</a></li>{% endif %}
             <li><a href="/accounts/logout">Déconnexion</a></li>
             <p>Connecté en tant que <a href="/accounts">{{ user.username }}</a></p>
           {% else %}
