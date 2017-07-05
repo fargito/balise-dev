@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^accounts/', include('accounts.urls')),
     url(r'^binets/', include('binets.urls')),
     url(r'^backend/', include('backend.urls')),
+    url(r'^vos/', include('vos.urls')),
     url(r'^$', views.home),
 
 ]

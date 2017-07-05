@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'binets',
     'backend',
     'imports',
+    'vos',
 ]
 
 MIDDLEWARE = [
