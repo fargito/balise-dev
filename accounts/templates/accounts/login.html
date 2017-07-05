@@ -14,9 +14,9 @@
 	{% if user.is_authenticated %}
 		<div class='row'>Vous êtes connecté, {{ user.username }} !</div>
 	{% else %}
-		<div class='row'>
+		<div class='row txtcentre'>
 			<form method="post" action="./login">
-				<div class='row txtcentre'>
+<div class='col-sm-12'>
 				    {% csrf_token %}
 				    {{ form.as_p }}
 				</div>

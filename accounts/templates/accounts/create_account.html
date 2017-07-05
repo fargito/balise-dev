@@ -17,9 +17,11 @@
 		<h1>Inscription</h1>
 		<p>Nouveau sur le site ? Entrez vos informations pour créer un compte</p>
 		<form method="post" action="create">
+<div class='col-sm-12'>
 		    {% csrf_token %}
 		    {{ account_form.as_p }}
 		    {{ user_form.as_p }}
+</div>
 		    <input type="submit" value="Créer compte" />
 		</form>
 	{% endif %}
