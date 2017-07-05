@@ -14,6 +14,7 @@ def home(request):
 def create_account(request):
 	"""users can register here to create an account.
 	At first it is linked with no Binet"""
+
 	sent = False
 	print(request.POST)
 	user_form = CreateUserForm(request.POST or None)
