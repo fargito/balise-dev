@@ -10,7 +10,7 @@
 	<div class='row'>
 		<div class='col-sm-12'>
 			{% block message %}
-				Oups, une erreur est survenue
+				{{ request.session | message }}
 			{% endblock %}
 		</div>	
 	</div>

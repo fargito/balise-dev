@@ -11,7 +11,7 @@ def eleves_file_handler(f, pathname):
 			destination.write(chunk)
 
 
-def create_eleves(imported_eleves):
+def create_eleves(request, imported_eleves):
 	"""allows you to create binets from a dict with
 	the correct keys"""
 	print('Creating or updating eleves:')
@@ -20,7 +20,7 @@ def create_eleves(imported_eleves):
 		# dans ce cas on effectue le traitement nécessaire
 		if '@polytechnique.edu' in eleve['Identifiant']:
 			eleve['Identifiant'] = eleve['Identifiant'].split(
-				'@polytechnique.edu')[0]
+			'@polytechnique.edu')[0]
 		created_user, user_was_created = User.objects.update_or_create(
 			username=eleve['Identifiant'],
 			email=eleve['Identifiant']+'@polytechnique.edu')	

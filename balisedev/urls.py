@@ -9,5 +9,6 @@ urlpatterns = [
     url(r'^binets/', include('binets.urls')),
     url(r'^backend/', include('backend.urls')),
     url(r'^$', views.home),
+    url(r'error^$', views.error),
 
 ]

@@ -11,6 +11,11 @@ def home(request):
 	return render(request, 'welcome.html')
 
 
+def error(request):
+	"""caution the error view is also defined here"""
+	return render(request, 'error.html')
+
+
 def create_account(request):
 	"""users can register here to create an account.
 	At first it is linked with no Binet"""
