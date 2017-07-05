@@ -90,13 +90,12 @@ def import_binets(request):
 				request.session['pathname'] = pathname
 				binets_file_handler(request.FILES['excel_file'], pathname)
 				# on redirige vers la validation
-				validated = False
 				sent = False
 				# on lit les données importées et on les met dans un dict
 				imported_binets = pandas.read_excel(open(pathname, 'rb'), sheetname=0)
 				imported_binets = imported_binets.transpose().to_dict().values()
 				# On affiche les binets
-				imported_binets_html = []
+				imported_binets_list = []
 				for binet in imported_binets:
 					# on accepte que les identifiants soient mis en adresse mail polytechnique
 					# dans ce cas on effectue le traitement nécessaire
@@ -106,12 +105,12 @@ def import_binets(request):
 					if '@polytechnique.edu' in binet['Trésorier']:
 						binet['Trésorier'] = binet['Trésorier'].split(
 							'@polytechnique.edu')[0]
-					imported_binets_html.append(
-						'<div class="binet">{}</div><div class="type">Type\
-						 {}</div><div class="promo">X{} ,</div><div class="president">\
-						 président: {}, </div><div class="trésoriers">trésorier: {}</div>'.format(binet['Binet'],
-							binet['Type'], binet['Promotion'], binet['Président'],
-							binet['Trésorier']))
+					imported_binets_list.append(
+						(binet['Binet'], binet['Type'], binet['Promotion'],
+						binet['Président'], binet['Trésorier']))
+				del request.session['message']
+				request.session['message'] = []
+				request.session['message'].append('Copied the file in the database')
 				return render(request, 'backend/confirm_import_binets.html', locals())
 		else:
 			if request.POST['validation'] == 'Valider':
@@ -121,14 +120,14 @@ def import_binets(request):
 				imported_binets = imported_binets.transpose().to_dict().values()
 				create_binets(request, imported_binets)
 				# on supprime le fichier temporaire
-				# os.remove(pathname)
+				del request.session['pathname']
 				sent = True
-				validated = True
 			else:
 				# on supprime le fichier temporaire
-				# os.remove(pathname)
+				del request.session['pathname']
+				del request.session['message']
+				request.session['message'].append('Requête annulée')
 				sent = True
-				validated = False
 				print('on annule tout')
 
 			return render(request, 'backend/confirm_import_binets.html', locals())

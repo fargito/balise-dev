@@ -24,7 +24,7 @@ def create_eleves(request, imported_eleves):
 		created_user, user_was_created = User.objects.update_or_create(
 			username=eleve['Identifiant'],
 			email=eleve['Identifiant']+'@polytechnique.edu')	
-		if user_was_created:
+		if user_was_created or created_user.password == None:
 			# on ne réinitialise pas les mots de passe si update seulement
 			created_user.set_password(eleve['Mot de passe'])
 		created_user.save()

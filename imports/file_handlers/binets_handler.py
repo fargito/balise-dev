@@ -35,6 +35,7 @@ def create_binets(request,imported_binets):
 			(promotion_prez != promotion_trez) or
 			(promotion_trez != promotion)):
 			print("Could not create: {} due to incoherent users promotions".format(binet['Binet']))
+			request.session['message'].append("Impossible de créer: {} incohérence dans les promos".format(binet['Binet']))
 		else:
 			try:
 				created_binet, binet_was_created = Binet.objects.update_or_create(
@@ -43,7 +44,7 @@ def create_binets(request,imported_binets):
 					'type_binet': TypeBinet.objects.get(nom=binet['Type']),
 					'current_president': User.objects.get(username=binet['Président']),
 					'current_tresorier': User.objects.get(username=binet['Trésorier']),
-					'current_promotion': Promotion.objects.get(nom=binet['Promotion'])})
+					'current_promotion': 	Promotion.objects.get(nom=binet['Promotion'])})
 				created_binet.save()
 				created_mandat, mandat_was_created = Mandat.objects.update_or_create(
 					binet=created_binet,
@@ -53,6 +54,8 @@ def create_binets(request,imported_binets):
 				created_mandat.save()
 			except ObjectDoesNotExist:
 				print("Could not create: {} due to invalid query: invalid users, promotion or type_binet".format(binet['Binet']))
+				request.session['message'].append("Impossible de créer: {} à cause d'utilisateurs, de promos ou de types de binets non enregistrés dans la base de données</li>".format(binet['Binet']))
 			else:
 				affichage = {True:'Created: ', False:'Updated: '}
 				print(affichage[binet_was_created],created_binet)
+				request.session['message'].append((affichage[binet_was_created]+str(created_binet)+' ('+str(binet['Promotion'])+')'))

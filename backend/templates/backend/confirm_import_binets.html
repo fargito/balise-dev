@@ -4,24 +4,25 @@
 	<h1>Validation des imports</h1>
 	{% if user.is_staff %}
 		{% if sent %}
-			{# on utilise la même page pour afficher le succès #}
-			{% if validated %}
-				<p>La liste de binets a bien été incorporée</p>
-			{% else %}
-				<p>Import annulé</p>
-			{% endif %}
+			{# on utilise la même page pour afficher le succès et l'échec. #}
+			<ul>
+			{% for message in request.session.message %}
+				<li>{{ message }}</li>
+			{% endfor %}
+			</ul>
 			<form action="../">
 			    <input type="submit" value="Retour" />
 			</form>
 		{% else %}
 			{# affichage initial: on affiche les élèves avec les boutons de validation #}
-		
-			{% for binet in imported_binets_html %}
-				<div class="eleve">
-					{# attention le code html pour les différents items à l'intérieur du binet est défini dans la vue confirm_import_binets #}
-					{{ binet | safe }}
+			<p>Importer les binets suivants ?</p>
+			<ul>
+			{% for binet, type, promotion, president, tresorier in imported_binets_list %}
+				<div class="binet">
+					<li>{{ binet}} {{ type}} {{ promotion }} {{ president }} {{ tresorier }}</li>
 				</div>
 			{% endfor %}
+			</ul>
 			<form method="post" action=".">
 			    {% csrf_token %}
 			    <input type="submit" name="validation" value="Valider" />
