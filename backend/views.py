@@ -2,10 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from imports.forms import ImportFileForm
 from django.contrib.auth.decorators import permission_required
-from imports.file_handlers.eleves_handler import eleves_file_handler
+from imports.file_handlers import eleves_file_handler, binets_file_handler, create_eleves
 import pandas, os
-from accounts.models import Eleve, Promotion
-from django.contrib.auth.models import User
+
 
 
 @permission_required('is_staff')
@@ -18,68 +17,57 @@ def backend_home(request):
 def import_eleves(request):
 	"""permet d'importer un fichier excel contenant
 	une liste d'eleves et la crée dans la base de données"""
+	pathname = 'imports/logs/eleves_imports/names.xls'
 	if request.method == 'POST':
-		import_form = ImportFileForm(request.POST, request.FILES)
-		if import_form.is_valid():
-			eleves_file_handler(request.FILES['excel_file'])
-			# on redirige vers la validation
-			return HttpResponseRedirect('./confirm')
+		if request.POST['validation'] == 'Upload':
+			# l'utilisateur a appuyé sur le bouton upload
+			import_form = ImportFileForm(request.POST, request.FILES)
+			if import_form.is_valid():
+				# on copie l'import en mémoire
+				eleves_file_handler(request.FILES['excel_file'], pathname)
+				# on redirige vers la validation
+				validated = False
+				sent = False
+				# on lit les données importées et on les met dans un dict
+				imported_eleves = pandas.read_excel(open(pathname, 'rb'), sheetname=0)
+				imported_eleves = imported_eleves.transpose().to_dict().values()
+				# On affiche les élèves
+				imported_eleves_html = []
+				for eleve in imported_eleves:
+					imported_eleves_html.append(
+						'<div class="nom">{}</div><div class="prenom">\
+						 {}</div class="promo"X{} ,</div><div class="id">\
+						 identifiant: {}</div>'.format(eleve['Nom'],
+							eleve['Prénom'], eleve['Promotion'], eleve['Identifiant']))
+				return render(request, 'backend/confirm_import_eleves.html', locals())
+		else:
+			if request.POST['validation'] == 'Valider':
+				# dans ce cas on crée les objets élèves correspondants
+				imported_eleves = pandas.read_excel(open(pathname, 'rb'), sheetname=0)
+				imported_eleves = imported_eleves.transpose().to_dict().values()
+				create_eleves(imported_eleves)
+				# on supprime le fichier temporaire
+				os.remove(pathname)
+				sent = True
+				validated = True
+			else:
+				# on supprime le fichier temporaire
+				os.remove(pathname)
+				sent = True
+				validated = False
+				print('on annule tout')
+
+			return render(request, 'backend/confirm_import_eleves.html', locals())
 	else:
 		import_form = ImportFileForm()
 	return render(request, 'backend/import_eleves.html', locals())
 
 
-@permission_required('is_staff')
-def confirm_import_eleves(request):
-	"""is called after the import. The admin can validate its 
-	imports"""
-	validated = False
-	sent = False
-	imported_eleves = pandas.read_excel(open('imports/logs/eleves_imports/names.xls', 'rb'), sheetname=0)
-	imported_eleves = imported_eleves.transpose().to_dict().values()
-	# On affiche les élèves
-	imported_eleves_html = []
-	for eleve in imported_eleves:
-		imported_eleves_html.append(
-			'<div class="nom">{}</div><div class="prenom">\
-			 {}</div class="promo"X{} ,</div><div class="id">\
-			 identifiant: {}</div>'.format(eleve['Nom'],
-				eleve['Prénom'], eleve['Promotion'], eleve['Identifiant']))
-	if request.method=='POST':
-		# l'utilisateur a appuyé sur un bouton
-		if request.POST['validation'] == 'Valider':
-			# dans ce cas on crée les objets élèves correspondants
-			print('Creating or updating eleves:')
-			for eleve in imported_eleves:
-				# on accepte que les identifiants soient mis en adresse mail polytechnique
-				# dans ce cas on effectue le traitement nécessaire
-				if '@polytechnique.edu' in eleve['Identifiant']:
-					eleve['Identifiant'] = eleve['Identifiant'].split(
-						'@polytechnique.edu')[0]
-				created_user, user_was_created = User.objects.update_or_create(
-					username=eleve['Identifiant'],
-					email=eleve['Identifiant']+'@polytechnique.edu')	
-				if user_was_created:
-					# on ne réinitialise pas les mots de passe si update seulement
-					created_user.set_password(eleve['Mot de passe'])
-				created_user.save()
-
-				created_eleve, eleve_was_created = Eleve.objects.update_or_create(
-					user=created_user, nom=eleve['Nom'],
-					prenom=eleve['Prénom'], promotion=Promotion.objects.get(
-						nom=eleve['Promotion']))
-				created_eleve.save()
-				affichage = {True:'Created: ', False:'Updated: '}
-				print(affichage[user_was_created],created_user)
-				# on supprime le fichier temporaire
-			os.remove('imports/logs/eleves_imports/names.xls')
-			sent = True
-			validated = True
-		else:
-			# on supprime le fichier temporaire
-			os.remove('imports/logs/eleves_imports/names.xls')
-			sent = True
-			validated = False
-			print('on annule tout')
 	
-	return render(request, 'backend/confirm_import_eleves.html', locals())
+
+
+def import_binets(request):
+	"""permet d'importer une liste de binets, avec leurs
+	président et trésoriers actuels. Si le binet existe déjà,
+	les noms du président et du trésorier ne sont pas actualisés"""
+	return render("")

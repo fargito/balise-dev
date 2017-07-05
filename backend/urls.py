@@ -7,5 +7,5 @@ from . import views
 urlpatterns = [
 	url(r'^$', views.backend_home),
 	url(r'^import_eleves/$', views.import_eleves),
-	url(r'^import_eleves/confirm/$', views.confirm_import_eleves),
+	url(r'^import_binets/$', views.import_binets),
 ]

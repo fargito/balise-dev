@@ -9,7 +9,7 @@
 	<form enctype="multipart/form-data" method="post" action=".">
 	    {% csrf_token %}
 	    {{ import_form.as_p }}
-		<input type="submit" value="Upload" />
+		<input type="submit" name="validation" value="Upload" />
 	</form>
 
 {% endblock %}
