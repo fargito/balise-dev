@@ -16,6 +16,7 @@ def create_account(request):
 	At first it is linked with no Binet"""
 
 	sent = False
+	print(request.POST)
 	user_form = CreateUserForm(request.POST or None)
 	account_form = CreateAccountForm(request.POST or None)
 	if (account_form.is_valid() and user_form.is_valid()):
