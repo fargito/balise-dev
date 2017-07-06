@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h1>VOS</h1>
+	<p>Bienvenue sur le module de compta, c'est là que vous pouvez saisir les opérations comptables de votre binet ainsi qu'accéder à l'historique des opérations des mandats précédents</p>
+	{# on récupère la vue générée par la vue générique listView #}
+	{% for binet in object_list %}
+		<div class="binet">
+			<h3>{{ binet.nom }}</h3>
+			<p>{{ binet.current_president }}, {{ binet.current_tresorier }}, {{ binet.current_promotion }}</p>
+
+
+		</div>
+	{% endfor %}
+{% endblock %}

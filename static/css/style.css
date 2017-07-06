@@ -36,3 +36,7 @@ color: yellow;
 .marge-bas {
 	margin-bottom: 50px;
 }
+
+.table-borderless {
+	border: none;
+}
