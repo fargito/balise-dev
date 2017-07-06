@@ -19,8 +19,10 @@
 		<form method="post" action="create">
 <div class='col-sm-12'>
 		    {% csrf_token %}
-		    {{ account_form.as_p }}
-		    {{ user_form.as_p }}
+<table class='table table-responsive table-borderless'>
+		    {{ account_form.as_table }}
+		    {{ user_form.as_table }}
+</table>
 </div>
 		    <input type="submit" value="Créer compte" />
 		</form>
