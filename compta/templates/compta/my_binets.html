@@ -6,6 +6,7 @@
 	{% for binet in liste_binets %}
 		<div class="binet">
 			<li>
+				Binet 
 				<strong><a>{{ binet.nom }}</a> </strong>({{ binet.current_promotion }}) :
 				{# on affiche aussi le rôle dans le binet #}
 				{% if binet.current_president == user %}

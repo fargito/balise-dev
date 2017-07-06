@@ -7,9 +7,9 @@
 <head>
    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
    <link rel="stylesheet" href="{% static 'css/dist/css/bootstrap.min.css' %}" />
-<script src="{% static 'css/jquery.js' %}"></script>
-      <script src="{% static 'css/dist/js/bootstrap.min.js' %}"></script>
-      <script src="{% static 'css/dist/js/bootstrap.js' %}"></script>
+    <script src="{% static 'css/jquery.js' %}"></script>
+    <script src="{% static 'css/dist/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'css/dist/js/bootstrap.js' %}"></script>
    <title>{% block title %}Balise{% endblock %}</title>
 </head>
 
@@ -21,17 +21,17 @@
   <nav class='navbar navbar-default'>
   	<div class='container-fluid kesdorado'>
       <div class='navbar-header'>
-<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#onglets" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#onglets" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
         <a href="/" class='navbar-brand'><p class='kesdorado'>Accueil</p></a>
       </div>
       {% block nav %}
         <div class='collapse navbar-collapse' id='onglets'>
-         <ul class='nav navbar-nav'>
+          <ul class='nav navbar-nav'>
 
             {% if user.is_authenticated %}
               <li><a href="/binets" class='navbar-brand'><p class='kesdorado'>Liste des binets</p></a></li>
@@ -44,23 +44,22 @@
             {% else %}
               <li><a href="/accounts/login" class='navbar-brand'><p class='kesdorado'>Connexion</p></a></li>
             {% endif %}
-         </ul>
-            {% if user.is_authenticated %}
-<div class='nav navbar-nav navbar-right'>
+          </ul>
+          {% if user.is_authenticated %}
+            <div class='nav navbar-nav navbar-right'>
               <a href="/accounts" class='navbar-brand'><p class='kesdorado'><!--Connecté en tant que --><u>{{ user.username }}</u></p></a>
-</div>
-            {% endif %}
+            </div>
+          {% endif %}
         </div>
       {% endblock %}
   	</div>
   </nav>
 
- <section id="content" class='marge-bas'>
-<div class='container'>
-
+<section id="content" class='marge-bas'>
+  <div class='container'>
      {% block content %}{% endblock %}
-</div>
- </section>
+  </div>
+</section>
 
 <footer>&copy; Balise 2017 - Développement François Farge et Jean-Baptiste de Cagny</footer>
 </body>
