@@ -12,10 +12,10 @@ class BinetAdmin(admin.ModelAdmin):
 
 
 class MandatAdmin(admin.ModelAdmin):
-	list_display = ('binet', 'tresorier',)
-	list_filter = ('binet', 'tresorier',)
-	ordering = ('binet',)
-	search_fields = ('binet', 'tresorier',)
+	list_display = ('binet', 'promotion', 'president', 'tresorier',)
+	list_filter = ('binet', 'promotion', 'president', 'tresorier',)
+	ordering = ('binet','promotion')
+	search_fields = ('binet', 'promotion', 'president', 'tresorier',)
 
 
 class TypeBinetAdmin(admin.ModelAdmin):

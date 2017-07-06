@@ -1,11 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
+	<h1>Validation des imports</h1>
 	{% if user.is_staff %}
-		{% for eleve in imported_eleves %}
-			<div class="eleve">
-				{{ eleve['Nom'] }}
-			</div>
-		{% endfor %}
+		{% if sent %}
+			{# on utilise la même page pour afficher le succès et l'échec. #}
+			<ul>
+			{% for message in request.session.messages %}
+				<li>{{ message }}</li>
+			{% endfor %}
+			</ul>
+			<form action="../">
+			    <input type="submit" value="Retour" />
+			</form>
+		{% else %}
+			{# affichage initial: on affiche les élèves avec les boutons de validation #}
+			<ul>
+			{% for nom, prenom, promotion, identifiant in imported_eleves_list %}
+				<li>
+					<strong>{{ nom }}, </strong>{{ prenom }}, {{ promotion }}, {{ identifiant }}
+				</li>
+			{% endfor %}
+			</ul>
+			<form method="post" action=".">
+			    {% csrf_token %}
+			    <input type="submit" name="validation" value="Valider" />
+			    <input type="submit" name="validation" value="Annuler" />
+			</form>
+		{% endif %}
 	{% endif %}
 {% endblock %}

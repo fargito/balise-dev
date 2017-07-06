@@ -1,12 +1,15 @@
 {% extends 'base.html' %}
+{% load static %}
+
 
 {% block content %}
 	<h1>Import de plusieurs utilisateurs</h1>
 	<p>Attention, pour être accepté, votre fichier doit être au format .xls avec comme colonnes "Nom|Prénom|Promotion|Identifiant|Mot de passe" (écrites en haut des colonnes)</p>
+	<img src="{% static 'img/import_eleves_excel.png' %}" />
 	<form enctype="multipart/form-data" method="post" action=".">
 	    {% csrf_token %}
 	    {{ import_form.as_p }}
-		<input type="submit" value="Upload" />
+		<input type="submit" name="validation" value="Upload" />
 	</form>
 
 {% endblock %}

@@ -4,7 +4,6 @@ from .models import Binet
 
 def all_binets(request):
 	"""sur cette page on peut accéder à la liste des binets
-	avec les responsables"""
-	liste_binets = Binet.objects.all()
-	print(liste_binets)
-	return render(request, 'binets/all_binets.html')
+	actifs avec les responsables"""
+	liste_binets = Binet.objects.filter(is_active=True)
+	return render(request, 'binets/all_binets.html', locals())

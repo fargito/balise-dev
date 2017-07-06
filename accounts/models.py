@@ -6,9 +6,10 @@ from django.contrib.auth.models import User
 class Promotion(models.Model):
 	"""table des promotions"""
 	nom = models.CharField(max_length=4)
-
+	
 	class Meta:
 		ordering = ('-nom',)
+		unique_together = ('nom',)
 
 	def __str__(self):
 		return self.nom

@@ -10,5 +10,6 @@ urlpatterns = [
     url(r'^backend/', include('backend.urls')),
     url(r'^vos/', include('vos.urls')),
     url(r'^$', views.home),
+    url(r'error^$', views.error),
 
 ]
