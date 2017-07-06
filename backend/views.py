@@ -28,24 +28,20 @@ def import_eleves(request):
 				# on copie l'import en mémoire
 				eleves_file_handler(request.FILES['excel_file'], pathname)
 				# on redirige vers la validation
-				validated = False
 				sent = False
 				# on lit les données importées et on les met dans un dict
 				imported_eleves = pandas.read_excel(open(pathname, 'rb'), sheetname=0)
 				imported_eleves = imported_eleves.transpose().to_dict().values()
 				# On affiche les élèves
-				imported_eleves_html = []
+				imported_eleves_list = []
 				for eleve in imported_eleves:
 					# on accepte que les identifiants soient mis en adresse mail polytechnique
 					# dans ce cas on effectue le traitement nécessaire
 					if '@polytechnique.edu' in eleve['Identifiant']:
 						eleve['Identifiant'] = eleve['Identifiant'].split(
 							'@polytechnique.edu')[0]
-					imported_eleves_html.append(
-						'<div class="nom">{}</div><div class="prenom">\
-						 {}</div class="promo"X{} ,</div><div class="id">\
-						 identifiant: {}</div>'.format(eleve['Nom'],
-							eleve['Prénom'], eleve['Promotion'], eleve['Identifiant']))
+					imported_eleves_list.append([eleve['Nom'], eleve['Prénom'],
+					 eleve['Promotion'], eleve['Identifiant']])
 				return render(request, 'backend/confirm_import_eleves.html', locals())
 		else:
 			if request.POST['validation'] == 'Valider':
@@ -56,12 +52,11 @@ def import_eleves(request):
 				# on supprime le fichier temporaire
 				os.remove(pathname)
 				sent = True
-				validated = True
 			else:
 				# on supprime le fichier temporaire
 				os.remove(pathname)
 				sent = True
-				validated = False
+				request.session['messages'] = 'Requête annulée'
 				print('on annule tout')
 
 			return render(request, 'backend/confirm_import_eleves.html', locals())
@@ -108,9 +103,8 @@ def import_binets(request):
 					imported_binets_list.append(
 						(binet['Binet'], binet['Type'], binet['Promotion'],
 						binet['Président'], binet['Trésorier']))
-				del request.session['message']
-				request.session['message'] = []
-				request.session['message'].append('Copied the file in the database')
+				request.session['messages'] = []
+				request.session['messages'].append('Copied the file in the database')
 				return render(request, 'backend/confirm_import_binets.html', locals())
 		else:
 			if request.POST['validation'] == 'Valider':
@@ -125,8 +119,7 @@ def import_binets(request):
 			else:
 				# on supprime le fichier temporaire
 				del request.session['pathname']
-				del request.session['message']
-				request.session['message'].append('Requête annulée')
+				request.session['messages'] = ['Requête annulée']
 				sent = True
 				print('on annule tout')
 

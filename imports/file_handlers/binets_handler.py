@@ -17,6 +17,7 @@ def create_binets(request,imported_binets):
 	"""allows you to create binets from a dict with
 	the correct keys"""
 	print('Creating or updating binets:')
+	request.session['messages'] = []
 	for binet in imported_binets:
 		# on accepte que les identifiants soient mis en adresse mail polytechnique
 		# dans ce cas on effectue le traitement nécessaire
@@ -35,7 +36,7 @@ def create_binets(request,imported_binets):
 			(promotion_prez != promotion_trez) or
 			(promotion_trez != promotion)):
 			print("Could not create: {} due to incoherent users promotions".format(binet['Binet']))
-			request.session['message'].append("Impossible de créer: {} incohérence dans les promos".format(binet['Binet']))
+			request.session['messages'].append("Impossible de créer: {} incohérence dans les promos".format(binet['Binet']))
 		else:
 			try:
 				created_binet, binet_was_created = Binet.objects.update_or_create(
@@ -54,8 +55,8 @@ def create_binets(request,imported_binets):
 				created_mandat.save()
 			except ObjectDoesNotExist:
 				print("Could not create: {} due to invalid query: invalid users, promotion or type_binet".format(binet['Binet']))
-				request.session['message'].append("Impossible de créer: {} à cause d'utilisateurs, de promos ou de types de binets non enregistrés dans la base de données</li>".format(binet['Binet']))
+				request.session['messages'].append("Impossible de créer: {} à cause d'utilisateurs, de promos ou de types de binets non enregistrés dans la base de données</li>".format(binet['Binet']))
 			else:
 				affichage = {True:'Created: ', False:'Updated: '}
 				print(affichage[binet_was_created],created_binet)
-				request.session['message'].append((affichage[binet_was_created]+str(created_binet)+' ('+str(binet['Promotion'])+')'))
+				request.session['messages'].append((affichage[binet_was_created]+str(created_binet)+' ('+str(binet['Promotion'])+')'))

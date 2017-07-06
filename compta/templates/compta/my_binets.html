@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h2>Mes binets</h2>
+	<ul>
+	{% for binet in liste_binets %}
+		<div class="binet">
+			<li>
+				<strong><a>{{ binet.nom }}</a> </strong>({{ binet.current_promotion }}) :
+				{# on affiche aussi le rôle dans le binet #}
+				{% if binet.current_president == user %}
+					président
+				{% elif binet.current_tresorier == user %}
+					trésorier
+				{% elif user.is_staff %}
+					kessier
+				{% endif %}
+			</li>
+		</div>
+	{% endfor %}
+	</ul>
+{% endblock %}

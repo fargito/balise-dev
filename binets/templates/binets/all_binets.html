@@ -2,12 +2,11 @@
 
 {% block content %}
 	<h2>Liste des binets actifs</h2>
+	<ul>
 	{% for binet in liste_binets %}
 		<div class="binet">
-			<h3>{{ binet.nom }}</h3>
-			<p>{{ binet.current_president }}, {{ binet.current_tresorier }}, {{ binet.current_promotion }}</p>
-
-
+			<li><strong>{{ binet.nom }}, </strong>{{ binet.current_president }}, {{ binet.current_tresorier }}, {{ binet.current_promotion }}</li>
 		</div>
 	{% endfor %}
+	</ul>
 {% endblock %}

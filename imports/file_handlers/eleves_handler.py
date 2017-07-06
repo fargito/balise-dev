@@ -15,6 +15,7 @@ def create_eleves(request, imported_eleves):
 	"""allows you to create binets from a dict with
 	the correct keys"""
 	print('Creating or updating eleves:')
+	request.session['messages'] = []
 	for eleve in imported_eleves:
 		# on accepte que les identifiants soient mis en adresse mail polytechnique
 		# dans ce cas on effectue le traitement nécessaire
@@ -35,4 +36,5 @@ def create_eleves(request, imported_eleves):
 				nom=eleve['Promotion']))
 		created_eleve.save()
 		affichage = {True:'Created: ', False:'Updated: '}
+		request.session['messages'].append(affichage[user_was_created]+str(created_user))
 		print(affichage[user_was_created],created_user)

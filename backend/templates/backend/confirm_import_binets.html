@@ -6,7 +6,7 @@
 		{% if sent %}
 			{# on utilise la même page pour afficher le succès et l'échec. #}
 			<ul>
-			{% for message in request.session.message %}
+			{% for message in request.session.messages %}
 				<li>{{ message }}</li>
 			{% endfor %}
 			</ul>
@@ -19,7 +19,7 @@
 			<ul>
 			{% for binet, type, promotion, president, tresorier in imported_binets_list %}
 				<div class="binet">
-					<li>{{ binet}} {{ type}} {{ promotion }} {{ president }} {{ tresorier }}</li>
+					<li><strong>{{ binet}}</strong> {{ type}} {{ promotion }} {{ president }} {{ tresorier }}</li>
 				</div>
 			{% endfor %}
 			</ul>
