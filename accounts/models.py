@@ -13,6 +13,16 @@ class Promotion(models.Model):
 	def __str__(self):
 		return self.nom
 
+class Section(models.Model):
+	"""table des sections"""
+	nom = models.CharField(max_length=20)
+
+	class Meta:
+		ordering = ('-nom',)
+
+	def __str__(self):
+		return self.nom
+
 
 class Eleve(models.Model):
 	"""table des eleves. On la fait hériter de la table des users"""
@@ -22,4 +32,4 @@ class Eleve(models.Model):
 	promotion = models.ForeignKey('Promotion')
 
 	def __str__(self):
-		return "{0} {1} X{2}".format(self.nom, self.prenom, self.promotion)
+		return "{0} {1} X{2}".format(self.prenom, self.nom, self.promotion)
