@@ -9,6 +9,7 @@ class Promotion(models.Model):
 	
 	class Meta:
 		ordering = ('-nom',)
+		unique_together = ('nom',)
 
 	def __str__(self):
 		return self.nom
