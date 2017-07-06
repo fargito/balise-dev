@@ -23,4 +23,4 @@ class Eleve(models.Model):
 	promotion = models.ForeignKey('Promotion')
 
 	def __str__(self):
-		return "{0} {1} X{2}".format(self.nom, self.prenom, self.promotion)
+		return "{0} {1} X{2}".format(self.prenom, self.nom, self.promotion)
