@@ -15,6 +15,8 @@ class EleveVos(models.Model):
 	"""eleves par section et promotion"""
 	section = models.ForeignKey('vos.Section')
 	promotion = models.ForeignKey('accounts.Promotion')
+	nom = models.CharField(max_length=100)
+	prenom = models.CharField(max_length=100)
 		
 	
 
@@ -27,12 +29,13 @@ class VOS(Binet):
 	#	Binet.__init__(self)
 
 	def __str__(self):
-		return "VOS {0} {1}".format(self.section, int(self.current_promotion.nom)+2)
+		return "VOS {0}".format(self.section)
 
 class Participation(models.Model):
 	"""table de participation a un evenement"""
 	eleve = models.ForeignKey('accounts.Eleve')
 	evenement = models.ForeignKey('vos.VOS')
+	promotion = models.ForeignKey('accounts.Promotion')
 	participation = models.BooleanField()
 
 	def __str__(self):
@@ -44,6 +47,7 @@ class Participation(models.Model):
 class MontantCheque(models.Model):
 	"""table des montants des différents chèques"""
 	evenement = models.ForeignKey('vos.VOS')
+	promotion = models.ForeignKey('accounts.Promotion')
 	ordre = models.IntegerField()
 	montant = models.DecimalField(max_digits=5, decimal_places=2)	
 
@@ -55,6 +59,7 @@ class Encaissement(models.Model):
 	evenement = models.ForeignKey('vos.VOS')
 	montant = models.ForeignKey('vos.MontantCheque')
 	eleve = models.ForeignKey('accounts.Eleve')
+	promotion = models.ForeignKey('accounts.Promotion')
 	paye = models.BooleanField()
 
 	def __str__(self):
