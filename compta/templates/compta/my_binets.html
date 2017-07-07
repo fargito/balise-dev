@@ -3,15 +3,15 @@
 {% block content %}
 	<h2>Mes binets</h2>
 	<ul>
-	{% for binet in liste_binets %}
-		<div class="binet">
+	{% for mandat in liste_mandats %}
+		<div class="mandat">
 			<li>
 				Binet 
-				<strong><a>{{ binet.nom }}</a> </strong>({{ binet.current_promotion }}) :
+				<strong><a>{{ mandat.binet }}</a> </strong>({{ mandat.promotion }}) :
 				{# on affiche aussi le rôle dans le binet #}
-				{% if binet.current_president == user %}
+				{% if mandat.president == user %}
 					président
-				{% elif binet.current_tresorier == user %}
+				{% elif mandat.tresorier == user %}
 					trésorier
 				{% elif user.is_staff %}
 					kessier

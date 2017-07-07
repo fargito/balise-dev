@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h2>Historique du binet {{ binet }}</h2>
+	<ul>
+	{% for mandat in liste_mandats %}
+		<div class="mandat">
+			<li>
+				<strong>X{{ mandat.promotion }}</strong> : {{ mandat.president }}, {{ mandat.tresorier }}
+			</li>
+		</div>
+	{% endfor %}
+	</ul>
+
+{% endblock %}
