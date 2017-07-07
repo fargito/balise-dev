@@ -27,6 +27,7 @@ class Mandat(models.Model):
 
 	class Meta:
 		unique_together = ('binet','promotion',)
+		ordering = ('binet', 'promotion',)
 
 	def __str__(self):
 		return str(self.id)
@@ -43,6 +44,10 @@ class Binet(models.Model):
 	current_president = models.ForeignKey(User, verbose_name = "Président", related_name = "current_president")
 	current_tresorier = models.ForeignKey(User, verbose_name = "Trésorier", related_name = "current_tresorier")
 	current_promotion = models.ForeignKey('accounts.Promotion', verbose_name = "Promo")
+
+	@models.permalink
+	def get_history_url(self):
+		return ('binet_history', [self.id])
 
 	class Meta:
 		ordering = ('current_promotion', 'nom',)

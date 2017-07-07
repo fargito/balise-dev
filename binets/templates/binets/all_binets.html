@@ -5,7 +5,9 @@
 	<ul>
 	{% for binet in liste_binets %}
 		<div class="binet">
-			<li>Binet <strong>{{ binet.nom }}, </strong>{{ binet.current_president }}, {{ binet.current_tresorier }}, {{ binet.current_promotion }}</li>
+			<li>
+				Binet <strong><a href="{{ binet.get_history_url }}">{{ binet.nom }}</a> </strong>({{ binet.current_promotion }}) : {{ binet.current_president }}, {{ binet.current_tresorier }}
+			</li>
 		</div>
 	{% endfor %}
 	</ul>
