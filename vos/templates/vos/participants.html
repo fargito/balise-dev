@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h1>Définir les participants au {{ vos_var }}</h1>
+<form method='post' action='liste'>
+<table class='table table-bordered'>
+<tr>
+<th>Promo</th>
+<th>Nom</th>
+<th>Prénom</th>
+<th></th>
+</tr>
+{% for p in liste_section %}
+<tr>
+<th>{{ p.promotion }}</th>
+<td>{{ p.nom }}</td>
+<td>{{ p.prenom }}</td>
+<td class='txtcentre'>
+	{% csrf_token %}
+	{{ form.as_p }}
+</td>
+</tr>
+{% endfor %}
+</table>
+<br/>
+<div class='row txtcentre'>
+	<input type='submit' class='btn btn-primary' value='Enregistrer' />
+</div>
+</form>
+{% endblock %}

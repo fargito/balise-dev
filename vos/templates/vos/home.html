@@ -4,16 +4,19 @@
 	<h1>Tableau de bord du {{ vos_var.nom }}</h1>
 <table class='table table-bordered'>
 <tr>
-<th>Chèque</th>
+<th>Promo</th>
+<th>Nom</th>
+<th>Prénom</th>
 	{# on récupère la vue générée par la vue générique listView #}
 	{% for cheque in liste_cheques %}
 		<td>
-			n°{{ cheque.ordre }}
+			Chèque n°{{ cheque.ordre }}
 
 
 		</td>
 	{% endfor %}
 </tr>
+<!--
 <tr>
 <th>Montant</th>
 	{# on récupère la vue générée par la vue générique listView #}
@@ -25,5 +28,25 @@
 		</td>
 	{% endfor %}
 </tr>
+-->
+{% for p in liste_participants %}
+<tr>
+<th>{{ p.promotion }}</th>
+<th>{{ p.nom }}</th>
+<th>{{ p.prenom }}</th>
+	{# on récupère la vue générée par la vue générique listView #}
+	{% for cheque in liste_cheques %}
+		<td>
+			{{ cheque.montant }}
+
+
+		</td>
+	{% endfor %}
+</tr>
+{% endfor %}
 </table>
+
+<div class='row txtcentre'>
+<a href='/vos/liste'>Liste des participants</a>
+</div>
 {% endblock %}
