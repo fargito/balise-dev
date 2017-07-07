@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import VOS, MontantCheque, Section
+from .models import VOS, MontantCheque, Section, EleveVos
 
 class VOSAdmin(admin.ModelAdmin):
 	list_display = ('section', 'current_promotion',)
@@ -28,8 +28,16 @@ class MontantChequeAdmin(admin.ModelAdmin):
 	ordering = ('evenement', 'ordre',)
 	search_fields = ('evenement','ordre','montant',)
 
+class EleveVosAdmin(admin.ModelAdmin):
+	list_display = ('nom','prenom','section')
+	list_filter = ('nom','prenom','section')
+	ordering = ('section','nom','prenom',)
+	search_fields = ('nom','prenom','section')
+	
+
 
 admin.site.register(VOS, VOSAdmin)
+admin.site.register(EleveVos, EleveVosAdmin)
 admin.site.register(MontantCheque, MontantChequeAdmin)
 admin.site.register(Section, SectionAdmin)
 
