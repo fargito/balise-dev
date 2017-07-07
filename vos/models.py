@@ -33,7 +33,7 @@ class VOS(Binet):
 
 class Participation(models.Model):
 	"""table de participation a un evenement"""
-	eleve = models.ForeignKey('accounts.Eleve')
+	eleve = models.ForeignKey('vos.eleveVos')
 	evenement = models.ForeignKey('vos.VOS')
 	promotion = models.ForeignKey('accounts.Promotion')
 	participation = models.BooleanField()
