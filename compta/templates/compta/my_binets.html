@@ -1,23 +1,37 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<h2>Mes binets</h2>
-	<ul>
-	{% for mandat in liste_mandats %}
-		<div class="mandat">
-			<li>
-				Binet 
-				<strong><a>{{ mandat.binet }}</a> </strong>({{ mandat.promotion }}) :
-				{# on affiche aussi le rôle dans le binet #}
-				{% if mandat.president == user %}
-					président
-				{% elif mandat.tresorier == user %}
-					trésorier
-				{% elif user.is_staff %}
-					kessier
-				{% endif %}
-			</li>
-		</div>
-	{% endfor %}
-	</ul>
+
+	<div id="page-title">Mes binets</div>
+	<section id="table-container">
+		<table id="liste-binets">
+			<thead class="liste-binets">
+				<tr>
+					<th class="nom-binet-head">Binet</th>
+					<th class="role-in-binet-head">Rôle</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for mandat in liste_mandats %}
+					<tr class="mandat">
+						<td class="nom-binet">
+							Binet 
+							<strong><a href={{ mandat.get_mandat_journal }}>{{ mandat.binet }}</a></strong> ({{ mandat.promotion }})
+						</td>
+						<td class="role-in-binet">
+						{# on affiche aussi le rôle dans le binet #}
+						{% if mandat.president == user %}
+							président
+						{% elif mandat.tresorier == user %}
+							trésorier
+						{% elif user.is_staff %}
+							kessier
+						{% endif %}
+						</td>
+					</tr>
+
+				{% endfor %}
+			</tbody>
+		</table>
+	</section>
 {% endblock %}

@@ -5,10 +5,10 @@ from .models import LigneCompta
 
 class LigneComptaAdmin(admin.ModelAdmin):
 	"""affiche de façon élégante les données dans l'interface admin"""
-	list_display   = ('binet', 'date', 'auteur', 'description', 'debit', 'credit',)
-	list_filter    = ('binet', 'date', 'debit', 'credit')
+	list_display   = ('mandat', 'date', 'auteur', 'description', 'debit', 'credit',)
+	list_filter    = ('mandat', 'date', 'debit', 'credit')
 	date_hierarchy = 'date'
 	ordering       = ('-date', )
-	search_fields  = ('binet', 'debit', 'credit')
+	search_fields  = ('mandat', 'debit', 'credit')
 
 admin.site.register(LigneCompta, LigneComptaAdmin)

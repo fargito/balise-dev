@@ -1,10 +1,18 @@
 @include('dist/css/bootstrap.min.css');
 @include('dist/css/bootstrap.css');
+@include('compta/compta.css');
 
 img.centre {
 	display: block;
 	margin: auto;
 	height: 150px;
+}
+
+#page-title {
+	font-size: 2em;
+	text-align: center;
+	margin-bottom: 0.5em;
+	width: 100%;
 }
 
 .txtcentre{
@@ -19,6 +27,7 @@ img.centre {
 	text-align: right;
 }
 
+
 footer {
 	bottom: 0px;
 	position: fixed;
@@ -29,8 +38,8 @@ footer {
 }
 
 .kesdorado{
-background-color: green;
-color: yellow;
+	background-color: green;
+	color: yellow;
 }
 
 .marge-bas {
@@ -40,3 +49,4 @@ color: yellow;
 .table-borderless {
 	border: none;
 }
+

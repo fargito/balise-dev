@@ -14,18 +14,19 @@
 	{% if user.is_authenticated %}
 		<div class='row'>Vous êtes connecté, {{ user.username }} !</div>
 	{% else %}
-			<form method="post" action="./login">
-		<div class='row'>
-				    {% csrf_token %}
-<div class='col-sm-12'><table class='table table-responsive table-borderless'>
-				    {{ form.as_table }}
-</table>
-</div>
-				</div>
-				<div class='row txtcentre'>
-					<input class='btn btn-default' type="submit" value="Se connecter" />
-				</div>
-			</form>
+		<form method="post" action="./login">
+			<div class='row'>
+					{% csrf_token %}
+						<div class='col-sm-12'>
+							<table class='table table-responsive table-borderless'>
+				    		{{ form.as_table }}
+							</table>
+						</div>
+			</div>
+			<div class='row txtcentre'>
+				<input class='btn btn-default' type="submit" value="Se connecter" />
+			</div>
+		</form>
 		<div class='row txtdroite'>
 			<a href="create">Créer un compte</a>
 		</div>

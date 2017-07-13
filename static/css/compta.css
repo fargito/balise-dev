@@ -1,0 +1,137 @@
+#compta-title-and-return {
+	display: flex;
+}
+
+#compta-title-cropped {
+	margin-right: 5em;
+	min-width: 30em;
+	width: 100%
+}
+
+#compta-nav {
+	display: flex;
+	min-width: 30em;
+}
+
+.compta-large-button-container {
+	width: 40em;
+	text-align: center;
+	background-color: #FFD895
+}
+
+.compta-option-activated {
+	background-color: #FF6060;
+}
+
+input.compta-nav-option {
+	background-color: transparent;
+	min-width: 8em;
+	width: 90%;
+	height: 4em;
+	border: none;
+}
+
+
+#compta-table {
+	width: 100%;
+	margin-top: 1em;
+}
+
+td.compta-form-montant {
+	width: 7em;
+	text-align: right;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+}
+
+th.compta-form-montant {
+	text-align: right;
+	padding-top: 0.6em;
+}
+
+td.compta-form-validate {
+	width: 5.5em;
+}
+
+#id_date {
+	width: 6.4em;
+}
+
+td.compta-form-date {
+	width: 5em;
+	text-align: center;
+}
+
+.compta-form-description {
+	padding-left: 1em;
+	padding-right: 1em;
+	min-width: 30em;
+}
+
+#id_description {
+	width: 100%;
+}
+
+#id_debit {
+	width: 7em;
+	text-align: right;
+}
+
+#id_credit {
+	width: 7em;
+	text-align: right;
+}
+
+#id_commentaire {
+	width: 100%;
+}
+
+.delete_icon {
+	width: 1em;
+	margin-left: 1em;
+}
+
+.edit_icon {
+	margin-left: 1em;
+}
+
+.compta-button-container {
+	text-align: right;
+	width: 0.8em;
+}
+
+.compta-positive {
+	color: blue;
+}
+
+.compta-negative {
+	color: red;
+}
+
+ul.errorlist {
+	list-style: none;
+	text-align: center;
+	padding: 0em;
+	color: red;
+}
+
+#view-ligne-title {
+	font-size: 1.5em;
+	margin-top: 1.5em;
+}
+
+.view-ligne-infos-container {
+	display: flex;
+	margin: 3em;
+}
+
+div.ligne-comment {
+	width: 50%;
+	padding: 1em;
+	border: 1px solid black;
+}
+
+.view-ligne-infos {
+	width: 50%;
+	margin: auto;
+}

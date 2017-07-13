@@ -1,0 +1,65 @@
+{% extends 'compta/journal.html' %}
+{# cette page récupère le menu de la page journal #}
+{% load static %}
+
+{% block compta_page %}
+	<div id="compta-table-container">
+		<div id="view-ligne-title">
+			Détails de l'opération
+		</div>
+		<table id="compta-table">
+			<thead>
+				<tr>
+					<th>
+						Effectée le
+					</th>
+					<th class="compta-form-description">
+						Description
+					</th>
+					<th class="compta-form-montant">
+						Débit
+					</th>
+					<th class="compta-form-montant">
+						Crédit
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<div class="ligne-compta">
+					<tr>
+						<td class="compta-form-date">{{ ligne.date|date:'d/m/Y' }}</td>
+						<td class="compta-form-description">{{ ligne.description }}</td>
+						<td class="compta-form-montant">{{ ligne.debit|default_if_none:"" }}</td>
+						<td class="compta-form-montant">{{ ligne.credit|default_if_none:"" }}</td>
+						{% if request.session.edit %}
+							<td class="compta-button-container">
+								<a href={{ ligne.edit_self_link }}>
+									<img src="{% static 'img/edit.ico' %}" alt="Edit icone" class='edit_icon' label="Modifier la ligne"/>
+								</a>
+							</td>
+							<td class="compta-button-container">
+								<a href={{ ligne.delete_self_link }}>
+									<img src="{% static 'img/delete.ico' %}" alt="Delete icone" class='delete_icon'/>
+								</a>
+							</td>
+						{% endif %}
+					</tr>
+				</div>
+			</tbody>
+		</table>
+		<div class="view-ligne-infos-container">
+			<ul class="view-ligne-infos">
+				<li>Mandat : {{ ligne.mandat }}</li>
+				<li>Création : {{ ligne.add_date }} par {{ ligne.auteur }}</li>
+				<li>Dernière modification : {{ ligne.edit_date }} par {{ ligne.modificateur }}</li>
+			</ul>
+
+			<div class="ligne-comment">
+				<p><strong>Commentaire</strong></p>
+				<p>
+					{{ ligne.commentaire|default_if_none:"" }}
+				</p>
+			</div>
+		</div>
+	</div>
+{% endblock %}

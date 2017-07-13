@@ -1,14 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<h2>Liste des binets actifs</h2>
-	<ul>
-	{% for binet in liste_binets %}
-		<div class="binet">
-			<li>
-				Binet <strong><a href="{{ binet.get_history_url }}">{{ binet.nom }}</a> </strong>({{ binet.current_promotion }}) : {{ binet.current_president }}, {{ binet.current_tresorier }}
-			</li>
-		</div>
-	{% endfor %}
-	</ul>
+	<div id="page-title">Liste des binets actifs</div>
+	<section id="table-container">
+		<table id="liste-binets">
+			<thead class="liste-binets">
+				<tr>
+					<th class="nom-binet-head">Binet</th>
+					<th class="binet-user-head">Président</th>
+					<th class="binet-user-head">Trésorier</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for binet in liste_binets %}
+					<tr class="mandat">
+						<td class="nom-binet">
+							Binet <strong><a href="{{ binet.get_history_url }}">{{ binet.nom }}</a> </strong> ({{ binet.current_promotion }})
+						</td>
+						<td class="binet-user">
+							{{ binet.current_president }}
+						</td>
+						<td class="binet-user">
+							{{ binet.current_tresorier }}
+						</td>
+					</tr>
+
+				{% endfor %}
+			</tbody>
+		</table>
+	</section>
 {% endblock %}
