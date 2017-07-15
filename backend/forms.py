@@ -1,5 +1,6 @@
 from django import forms
 from .models import ValidateEleve
+from compta.models import VagueSubventions
 
 # obsolete
 class ValidateEleveForm(forms.ModelForm):
@@ -11,3 +12,14 @@ class ValidateEleveForm(forms.ModelForm):
 		fields='__all__'
 		model = ValidateEleve
 		labels = {'prenom': 'Prénom'}
+
+
+
+class VagueForm(forms.ModelForm):
+	"""allows the admin to create the VagueSubvention
+	object when importing a subvention vague"""
+
+	class Meta:
+		model = VagueSubventions
+		fields = '__all__'
+		labels = {'type_subvention': 'Vague de subventions'}

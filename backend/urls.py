@@ -8,4 +8,5 @@ urlpatterns = [
 	url(r'^$', views.backend_home),
 	url(r'^import_eleves/$', views.import_eleves),
 	url(r'^import_binets/$', views.import_binets),
+	url(r'^import_subventions/$', views.import_subventions),
 ]

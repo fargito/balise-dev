@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from imports.forms import ImportFileForm
 from django.contrib.auth.decorators import permission_required
-from imports.file_handlers import eleves_file_handler, binets_file_handler
-from imports.file_handlers import create_eleves, create_binets
+from imports.file_handlers import eleves_file_handler, binets_file_handler, subventions_file_handler
+from imports.file_handlers import create_eleves, create_binets, create_subventions
+from .forms import VagueForm
 import pandas, os
 from datetime import datetime
 
@@ -127,3 +128,74 @@ def import_binets(request):
 	else:
 		import_form = ImportFileForm()
 	return render(request, 'backend/import_binets.html', locals())
+
+
+
+
+
+@permission_required('is_staff')
+def import_subventions(request):
+	"""permet d'importer une vague de subventions
+	une vague de subventions ne peut être remplie qu'une fois.
+	Si il y a des erreurs, modifier au cas par cas dans l'interface
+	admin django ou supprimer complètement la vague et la réimporter"""
+	if request.method == 'POST':
+		if request.POST['validation'] == 'Upload':
+			# l'utilisateur a appuyé sur le bouton upload
+			vague_form = VagueForm(request.POST)
+			import_form = ImportFileForm(request.POST, request.FILES)
+			# on commence par tester si la vague de subventions n'a pas été remplie
+			if vague_form.is_valid():
+				# vague_subventions = vague_form.save(commit=False)
+				if import_form.is_valid():
+					# on rentre les infos sur la vague de subventions et le chemin du
+					# fichier pour pouvoir les créer plus tard
+					request.session['vague_annee'] = vague_form.cleaned_data['annee']
+					request.session['vague_type'] = str(vague_form.cleaned_data['type_subvention'])
+					# on copie l'import en mémoire
+					date = datetime.today()
+					pathname = 'imports/logs/subventions_imports/'+request.session[
+						'vague_annee']+str(vague_form.cleaned_data['type_subvention'])
+					
+					request.session['pathname'] = pathname
+					# on enregistre le fichier temporaire
+					binets_file_handler(request.FILES['excel_file'], pathname)
+					# on redirige vers la validation
+					sent = False
+					# on lit les données importées et on les met dans un dict
+					imported_subventions = pandas.read_excel(open(pathname, 'rb'), sheetname=0)
+					imported_subventions = imported_subventions.transpose().to_dict().values()
+					# On affiche les binets
+					imported_subventions_list = []
+					for subvention in imported_subventions:
+						# on accepte que les identifiants soient mis en adresse mail polytechnique
+						# dans ce cas on effectue le traitement nécessaire
+						imported_subventions_list.append(
+							(subvention['Binet'], subvention['Promotion'],subvention['Demandé'], subvention['Accordé'],
+							subvention['Postes']))
+					request.session['messages'] = []
+					request.session['messages'].append('Copied the file in the database')
+					return render(request, 'backend/confirm_import_subventions.html', locals())
+
+		else:
+			if request.POST['validation'] == 'Valider':
+				# dans ce cas on crée les objets élèves correspondants
+				imported_subventions = pandas.read_excel(open(request.session[
+					'pathname'], 'rb'), sheetname=0)
+				imported_subventions = imported_subventions.transpose().to_dict().values()
+				create_subventions(request, imported_subventions)
+				# on supprime le fichier temporaire
+				del request.session['pathname']
+				sent = True
+			else:
+				# on supprime le fichier temporaire
+				del request.session['pathname']
+				request.session['messages'] = ['Requête annulée']
+				sent = True
+				print('on annule tout')
+
+			return render(request, 'backend/confirm_import_binets.html', locals())
+	else:
+		vague_form = VagueForm()
+		import_form = ImportFileForm()
+	return render(request, 'backend/import_subventions.html', locals())

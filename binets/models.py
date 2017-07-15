@@ -26,6 +26,9 @@ class Mandat(models.Model):
 	president = models.ForeignKey(User, related_name = "president")
 	tresorier = models.ForeignKey(User, related_name = "tresorier")
 	promotion = models.ForeignKey('accounts.Promotion', verbose_name = "Promo")
+	description = models.TextField(blank=True, null = True) # facultatif
+	remarques_admins = models.TextField(blank=True, null = True) # facultatif
+
 
 	class Meta:
 		unique_together = ('binet','promotion',)

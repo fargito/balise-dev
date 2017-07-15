@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h1>Validation des imports</h1>
+	{% if user.is_staff %}
+		{% if sent %}
+			{# on utilise la même page pour afficher le succès et l'échec. #}
+			<ul>
+			{% for message in request.session.messages %}
+				<li>{{ message }}</li>
+			{% endfor %}
+			</ul>
+			<form action="../">
+			    <input type="submit" value="Retour" />
+			</form>
+		{% else %}
+			{# affichage initial: on affiche les élèves avec les boutons de validation #}
+			<p>Importer la vague de {{ request.session.vague_type }} {{ request.session.vague_annee }} ?</p>
+			<ul>
+			{% for binet, promotion, demande, accorde, postes in imported_subventions_list %}
+				<div class="subvention">
+					<li><strong>{{ binet}}</strong> ({{ promotion }}) : demandé {{ demande }} accordé <strong>{{ montant }}</strong> {{ postes }}</li>
+				</div>
+			{% endfor %}
+			</ul>
+			<form method="post" action=".">
+			    {% csrf_token %}
+			    <input type="submit" name="validation" value="Valider" />
+			    <input type="submit" name="validation" value="Annuler" />
+			</form>
+		{% endif %}
+	{% endif %}
+{% endblock %}
