@@ -9,6 +9,7 @@
    <link rel="stylesheet" href="{% static 'css/dist/css/bootstrap.min.css' %}" />
    <link rel="stylesheet" href="{% static 'css/listes_binets.css' %}" />
    <link rel="stylesheet" href="{% static 'css/compta.css' %}" />
+   <link rel="stylesheet" href="{% static 'css/subventions.css' %}" />
     <script src="{% static 'css/jquery.js' %}"></script>
     <script src="{% static 'css/dist/js/bootstrap.min.js' %}"></script>
     <script src="{% static 'css/dist/js/bootstrap.js' %}"></script>
@@ -37,6 +38,7 @@
 
             {% if user.is_authenticated %}
               <li><a href="/binets" class='navbar-brand'><p class='kesdorado'>Liste des binets</p></a></li>
+              <li><a href="/subventions" class='navbar-brand'><p class='kesdorado'>Subventions</p></a></li>
 
               {% if user.is_staff %}<li><a href="/backend" class='navbar-brand'><p class='kesdorado'>Administration</p></a></li>{% endif %}
               

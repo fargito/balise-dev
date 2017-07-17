@@ -1,0 +1,37 @@
+#subventions-container {
+	margin: auto;
+}
+
+#subventions-table {
+	margin: auto;
+}
+
+.subventions-nom-binet {
+	min-width: 15em;
+}
+
+.subventions-postes {
+	padding-left: 2em;
+	min-width: 20em;
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+}
+
+.subventions-postes p {
+	margin: auto;
+}
+
+td.subventions-montant {
+	min-width: 9em;
+	text-align: right;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	padding-right: 1em;
+}
+
+th.subventions-montant {
+	width: 4em;
+	text-align: right;
+	padding-top: 1em;
+	padding-right: 1em;
+}

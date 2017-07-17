@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<section id="compta-title-and-return">
+		<div class="return-button">
+			<form action="../">
+				<input type="submit" value="Retour" />
+			</form>
+		</div>
+		<div id="compta-title-cropped">
+			<div id="page-title">Subventions {{ vague.type_subvention }} {{ vague.annee }}</div>
+		</div>
+	</section>
+	<section id="compta-container">
+		<div id="subventions-container">
+			<table id="subventions-table">
+				<thead>
+					<tr>
+						<th class="subventions-nom-binet">Binet</th>
+						<th class="subventions-montant">Somme demandée</th>
+						<th class="subventions-montant">Somme accordée</th>
+						<th class='subventions-postes'>Postes de dépenses</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for subvention in subventions %}
+					<tr>
+						<td class="subventions-nom-binet">{{ subvention.mandat }}</td>
+						<td class="subventions-montant">{{ subvention.demande }}</td>
+						<td class="subventions-montant">{{ subvention.accorde }}</td>
+						<td class='subventions-postes'>{{ subvention.postes|linebreaks }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+				<tfoot>
+					<tr>
+						<th>Total</th>
+						<th class="subventions-montant">{{ total_demande }}</th>
+						<th class="subventions-montant">{{ total_accorde }}</th>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</section>
+{% endblock %}

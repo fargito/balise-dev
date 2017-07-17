@@ -1,19 +1,10 @@
 from accounts.models import Promotion
 from binets.models import Binet, Mandat
-from compta.models import Subvention, TypeSubvention, VagueSubventions
+from subventions.models import Subvention, TypeSubvention, VagueSubventions
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
-
-
-def subventions_file_handler(f, pathname):
-	"""cette fonction est appelée après l'upload d'un fichier
-	excel contenant des noms d'élèves"""
-	# on commence par enregistrer les données du fichier dans un fichier temporaire
-	with open(pathname, 'wb+') as destination:
-		for chunk in f.chunks():
-			destination.write(chunk)
 
 
 def create_subventions(request, imported_subventions):

@@ -2,15 +2,6 @@ from accounts.models import Eleve, Promotion
 from django.contrib.auth.models import User
 
 
-def eleves_file_handler(f, pathname):
-	"""cette fonction est appelée après l'upload d'un fichier
-	excel contenant des noms d'élèves"""
-	# on commence par enregistrer les données du fichier dans un fichier temporaire
-	with open(pathname, 'wb+') as destination:
-		for chunk in f.chunks():
-			destination.write(chunk)
-
-
 def create_eleves(request, imported_eleves):
 	"""allows you to create binets from a dict with
 	the correct keys"""

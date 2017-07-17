@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from imports.forms import ImportFileForm
 from django.contrib.auth.decorators import permission_required
-from imports.file_handlers import eleves_file_handler, binets_file_handler, subventions_file_handler
+from imports.file_handlers import file_handler
 from imports.file_handlers import create_eleves, create_binets, create_subventions
 from .forms import VagueForm
 import pandas, os
@@ -27,7 +27,7 @@ def import_eleves(request):
 			import_form = ImportFileForm(request.POST, request.FILES)
 			if import_form.is_valid():
 				# on copie l'import en mémoire
-				eleves_file_handler(request.FILES['excel_file'], pathname)
+				file_handler(request.FILES['excel_file'], pathname)
 				# on redirige vers la validation
 				sent = False
 				# on lit les données importées et on les met dans un dict
@@ -84,7 +84,7 @@ def import_binets(request):
 					str(date.month)+'_'+str(date.day)+' '+str(
 					date.hour)+'_'+str(date.minute)
 				request.session['pathname'] = pathname
-				binets_file_handler(request.FILES['excel_file'], pathname)
+				file_handler(request.FILES['excel_file'], pathname)
 				# on redirige vers la validation
 				sent = False
 				# on lit les données importées et on les met dans un dict
@@ -159,7 +159,7 @@ def import_subventions(request):
 					
 					request.session['pathname'] = pathname
 					# on enregistre le fichier temporaire
-					binets_file_handler(request.FILES['excel_file'], pathname)
+					file_handler(request.FILES['excel_file'], pathname)
 					# on redirige vers la validation
 					sent = False
 					# on lit les données importées et on les met dans un dict

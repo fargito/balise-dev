@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'backend',
     'imports',
     'vos',
+    'subventions',
 ]
 
 MIDDLEWARE = [

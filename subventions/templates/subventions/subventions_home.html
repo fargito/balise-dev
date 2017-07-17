@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<section id="compta-title-and-return">
+		<div class="return-button">
+			<form action="../">
+				<input type="submit" value="Retour" />
+			</form>
+		</div>
+		<div id="compta-title-cropped">
+			<div id="page-title">Liste des subventions</div>
+		</div>
+	</section>
+	<section>
+		<div class="txtcentre">
+		{% for vague in vagues_subventions %}
+			<p><a href={{ vague.view_self_url }}>Subventions {{ vague.type_subvention }} {{ vague.annee }}</a></p>
+		{% endfor %}
+		</div>
+	</section>
+{% endblock %}

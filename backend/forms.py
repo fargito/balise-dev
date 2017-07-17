@@ -1,6 +1,6 @@
 from django import forms
 from .models import ValidateEleve
-from compta.models import VagueSubventions
+from subventions.models import VagueSubventions
 
 # obsolete
 class ValidateEleveForm(forms.ModelForm):
