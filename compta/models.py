@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from subventions.models import Subvention, DeblocageSubvention
+
 
 class LigneCompta(models.Model):
 	"""opérations comptables Elles sont liées à la fois à
@@ -39,3 +41,18 @@ class LigneCompta(models.Model):
 	def view_self_link(self):
 		"""retourne le lien vers la vue qui modifie cette ligne"""
 		return ('view_ligne', [self.id])
+
+
+	def get_deblocages(self):
+		"""retourne une liste de querysets contenant les déblocages effectués sur les différentes
+		vagues attribuées au mandat"""
+		mandat_subventions = Subvention.objects.filter(mandat=self.mandat)
+		ligne_deblocages = []
+		for subvention in mandat_subventions:
+			deblocage = DeblocageSubvention.objects.filter(
+				subvention=subvention, ligne_compta=self)
+			if len(deblocage) == 0:
+				ligne_deblocages.append((str(subvention), None))
+			else:
+				ligne_deblocages.append((str(subvention), deblocage[0].montant))
+		return ligne_deblocages

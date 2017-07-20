@@ -4,8 +4,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from binets.models import Mandat
-from .forms import LigneComptaForm
+from .forms import LigneComptaForm, DeblocageSubventionForm
 from .models import LigneCompta
+from subventions.models import VagueSubventions, Subvention, DeblocageSubvention, TypeSubvention
+from django.forms import formset_factory
 from django.db.models import Q
 
 
@@ -46,11 +48,29 @@ def mandat_journal(request):
 	if request.user not in authorized['view'] and not(request.user.is_staff):
 		return redirect('../')
 
+	# on récupère toutes les subventions du binet
+	subventions_binet = Subvention.objects.filter(mandat=mandat)
+	has_subventions = len(subventions_binet) != 0
+
+
 	if request.user in authorized['edit'] or request.user.is_staff:
 		# on ne met le formulaire en place que si l'user a le doit de modif
 		request.session['edit'] = True
 		ligne_form = LigneComptaForm(request.POST or None)
-		if ligne_form.is_valid():
+
+		# on met ensuite dynamiquement les formulaires qui nous intéressent dans un dict
+		subventions_names = []
+		for subvention in subventions_binet:
+			subventions_names.append(
+				subvention.vague.type_subvention.nom+' '+subvention.vague.annee)
+		print(request.POST)
+
+		# on construit le formset
+		DeblocageSubventionFormSet = formset_factory(DeblocageSubventionForm, extra=len(subventions_binet))
+		deblocage_formset = DeblocageSubventionFormSet(request.POST or None)
+
+
+		if ligne_form.is_valid() and deblocage_formset.is_valid():
 			# on crée une nouvelle ligne comptable pour le mandat
 			ligne = ligne_form.save(commit=False)
 			ligne.auteur = request.user
@@ -59,11 +79,25 @@ def mandat_journal(request):
 			ligne.save()
 			ligne_form = LigneComptaForm(None)
 
+			# on crée les déblocages de subvention qui vont avec la ligne
+			for k in range(len(subventions_binet)):
+				deblocage = deblocage_formset[k].save(commit=False)
+				deblocage.ligne_compta = ligne
+				deblocage.subvention = subventions_binet[k]
+				deblocage.save()
+			deblocage_formset = DeblocageSubventionFormSet(None)
+
+
+
+	# on récupère toutes les lignes du mandat
 	lignes = LigneCompta.objects.filter(mandat=mandat)
+
+	
 	debit_total, credit_total = mandat.get_totals()
 	balance = credit_total-debit_total
 	is_positive = (balance >= 0)
-	# pour chacun des éléments dans la barre de nav du module 
+
+		# pour chacun des éléments dans la barre de nav du module 
 	# compta, on doit mettre cette variable pour afficher le choix 
 	# d'une couleur différente
 	request.session['active_tab'] = 'Journal'
@@ -142,5 +176,14 @@ def binet_subventions(request):
 	authorized = mandat.get_authorized_users()
 	if request.user not in authorized['view'] and not(request.user.is_staff):
 		return redirect('../')
+
+	# on récupère toutes les subventions du binet
+	subventions = Subvention.objects.filter(mandat=mandat)
+	subventions_dict = {}
+	for subvention in subventions:
+		subventions_dict[subvention.vague.type_subvention.nom+' '+subvention.vague.annee] = subvention.accorde
+	print(subventions_dict)
+
+
 	request.session['active_tab'] = 'Subventions'
 	return render(request, 'compta/binet_subventions.html', locals())

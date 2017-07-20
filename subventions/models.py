@@ -7,6 +7,7 @@ class TypeSubvention(models.Model):
 	A priori ne concerne que les subventions pour lesquelles on surveille le déblocage
 	(pas les subventions corps par exemple"""
 	nom = models.CharField(max_length=30)
+	deblocable = models.BooleanField()
 
 	class Meta:
 		unique_together = ('nom',)
@@ -54,7 +55,6 @@ class Subvention(models.Model):
 	mandat = models.ForeignKey('binets.Mandat')
 	demande = models.DecimalField(null=True, blank=True,max_digits=9, decimal_places=2)
 	accorde = models.DecimalField(null=True, blank=True,max_digits=9, decimal_places=2)
-	debloque = models.DecimalField(null=True, blank=True,max_digits=9, decimal_places=2)	
 	postes = models.TextField()
 
 	def __str__(self):
@@ -62,4 +62,32 @@ class Subvention(models.Model):
 
 	class Meta:
 		unique_together = ('vague', 'mandat',)
-		ordering = ('vague', 'mandat',)
+		ordering = ('-vague', 'mandat',)
+
+	def get_deblocages_list(self):
+		"""retourne la liste des déblocages effectués sur cette subvention"""
+		return DeblocageSubvention.objects.filter(subvention=self)
+
+	def get_deblocages_total(self):
+		"""retourne le total débloqué sur cette subvention"""
+		deblocages = get_deblocages_list(self)
+		debloque = 0
+		for deblocage in deblocages:
+			debloque += deblocage.montant
+		return debloque
+
+
+
+class DeblocageSubvention(models.Model):
+	"""cette classe sert à avoir des déblocages sur chaque vague. Elles sont en OneToOne avec une ligne de compta
+	et non pas intégrées pour pouvoir rajouter des types de subventions"""
+	ligne_compta = models.ForeignKey('compta.LigneCompta')
+	subvention = models.ForeignKey(Subvention)
+	montant = models.DecimalField(null=True, blank=True,max_digits=9, decimal_places=2)
+
+	class Meta:
+		ordering = ('subvention',)
+		unique_together = ('ligne_compta', 'subvention',)
+
+	def __str__(self):
+		return 'deblocage de '+str(self.montant)+' depense '+str(self.ligne_compta)+' sur '+str(self.subvention)

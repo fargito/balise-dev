@@ -1,5 +1,6 @@
 from django import forms
 from .models import LigneCompta
+from subventions.models import DeblocageSubvention
 
 
 
@@ -36,3 +37,22 @@ class LigneComptaForm(forms.ModelForm):
 			if debit > 0 and credit > 0:
 				msg = "Une opération de peut pas être débit et crédit"
 				self.add_error("debit", msg)
+
+
+
+class DeblocageSubventionForm(forms.ModelForm):
+	"""définit un formulaire permettant de faire un déblocage de subventions sur une vague"""
+
+	class Meta:
+		model = DeblocageSubvention
+		fields = ('montant',)
+
+	def clean(self):
+		"""on définit la validation pour le paramètre ne dépendant que du champ:
+		il doit être positif"""
+		cleaned_data = super(DeblocageSubventionForm, self).clean()
+		montant = cleaned_data.get('montant')
+
+		if montant < 0:
+			msg = 'Ce montant doit être positif'
+			self.add_error('montant', msg)

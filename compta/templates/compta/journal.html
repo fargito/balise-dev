@@ -107,6 +107,9 @@
 						<th class="compta-form-montant">
 							Crédit
 						</th>
+						{% for subvention_name in subventions_names %}
+						<th class="compta-form-montant">{{ subvention_name }}</th>
+						{% endfor %}
 					</tr>
 				</thead>
 				<tbody>
@@ -127,6 +130,9 @@
 									{{ ligne_form.credit.errors }}
 									{{ ligne_form.debit.errors }}
 								</td>
+								{% for deblocage_form in deblocage_formset %}
+									<td class="compta-form-montant">{{ deblocage_form.montant.errors }}</td>
+								{% endfor %}
 							</tr>
 
 							<tr id="new-ligne-compta-form">
@@ -142,10 +148,15 @@
 								<td class="compta-form-montant">
 									{{ ligne_form.credit }}
 								</td>
+								{{ deblocage_formset.management_form }}
+								{% for deblocage_form in deblocage_formset %}
+									<td class="compta-form-montant">{{ deblocage_form.montant }}</td>
+								{% endfor %}
 								<td class="compta-form-validate" colspan="2">
 									{% csrf_token %}
 									<input type="submit" name="validation" value="Ajouter" />
 								</td>
+								
 							<tr>									
 						</form>
 					</div>
@@ -155,8 +166,13 @@
 						<tr>
 							<td class="compta-form-date">{{ ligne.date|date:'d/m/Y' }}</td>
 							<td class="compta-form-description"><a href={{ ligne.view_self_link }}>{{ ligne.description }}</a></td>
-							<td class="compta-form-montant">{{ ligne.debit|default_if_none:"" }}</td>
-							<td class="compta-form-montant">{{ ligne.credit|default_if_none:"" }}</td>
+							<td class="compta-form-montant">{% if ligne.debit %}{{ ligne.debit|default_if_none:"" }}{% endif %}</td>
+							<td class="compta-form-montant">{% if ligne.credit %}{{ ligne.credit|default_if_none:"" }}{% endif %}</td>
+							{% for nom_vague, deblocage in ligne.get_deblocages %}
+								<td class="compta-form-montant">
+									{{ deblocage|default_if_none:"" }}
+								</td>
+							{% endfor %}
 							{% if request.session.edit %}
 								<td class="compta-button-container">
 									<a href={{ ligne.edit_self_link }}>

@@ -65,19 +65,15 @@ td.compta-form-date {
 .compta-form-description {
 	padding-left: 1em;
 	padding-right: 1em;
-	min-width: 30em;
+	min-width: 20em;
+	width: 100%;
 }
 
 #id_description {
 	width: 100%;
 }
 
-#id_debit {
-	width: 7em;
-	text-align: right;
-}
-
-#id_credit {
+.compta-form-montant input {
 	width: 7em;
 	text-align: right;
 }

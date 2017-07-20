@@ -16,10 +16,10 @@ class VagueSubventionsAdmin(admin.ModelAdmin):
 
 
 class SubventionAdmin(admin.ModelAdmin):
-	list_display = ('vague', 'mandat', 'demande', 'accorde', 'debloque', 'postes',)
-	list_filter = ('vague', 'mandat', 'demande', 'accorde', 'debloque', 'postes',)
+	list_display = ('vague', 'mandat', 'demande', 'accorde', 'postes',)
+	list_filter = ('vague', 'mandat', 'demande', 'accorde', 'postes',)
 	ordering = ('vague', 'mandat',)
-	search_fields = ('vague', 'mandat', 'demande', 'accorde', 'debloque', 'postes',)
+	search_fields = ('vague', 'mandat', 'demande', 'accorde', 'postes',)
 
 
 admin.site.register(TypeSubvention, TypeSubventionAdmin)
