@@ -130,9 +130,12 @@
 									{{ ligne_form.credit.errors }}
 									{{ ligne_form.debit.errors }}
 								</td>
+								<td class="compta-form-errors-container" colspan="15">
+								{{ deblocage_formset.non_form_errors }}
 								{% for deblocage_form in deblocage_formset %}
-									<td class="compta-form-montant">{{ deblocage_form.montant.errors }}</td>
+									{{ deblocage_form.montant.errors }}
 								{% endfor %}
+								</td>
 							</tr>
 
 							<tr id="new-ligne-compta-form">
@@ -162,36 +165,67 @@
 					</div>
 				{% endif %}
 				{% for ligne in lignes %}
-					<div class="ligne-compta">
-						<tr>
-							<td class="compta-form-date">{{ ligne.date|date:'d/m/Y' }}</td>
+					<tr class="ligne-compta">
+						<td class="compta-form-date">{{ ligne.date|date:'d/m/Y' }}</td>
+						{# si l'utilisateur peut éditer le journal, le lien de la description l'amène directement à edit. Sinon à view #}
+						{% if request.session.edit %}
+							<td class="compta-form-description"><a href={{ ligne.edit_self_link }}>{{ ligne.description }}</a></td>
+						{% else %}
 							<td class="compta-form-description"><a href={{ ligne.view_self_link }}>{{ ligne.description }}</a></td>
-							<td class="compta-form-montant">{% if ligne.debit %}{{ ligne.debit|default_if_none:"" }}{% endif %}</td>
-							<td class="compta-form-montant">{% if ligne.credit %}{{ ligne.credit|default_if_none:"" }}{% endif %}</td>
-							{% for nom_vague, deblocage in ligne.get_deblocages %}
-								<td class="compta-form-montant">
-									{{ deblocage|default_if_none:"" }}
-								</td>
-							{% endfor %}
-							{% if request.session.edit %}
-								<td class="compta-button-container">
-									<a href={{ ligne.edit_self_link }}>
-										<img src="{% static 'img/edit.ico' %}" alt="Edit icone" class='edit_icon' label="Modifier la ligne"/>
-									</a>
-								</td>
-								<td class="compta-button-container">
-									<a href={{ ligne.delete_self_link }}>
-										<img src="{% static 'img/delete.ico' %}" alt="Delete icone" class='delete_icon'/>
-									</a>
-								</td>
-							{% endif %}
-						</tr>
-					</div>
+						{% endif %}
+						<td class="compta-form-montant">{% if ligne.debit %}{{ ligne.debit|default_if_none:"" }}{% endif %}</td>
+						<td class="compta-form-montant">{% if ligne.credit %}{{ ligne.credit|default_if_none:"" }}{% endif %}</td>
+						{% for nom_vague, deblocage in ligne.get_deblocages %}
+							<td class="compta-form-montant">
+								<div class="compta-deblocage">
+									{% if deblocage %}{{ deblocage|default_if_none:"" }}{% endif %}
+								</div>
+							</td>
+						{% endfor %}
+						{% if request.session.edit %}
+							<td class="compta-button-container">
+								<a href={{ ligne.edit_self_link }}>
+									<img src="{% static 'img/edit.ico' %}" alt="Edit icone" class='edit_icon' label="Modifier la ligne"/>
+								</a>
+							</td>
+							<td class="compta-button-container">
+								<a href={{ ligne.delete_self_link }}>
+									<img src="{% static 'img/delete.ico' %}" alt="Delete icone" class='delete_icon'/>
+								</a>
+							</td>
+						{% endif %}
+					</tr>
 				{% endfor %}
 				</tbody>
 				<tfoot>
 				{# pour la dernière ligne on affiche les totaux #}
 					<div class="last-line">
+						<tr>
+							<th colspan="2"></th>
+							<th class="compta-form-montant">{{ debit_subtotal }}</th>
+							<th class="compta-form-montant">{{ credit_subtotal }}</th>
+							{% for subvention in subventions_binet %}
+							<th class="compta-form-montant">
+								<div class="compta-deblocage">{{ subvention.get_deblocages_total }}</div>
+							</th>
+							{% endfor %}
+						</tr>
+						{% for subvention in subventions_binet %}
+							<tr>
+								<td></td>
+								<td class="compta-form-description">
+									<div class="compta-deblocage">
+										Déblocage {{ subvention.vague }}
+									</div>
+								</td>
+								<td></td>
+								<td class="compta-form-montant">
+									<div class="compta-deblocage">
+										{{ subvention.get_deblocages_total }}
+									</div>
+								</td>
+							</tr>
+						{% endfor %}
 						<tr>
 							<th colspan="2"></th>
 							<th class="compta-form-montant">{{ debit_total }}</th>

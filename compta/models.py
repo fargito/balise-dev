@@ -52,7 +52,32 @@ class LigneCompta(models.Model):
 			deblocage = DeblocageSubvention.objects.filter(
 				subvention=subvention, ligne_compta=self)
 			if len(deblocage) == 0:
+				new_deblocage = DeblocageSubvention.objects.create(
+					ligne_compta=self,
+					subvention=subvention,
+					montant=None)
+				new_deblocage.save()
 				ligne_deblocages.append((str(subvention), None))
 			else:
 				ligne_deblocages.append((str(subvention), deblocage[0].montant))
+		return ligne_deblocages
+
+
+	def get_deblocages_for_formset(self):
+		"""retourne une liste de dict du type [{ 'montant': 159.99}, ] pour la mise en decimal_places
+		initiale du formset de déblocage dans la modification de ligne"""
+		mandat_subventions = Subvention.objects.filter(mandat=self.mandat)
+		ligne_deblocages = []
+		for subvention in mandat_subventions:
+			deblocage = DeblocageSubvention.objects.filter(
+				subvention=subvention, ligne_compta=self)
+			if len(deblocage) == 0:
+				new_deblocage = DeblocageSubvention.objects.create(
+					ligne_compta=self,
+					subvention=subvention,
+					montant=None)
+				new_deblocage.save()
+				ligne_deblocages.append({'montant': None})
+			else:
+				ligne_deblocages.append({'montant': deblocage[0].montant})
 		return ligne_deblocages

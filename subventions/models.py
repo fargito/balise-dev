@@ -66,15 +66,20 @@ class Subvention(models.Model):
 
 	def get_deblocages_list(self):
 		"""retourne la liste des déblocages effectués sur cette subvention"""
-		return DeblocageSubvention.objects.filter(subvention=self)
+		return DeblocageSubvention.objects.filter(subvention=self).filter(montant__gt=0)
 
 	def get_deblocages_total(self):
 		"""retourne le total débloqué sur cette subvention"""
-		deblocages = get_deblocages_list(self)
+		deblocages = self.get_deblocages_list()
 		debloque = 0
 		for deblocage in deblocages:
-			debloque += deblocage.montant
+			if deblocage.montant:
+				debloque += deblocage.montant
 		return debloque
+
+	def get_rest(self):
+		"""retourne ce qui reste de non débloqué de la subvention"""
+		return self.accorde-self.get_deblocages_total()
 
 
 

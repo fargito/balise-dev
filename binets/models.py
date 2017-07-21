@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from compta.models import LigneCompta
+from subventions.models import Subvention
 
 # stockage des binets avec leur type et les mandats
 # qui les concernent
@@ -42,18 +43,27 @@ class Mandat(models.Model):
 	def __str__(self):
 		return str(self.binet)+" ("+str(self.promotion)+")"
 
-	def get_totals(self):
+	def get_subtotals(self):
 		"""returns the total credits and debits attached
-		to this mandat"""
+		to this mandat without the subventions"""
 		lignes = LigneCompta.objects.filter(mandat=self)
-		debit_total = 0
-		credit_total = 0
+		debit_subtotal = 0
+		credit_subtotal = 0
 		for ligne in lignes:
 			if ligne.credit:
-				credit_total += ligne.credit
+				credit_subtotal += ligne.credit
 			if ligne.debit:
-				debit_total += ligne.debit
+				debit_subtotal += ligne.debit
+		return (debit_subtotal, credit_subtotal)
+
+	def get_totals(self):
+		"""returns the totals with the subventions"""
+		subventions = Subvention.objects.filter(mandat=self)
+		debit_total, credit_total = self.get_subtotals()
+		for subvention in subventions:
+			credit_total += subvention.get_deblocages_total()
 		return (debit_total, credit_total)
+
 
 	def get_balance(self):
 		"""retourne la balance actuelle du binet"""

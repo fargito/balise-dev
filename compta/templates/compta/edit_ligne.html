@@ -23,6 +23,9 @@
 						<th class="compta-form-montant">
 							Crédit
 						</th>
+						{% for subvention_name in subventions_names %}
+						<th class="compta-form-montant">{{ subvention_name }}</th>
+						{% endfor %}
 					</tr>
 				</thead>
 				<tbody>
@@ -42,6 +45,12 @@
 									{{ ligne_form.credit.errors }}
 									{{ ligne_form.debit.errors }}
 								</td>
+								<td class="compta-form-errors-container" colspan="15">
+								{{ deblocage_edit_formset.non_form_errors }}
+								{% for deblocage_form in deblocage_edit_formset %}
+									{{ deblocage_form.errors }}
+								{% endfor %}
+								</td>
 							</tr>
 
 							<tr id="new-ligne-compta-form">
@@ -57,9 +66,13 @@
 								<td class="compta-form-montant">
 									{{ ligne_form.credit }}
 								</td>
+								{{ deblocage_edit_formset.management_form }}
+								{% for deblocage_form in deblocage_edit_formset %}
+									<td class="compta-form-montant">{{ deblocage_form.id }}{{ deblocage_form.montant }}</td>
+								{% endfor %}
 								<td class="compta-form-validate" colspan="2">
 									{% csrf_token %}
-									<input type="submit" name="validation" value="Modifier" />
+									<input type="submit" name="validation" value="Ajouter" />
 								</td>
 							<tr>
 						</div>

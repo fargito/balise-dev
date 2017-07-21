@@ -6,6 +6,10 @@
 	margin: auto;
 }
 
+tr.subvention-ligne:nth-child(even) {background: #FFF;}
+tr.subvention-ligne:nth-child(odd) {background: #DDD;}
+
+
 .subventions-nom-binet {
 	min-width: 15em;
 }
@@ -34,4 +38,53 @@ th.subventions-montant {
 	text-align: right;
 	padding-top: 1em;
 	padding-right: 1em;
+}
+
+.subventions-deblocages-table {
+	margin: auto;
+	width: 100%;
+}
+
+.subventions-deblocages-and-lignes-container {
+	margin-bottom: 2em;
+}
+
+table.subventions-deblocage-lignes {
+	margin-left: 5em;
+	margin-right: 5em;
+}
+
+tbody.subventions-deblocage-lignes {
+	/*border: 1px solid black;*/
+}
+
+.subventions-deblocages-postes {
+	width: 20em;
+	padding-left: 1em;
+	padding-bottom: 0.5em;
+}
+
+.subventions-deblocages-postes p {
+	margin: auto;
+}
+
+.subventions-deblocages-montant {
+	text-align: right;
+	width: 8em;
+	padding-right: 1em;
+	margin-bottom: 1em;
+}
+
+.subventions-deblocages-fill {width: 30%;}
+
+.subventions-deblocages-recap {
+	margin-bottom: 1em;
+	margin-top: 1em;
+	background-color: #DD8888;
+}
+
+#view-deblocages-title {
+	font-size: 1.5em;
+	margin-top: 1.5em;
+	margin-bottom: 0.8em;
 }

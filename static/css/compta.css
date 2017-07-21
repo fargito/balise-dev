@@ -19,6 +19,10 @@
 	background-color: #FFD895
 }
 
+.compta-large-button-container:hover {
+	background-color: #FF9999;
+}
+
 .compta-option-activated {
 	background-color: #FF6060;
 }
@@ -26,7 +30,7 @@
 input.compta-nav-option {
 	background-color: transparent;
 	min-width: 8em;
-	width: 90%;
+	width: 100%;
 	height: 4em;
 	border: none;
 }
@@ -37,16 +41,27 @@ input.compta-nav-option {
 	margin-top: 1em;
 }
 
+tr.ligne-compta:nth-child(even) {background: #DDD}
+tr.ligne-compta:nth-child(odd) {background: #FFF}
+
 td.compta-form-montant {
 	width: 7em;
+	min-width: 7em;
 	text-align: right;
 	padding-top: 0.2em;
 	padding-bottom: 0.2em;
+	padding-right: 1em;
 }
 
 th.compta-form-montant {
+	min-width: 5.5em;
 	text-align: right;
 	padding-top: 0.6em;
+	padding-right: 1em;
+}
+
+.compta-deblocage {
+	font-style: italic;
 }
 
 td.compta-form-validate {

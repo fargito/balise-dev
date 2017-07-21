@@ -4,10 +4,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from binets.models import Mandat
-from .forms import LigneComptaForm, DeblocageSubventionForm
+from .forms import LigneComptaForm, DeblocageSubventionForm, BaseDeblocageSubventionFormSet, CustomDeblocageSubventionFormSet
 from .models import LigneCompta
 from subventions.models import VagueSubventions, Subvention, DeblocageSubvention, TypeSubvention
-from django.forms import formset_factory
+from django.forms import formset_factory, inlineformset_factory
 from django.db.models import Q
 
 
@@ -58,15 +58,16 @@ def mandat_journal(request):
 		request.session['edit'] = True
 		ligne_form = LigneComptaForm(request.POST or None)
 
+
 		# on met ensuite dynamiquement les formulaires qui nous intéressent dans un dict
 		subventions_names = []
 		for subvention in subventions_binet:
 			subventions_names.append(
 				subvention.vague.type_subvention.nom+' '+subvention.vague.annee)
-		print(request.POST)
 
-		# on construit le formset
-		DeblocageSubventionFormSet = formset_factory(DeblocageSubventionForm, extra=len(subventions_binet))
+
+		# on construit le formset des formulaires pour les déblocages
+		DeblocageSubventionFormSet = formset_factory(DeblocageSubventionForm, extra=len(subventions_binet), formset=BaseDeblocageSubventionFormSet)
 		deblocage_formset = DeblocageSubventionFormSet(request.POST or None)
 
 
@@ -93,6 +94,7 @@ def mandat_journal(request):
 	lignes = LigneCompta.objects.filter(mandat=mandat)
 
 	
+	debit_subtotal, credit_subtotal = mandat.get_subtotals()
 	debit_total, credit_total = mandat.get_totals()
 	balance = credit_total-debit_total
 	is_positive = (balance >= 0)
@@ -122,19 +124,61 @@ def edit_ligne(request, id_ligne):
 	"""permet de modifier une ligne et de rajouter des commentaires dessus"""
 	mandat = Mandat.objects.get(
 		id = request.session['id_mandat'])
+
+	# on récupère toutes les subventions du binet
+	subventions_binet = Subvention.objects.filter(mandat=mandat)
+
+	# on met ensuite dynamiquement les formulaires qui nous intéressent dans un dict
+	subventions_names = []
+	for subvention in subventions_binet:
+		subventions_names.append(
+			subvention.vague.type_subvention.nom+' '+subvention.vague.annee)
+
 	# on récupère la liste des utilisateurs habilités
 	# à supprimer la ligne
 	authorized = mandat.get_authorized_users()
 	if request.user not in authorized['edit'] and not(request.user.is_staff):
 		return redirect('../')
+
+
 	ligne = LigneCompta.objects.get(id=id_ligne)
 	if request.method == 'POST':
 		ligne_form = LigneComptaForm(request.POST, instance=ligne)
-		ligne = ligne_form.save(commit=False)
-		ligne.modificateur = request.user
-		ligne.save()
+		
+		# on construit le formset des formulaires pour les déblocages en précisant les instances à modifier
+		DeblocageSubventionFormSet = inlineformset_factory(LigneCompta, DeblocageSubvention, fields=('montant',), extra=0, formset=CustomDeblocageSubventionFormSet)
+		deblocage_edit_formset = DeblocageSubventionFormSet(request.POST, instance=ligne)
+		
+
+		# on vérifie la validité du formulaire et on pré-enregistre la ligne
+		if ligne_form.is_valid():
+			ligne = ligne_form.save(commit=False)
+			ligne.modificateur = request.user
+			
+			# on construit le formset des formulaires pour les déblocages en précisant les instances à modifier
+			DeblocageSubventionFormSet = inlineformset_factory(LigneCompta, DeblocageSubvention, fields=('montant',), extra=0, formset=CustomDeblocageSubventionFormSet)
+			deblocage_edit_formset = DeblocageSubventionFormSet(request.POST, instance=ligne)
+
+			if deblocage_edit_formset.is_valid():
+				# on crée les déblocages de subvention qui vont avec la ligne
+				for k in range(len(subventions_binet)):
+					deblocage = deblocage_edit_formset[k].save()
+
+
+				ligne.save()
+				ligne = ligne
+
+				ligne_form = LigneComptaForm(instance=ligne)
+				# on construit le formset des formulaires pour les déblocages en précisant les instances à modifier
+				DeblocageSubventionFormSet = inlineformset_factory(LigneCompta, DeblocageSubvention, fields=('montant',), extra=0)
+				deblocage_edit_formset = DeblocageSubventionFormSet(instance=ligne)
+
+	else:
 		ligne_form = LigneComptaForm(instance=ligne)
-	ligne_form = LigneComptaForm(instance=ligne)
+		# on construit le formset des formulaires pour les déblocages en précisant les instances à modifier
+		DeblocageSubventionFormSet = inlineformset_factory(LigneCompta, DeblocageSubvention, fields=('montant',), extra=0)
+		deblocage_edit_formset = DeblocageSubventionFormSet(instance=ligne)
+
 	return render(request, 'compta/edit_ligne.html', locals())
 
 
@@ -143,6 +187,16 @@ def view_ligne(request, id_ligne):
 	"""permet de voir une ligne et de rajouter des commentaires dessus"""
 	mandat = Mandat.objects.get(
 		id = request.session['id_mandat'])
+
+	# on récupère toutes les subventions du binet
+	subventions_binet = Subvention.objects.filter(mandat=mandat)
+
+	# on met ensuite dynamiquement les formulaires qui nous intéressent dans un dict
+	subventions_names = []
+	for subvention in subventions_binet:
+		subventions_names.append(
+			subvention.vague.type_subvention.nom+' '+subvention.vague.annee)
+
 	# on récupère la liste des utilisateurs habilités
 	# à supprimer la ligne
 	authorized = mandat.get_authorized_users()
@@ -179,11 +233,6 @@ def binet_subventions(request):
 
 	# on récupère toutes les subventions du binet
 	subventions = Subvention.objects.filter(mandat=mandat)
-	subventions_dict = {}
-	for subvention in subventions:
-		subventions_dict[subvention.vague.type_subvention.nom+' '+subvention.vague.annee] = subvention.accorde
-	print(subventions_dict)
-
 
 	request.session['active_tab'] = 'Subventions'
 	return render(request, 'compta/binet_subventions.html', locals())
