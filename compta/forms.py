@@ -67,11 +67,19 @@ class BaseDeblocageSubventionFormSet(BaseFormSet):
 			"""on se fait pas chier à valider le formset si un des formulaires a une erreur"""
 			return
 
+		print(self.cleaned_data)
+		print(self.data)
+		print(self)
+
 		if(self.data['credit'] and float(self.data['credit']) > 0):
 			"""on ne peut pas subventionner une recette"""
-			raise forms.ValidationError("Impossible de débloquer des subventions sur une recette")
+			for deblocage in self.cleaned_data:
+				try:
+					if deblocage['montant'] and deblocage['montant'] > 0:
+						raise forms.ValidationError("Impossible de débloquer des subventions sur une recette")
+				except KeyError:
+					pass
 
-		print(self.cleaned_data)
 		somme_deblocages = 0
 		for deblocage in self.cleaned_data:
 			try:
@@ -80,7 +88,7 @@ class BaseDeblocageSubventionFormSet(BaseFormSet):
 			except KeyError:
 				pass
 
-		if(float(self.data['debit']) < somme_deblocages):
+		if(self.data['debit'] and float(self.data['debit']) < somme_deblocages):
 			raise forms.ValidationError('Impossible de débloquer des subventions supérieures au montant de la dépense')
 
 

@@ -68,12 +68,12 @@
 							{% if request.session.edit %}
 							<td class="compta-button-container">
 								<a href={{ deblocage.ligne_compta.edit_self_link }}>
-									<img src="{% static 'img/edit.ico' %}" alt="Edit icone" class='edit_icon' label="Modifier la ligne"/>
+									<img src="{% static 'img/edit.ico' %}" alt="Edit icone" class='edit_icon' title="Modifier la ligne"/>
 								</a>
 							</td>
 							<td class="compta-button-container">
 								<a href={{ deblocage.ligne_compta.delete_self_link }}>
-									<img src="{% static 'img/delete.ico' %}" alt="Delete icone" class='delete_icon'/>
+									<img src="{% static 'img/delete.ico' %}" alt="Delete icone" class='delete_icon' title="Supprimer la ligne"/>
 								</a>
 							</td>
 						{% endif %}

@@ -146,3 +146,17 @@ div.ligne-comment {
 	width: 50%;
 	margin: auto;
 }
+
+.comment-ligne-container {
+	border: 1px solid black;
+	padding-left: 1em;
+	padding-right: 1em;
+	padding-bottom: 1em;
+	margin-top: 1em;
+	margin-bottom: 1em;
+}
+
+.comment-commentaire {
+	text-align: justify;
+	margin-top: 1.5em;
+}

@@ -40,8 +40,11 @@ def mandat_set(request, id_mandat):
 @login_required
 def mandat_journal(request):
 	"""affiche le journal comptable et permet de le modifier"""
-	mandat = Mandat.objects.get(
-		id = request.session['id_mandat'])
+	try:
+		mandat = Mandat.objects.get(
+			id = request.session['id_mandat'])
+	except KeyError:
+		return redirect('../')
 	# on récupère la liste des utilisateurs habilités
 	# à accéder à la page
 	authorized = mandat.get_authorized_users()
@@ -109,8 +112,11 @@ def mandat_journal(request):
 @login_required
 def delete_ligne(request, id_ligne):
 	"""supprime une ligne comptable et redirige vers le journal"""
-	mandat = Mandat.objects.get(
-		id = request.session['id_mandat'])
+	try:
+		mandat = Mandat.objects.get(
+			id = request.session['id_mandat'])
+	except KeyError:
+		return redirect('../')
 	# on récupère la liste des utilisateurs habilités
 	# à supprimer la ligne
 	authorized = mandat.get_authorized_users()
@@ -122,8 +128,11 @@ def delete_ligne(request, id_ligne):
 @login_required
 def edit_ligne(request, id_ligne):
 	"""permet de modifier une ligne et de rajouter des commentaires dessus"""
-	mandat = Mandat.objects.get(
-		id = request.session['id_mandat'])
+	try:
+		mandat = Mandat.objects.get(
+			id = request.session['id_mandat'])
+	except KeyError:
+		return redirect('../')
 
 	# on récupère toutes les subventions du binet
 	subventions_binet = Subvention.objects.filter(mandat=mandat)
@@ -166,7 +175,6 @@ def edit_ligne(request, id_ligne):
 
 
 				ligne.save()
-				ligne = ligne
 
 				ligne_form = LigneComptaForm(instance=ligne)
 				# on construit le formset des formulaires pour les déblocages en précisant les instances à modifier
@@ -185,8 +193,11 @@ def edit_ligne(request, id_ligne):
 @login_required
 def view_ligne(request, id_ligne):
 	"""permet de voir une ligne et de rajouter des commentaires dessus"""
-	mandat = Mandat.objects.get(
-		id = request.session['id_mandat'])
+	try:
+		mandat = Mandat.objects.get(
+			id = request.session['id_mandat'])
+	except KeyError:
+		return redirect('../')
 
 	# on récupère toutes les subventions du binet
 	subventions_binet = Subvention.objects.filter(mandat=mandat)
@@ -209,13 +220,22 @@ def view_ligne(request, id_ligne):
 @login_required
 def view_remarques(request):
 	"""permet de voir toutes les remarques sur les lignes compta et le mandat"""
-	mandat = Mandat.objects.get(
-		id = request.session['id_mandat'])
+	try:
+		mandat = Mandat.objects.get(
+			id = request.session['id_mandat'])
+	except KeyError:
+		return redirect('../')
 	# on récupère la liste des utilisateurs habilités
 	# à supprimer la ligne
 	authorized = mandat.get_authorized_users()
 	if request.user not in authorized['view'] and not(request.user.is_staff):
 		return redirect('../')
+
+
+	# on récupère toutes les subventions du binet
+	subventions_binet = Subvention.objects.filter(mandat=mandat)
+
+	lignes = LigneCompta.objects.filter(mandat=mandat)
 	request.session['active_tab'] = 'Remarques'
 	return render(request, 'compta/view_remarques.html', locals())
 
@@ -223,8 +243,11 @@ def view_remarques(request):
 @login_required
 def binet_subventions(request):
 	"""vue de la page des subventions du binet"""
-	mandat = Mandat.objects.get(
-		id = request.session['id_mandat'])
+	try:
+		mandat = Mandat.objects.get(
+			id = request.session['id_mandat'])
+	except KeyError:
+		return redirect('../')
 	# on récupère la liste des utilisateurs habilités
 	# à supprimer la ligne
 	authorized = mandat.get_authorized_users()
