@@ -62,14 +62,17 @@ class DeblocageSubventionForm(forms.ModelForm):
 
 class BaseDeblocageSubventionFormSet(BaseFormSet):
 	"""sert à définir les critères de validation groupés des subventions pour leur création"""
+
+	def __init__(self, subventions_list, *args, **kwargs):
+		"""on surcharge la méthode d'initialisation pour pouvoir transmettre au formset la liste des subventions utilisée"""
+		self.subventions_list = subventions_list
+		super(BaseDeblocageSubventionFormSet, self).__init__(*args, **kwargs)
+
+
 	def clean(self):
 		if any(self.errors):
 			"""on se fait pas chier à valider le formset si un des formulaires a une erreur"""
 			return
-
-		print(self.cleaned_data)
-		print(self.data)
-		print(self)
 
 		if(self.data['credit'] and float(self.data['credit']) > 0):
 			"""on ne peut pas subventionner une recette"""
@@ -90,6 +93,19 @@ class BaseDeblocageSubventionFormSet(BaseFormSet):
 
 		if(self.data['debit'] and float(self.data['debit']) < somme_deblocages):
 			raise forms.ValidationError('Impossible de débloquer des subventions supérieures au montant de la dépense')
+
+		for k in range(len(self.subventions_list)):
+			subvention = self.subventions_list[k]
+			deblocage = self.cleaned_data[k]
+			try:
+				if deblocage['montant'] and deblocage['montant'] > subvention.get_rest():
+					msg = 'Vous pouvez encore débloquer {} sur {} {}'.format(
+						subvention.get_rest(), 
+						str(subvention.vague.type_subvention),
+						str(subvention.vague.annee))
+					raise forms.ValidationError(msg)
+			except KeyError:
+				pass
 
 
 

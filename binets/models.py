@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from compta.models import LigneCompta
+from django.db.models import Q
 from subventions.models import Subvention
 
 # stockage des binets avec leur type et les mandats
@@ -35,13 +36,13 @@ class Mandat(models.Model):
 		unique_together = ('binet','promotion',)
 		ordering = ('binet', 'promotion',)
 
+	def __str__(self):
+		return str(self.binet)+" ("+str(self.promotion)+")"
+
 	@models.permalink
 	def get_mandat_journal(self):
 		"""returns the link to the mandat journal"""
 		return ('mandat_journal', [self.id])
-
-	def __str__(self):
-		return str(self.binet)+" ("+str(self.promotion)+")"
 
 	def get_subtotals(self):
 		"""returns the total credits and debits attached
@@ -117,3 +118,19 @@ class Binet(models.Model):
 
 	def __str__(self):
 		return self.nom
+
+	def get_available_mandats(self, user):
+		"""retourne la liste des mandats auquel l'utilisateur a accès"""
+		if user.is_staff:
+			res = {
+				'edit': Mandat.objects.filter(binet=self),
+			}
+			return res
+		res = {}
+		res['view'] = Mandat.objects.filter(
+			binet=self,
+			promotion__lt=user.eleve.promotion)
+		res['edit'] = Mandat.objects.filter(binet=self).filter(
+			Q(president=user) | 
+			Q(tresorier=user))
+		return res

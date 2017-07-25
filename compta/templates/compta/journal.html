@@ -78,12 +78,12 @@
 			<div class="compta-large-button-container">
 				{% if request.session.active_tab == 'Historique' %}
 				<div class="compta-option-activated">
-					<form action="#">
+					<form action="/compta/binet_compta_history/">
 						<input class="compta-nav-option" type="submit" value="Historique" />
 					</form>
 				</div>
 				{% else %}
-				<form action="#">
+				<form action="/compta/binet_compta_history/">
 					<input class="compta-nav-option" type="submit" value="Historique" />
 				</form>
 				{% endif %}

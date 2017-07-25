@@ -6,7 +6,9 @@
 	{% for mandat in liste_mandats %}
 		<div class="mandat">
 			<li>
-				<strong>X{{ mandat.promotion }}</strong> : {{ mandat.president }}, {{ mandat.tresorier }}
+				<strong>X{{ mandat.promotion }}</strong> : 
+				<a href={{ mandat.president.eleve.get_infos_url }}>{{ mandat.president }}</a>, 
+				<a href={{ mandat.tresorier.eleve.get_infos_url }}>{{ mandat.tresorier }}</a>
 			</li>
 		</div>
 	{% endfor %}

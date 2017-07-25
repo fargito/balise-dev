@@ -1,0 +1,3 @@
+Système de passations efficace
+
+Quand on réimporte la liste des utilisateurs via excel, que ça ne réinitialise pas les privilèges d'admin des utilisateurs

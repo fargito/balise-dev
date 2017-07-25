@@ -160,3 +160,12 @@ div.ligne-comment {
 	text-align: justify;
 	margin-top: 1.5em;
 }
+
+#main-comment {
+	margin-top: 2em;
+	margin-bottom: 2em;
+}
+
+.input-align-right {
+	text-align: right;
+}

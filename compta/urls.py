@@ -13,5 +13,6 @@ urlpatterns = [
     url(r'^journal/view_ligne/(?P<id_ligne>\d+)$', views.view_ligne, name='view_ligne'),
     url(r'^view_remarques/$', views.view_remarques),
     url(r'^binet_subventions/$', views.binet_subventions),
+    url(r'^binet_compta_history/$', views.binet_compta_history)
 
 ]

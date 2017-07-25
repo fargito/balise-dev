@@ -3,12 +3,15 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+
 from binets.models import Mandat
-from .forms import LigneComptaForm, DeblocageSubventionForm, BaseDeblocageSubventionFormSet, CustomDeblocageSubventionFormSet
 from .models import LigneCompta
 from subventions.models import VagueSubventions, Subvention, DeblocageSubvention, TypeSubvention
-from django.forms import formset_factory, inlineformset_factory
 from django.db.models import Q
+
+from .forms import LigneComptaForm, DeblocageSubventionForm, BaseDeblocageSubventionFormSet, CustomDeblocageSubventionFormSet
+from binets.forms import DescriptionForm
+from django.forms import formset_factory, inlineformset_factory
 
 
 @login_required
@@ -71,7 +74,9 @@ def mandat_journal(request):
 
 		# on construit le formset des formulaires pour les déblocages
 		DeblocageSubventionFormSet = formset_factory(DeblocageSubventionForm, extra=len(subventions_binet), formset=BaseDeblocageSubventionFormSet)
-		deblocage_formset = DeblocageSubventionFormSet(request.POST or None)
+		# attention contrairement à la modification de déblocages, on doit fournir au formset la liste des subventions
+		# pour pouvoir vérifier la compatibilité des déblocages
+		deblocage_formset = DeblocageSubventionFormSet(subventions_binet, request.POST or None)
 
 
 		if ligne_form.is_valid() and deblocage_formset.is_valid():
@@ -231,6 +236,11 @@ def view_remarques(request):
 	if request.user not in authorized['view'] and not(request.user.is_staff):
 		return redirect('../')
 
+	commentaire_form = DescriptionForm(request.POST or None, instance=mandat)
+
+	if commentaire_form.is_valid():
+		commentaire_form.save()
+
 
 	# on récupère toutes les subventions du binet
 	subventions_binet = Subvention.objects.filter(mandat=mandat)
@@ -259,3 +269,20 @@ def binet_subventions(request):
 
 	request.session['active_tab'] = 'Subventions'
 	return render(request, 'compta/binet_subventions.html', locals())
+
+
+
+@login_required
+def binet_compta_history(request):
+	"""affiche la liste des mandats du binet en question auquel a droit d'accéder l'utilisateur"""
+	try:
+		mandat = Mandat.objects.get(
+			id = request.session['id_mandat'])
+	except KeyError:
+		return redirect('../')
+
+	request.session['active_tab'] = 'Historique'
+
+	liste_mandats = mandat.binet.get_available_mandats(request.user)
+
+	return render(request, 'compta/binet_compta_history.html', locals())

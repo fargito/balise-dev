@@ -9,18 +9,11 @@ def all_binets(request):
 	return render(request, 'binets/all_binets.html', locals())
 
 
-def binet_set(request, id_binet):
-	"""the only purpose of this view is to set the binet.
-	It then redirects to the interesting view"""
-	request.session['id_binet'] = id_binet
-	# Here we have to check if the user can have this info
-	return redirect('.')
 
-
-def binet_history(request):
+def binet_history(request, id_binet):
 	"""generates the view for the binet history"""
 	binet = Binet.objects.get(
-		id=request.session['id_binet'])
+		id=id_binet)
 	liste_mandats = Mandat.objects.filter(
 		binet=binet)
 	return render(request, 'binets/binet_history.html', locals())

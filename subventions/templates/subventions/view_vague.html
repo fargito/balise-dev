@@ -25,7 +25,8 @@
 				<tbody>
 					{% for subvention in subventions %}
 					<tr class="subvention-ligne">
-						<td class="subventions-nom-binet">{{ subvention.mandat }}</td>
+						<td class="subventions-nom-binet">
+							<a href={{ subvention.mandat.binet.get_history_url }}>{{ subvention.mandat }}</a></td>
 						<td class="subventions-montant">{{ subvention.demande }}</td>
 						<td class="subventions-montant">{{ subvention.accorde }}</td>
 						<td class='subventions-postes'>{{ subvention.postes|linebreaks }}</td>

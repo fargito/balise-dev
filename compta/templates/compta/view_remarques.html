@@ -5,11 +5,20 @@
 {% block compta_page %}
 	<div id="compta-table-container">
 		<div id="view-ligne-title">
-			Remarques sur le mandat
+			Commentaires du mandat
 		</div>
 		<div id="comments-container">
 			<div id="main-comment">
-				{{ mandat.remarque }}
+				{% if request.session.edit %}
+					<form method='post' action='.'>
+						{{ commentaire_form }}
+						{% csrf_token %}
+						<div class="input-align-right"><input type="submit" value="Valider"/></div>
+					</form>
+				{% else %}
+					Commentaires généraux sur le mandat
+					{{ mandat.description }}
+				{% endif %}
 			</div>
 			{% for ligne in lignes %}
 			{% if ligne.commentaire %}

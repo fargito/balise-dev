@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import CreateAccountForm, CreateUserForm
 from django.contrib.auth.models import User
 from .models import Eleve
@@ -45,3 +45,12 @@ def create_account(request):
 def my_account(request):
 	"""shows the user his infos"""
 	return render(request, 'accounts/my_account.html')
+
+
+def view_account(request, id_user):
+	"""displays the useful infos concerning this eleve"""
+	viewed_user = User.objects.get(
+		id=id_user)
+	if viewed_user == request.user:
+		print("c'est moi")
+	return render(request, 'accounts/view_account.html', locals())
