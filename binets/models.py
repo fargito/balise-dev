@@ -122,15 +122,8 @@ class Binet(models.Model):
 	def get_available_mandats(self, user):
 		"""retourne la liste des mandats auquel l'utilisateur a accès"""
 		if user.is_staff:
-			res = {
-				'edit': Mandat.objects.filter(binet=self),
-			}
-			return res
-		res = {}
-		res['view'] = Mandat.objects.filter(
+			return Mandat.objects.filter(binet=self)
+		
+		return Mandat.objects.filter(
 			binet=self,
-			promotion__lt=user.eleve.promotion)
-		res['edit'] = Mandat.objects.filter(binet=self).filter(
-			Q(president=user) | 
-			Q(tresorier=user))
-		return res
+			promotion__lte=user.eleve.promotion)
