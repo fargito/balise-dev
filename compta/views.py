@@ -281,8 +281,15 @@ def binet_compta_history(request):
 	except KeyError:
 		return redirect('../')
 
-	request.session['active_tab'] = 'Historique'
-
 	liste_mandats = mandat.binet.get_available_mandats(request.user)
 
+	request.session['active_tab'] = 'Historique'
 	return render(request, 'compta/binet_compta_history.html', locals())
+
+
+@login_required
+def import_lignes(request):
+	"""this view allows the user to import compta operations"""
+
+	request.session['active_tab'] = 'Importer des opérations'
+	return render(request, 'compta/import_lignes.html', locals())

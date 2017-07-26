@@ -7,7 +7,7 @@ class TypeSubvention(models.Model):
 	A priori ne concerne que les subventions pour lesquelles on surveille le déblocage
 	(pas les subventions corps par exemple"""
 	nom = models.CharField(max_length=30)
-	deblocable = models.BooleanField()
+	deblocable = models.BooleanField(default=True)
 
 	class Meta:
 		unique_together = ('nom',)

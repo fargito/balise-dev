@@ -49,12 +49,12 @@
 			<div class="compta-large-button-container">
 				{% if request.session.active_tab == 'Importer des opérations' %}
 				<div class="compta-option-activated">
-					<form action="#">
+					<form action="/compta/import_lignes">
 						<input class="compta-nav-option" type="submit" value="Importer des opérations" />
 					</form>
 				</div>
 				{% else %}
-				<form action="#">
+				<form action="/compta/import_lignes">
 					<input class="compta-nav-option" type="submit" value="Importer des opérations" />
 				</form>
 				{% endif %}

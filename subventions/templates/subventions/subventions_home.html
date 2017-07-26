@@ -13,8 +13,11 @@
 	</section>
 	<section>
 		<div class="txtcentre">
-		{% for vague in vagues_subventions %}
-			<p><a href={{ vague.view_self_url }}>Subventions {{ vague.type_subvention }} {{ vague.annee }}</a></p>
+		{% for annee, vagues in vagues_subventions %}
+			{{ annee }}
+			{% for vague in vagues %}
+				<p><a href={{ vague.view_self_url }}>Subventions {{ vague.type_subvention }} {{ vague.annee }}</a></p>
+			{% endfor %}
 		{% endfor %}
 		</div>
 	</section>

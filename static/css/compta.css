@@ -169,3 +169,10 @@ div.ligne-comment {
 .input-align-right {
 	text-align: right;
 }
+
+.compta-history-title {
+	text-align: center;
+	height: 5em;
+	padding-top: 2em;
+	font-size: 1.5em;
+}

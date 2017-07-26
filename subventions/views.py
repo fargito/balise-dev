@@ -5,7 +5,18 @@ from .models import VagueSubventions, Subvention
 
 def subventions_home(request):
 	"""affiche des liens vers les subventions triés par année"""
-	vagues_subventions = VagueSubventions.objects.all()
+	all_vagues_subventions = VagueSubventions.objects.all()
+	# on récupère la liste de toutes les années dans lesquelles ont
+	# été accordées des subventions. Comme les vagues de subventions sont
+	# ordonnées par (-annee), on a les années en ordre décroissant
+	annees = all_vagues_subventions.values('annee').distinct()
+
+	vagues_subventions = []
+	for annee in annees:
+		vagues_subventions.append((annee['annee'],
+			VagueSubventions.objects.filter(
+				annee=annee['annee'])))
+		
 	return render(request, 'subventions/subventions_home.html', locals())
 
 

@@ -3,33 +3,24 @@
 {% load static %}
 
 {% block compta_page %}
+	<div class="binet-mandats-container">
+		<div class="compta-history-title">
+			Liens vers les mandats précédents
+		</div>
 		<table id="liste-binets">
-			<thead class="liste-binets">
-				<tr>
-					<th class="nom-binet-head">Binet</th>
-					<th class="role-in-binet-head">Rôle</th>
-				</tr>
-			</thead>
 			<tbody>
 				{% for available_mandat in liste_mandats %}
 					<tr class="mandat">
 						<td class="nom-binet">
-							Binet 
-							<strong><a href={{ available_mandat.get_mandat_journal }}>{{ available_mandat.binet }}</a></strong> ({{ available_mandat.promotion }})
-						</td>
-						<td class="role-in-binet">
-						{# on affiche aussi le rôle dans le binet #}
-						{% if mandat.president == user %}
-							président
-						{% elif mandat.tresorier == user %}
-							trésorier
-						{% elif user.is_staff %}
-							kessier
-						{% endif %}
+							<div class="txtcentre">
+								Binet 
+								<strong><a href={{ available_mandat.get_mandat_journal }}>{{ available_mandat.binet }} ({{ available_mandat.promotion }})</a></strong>
+							</div>
 						</td>
 					</tr>
 
 				{% endfor %}
 			</tbody>
 		</table>
+	</div>
 {% endblock %}
