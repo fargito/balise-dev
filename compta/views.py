@@ -12,6 +12,13 @@ from django.db.models import Q
 from .forms import LigneComptaForm, DeblocageSubventionForm, BaseDeblocageSubventionFormSet, CustomDeblocageSubventionFormSet
 from binets.forms import DescriptionForm
 from django.forms import formset_factory, inlineformset_factory
+from imports.forms import ImportFileForm
+
+from imports.file_handlers import file_handler, create_lignes_compta
+
+from datetime import datetime
+import pandas
+import numpy as np
 
 
 @login_required
@@ -96,6 +103,8 @@ def mandat_journal(request):
 				deblocage.save()
 			deblocage_formset = DeblocageSubventionFormSet(None)
 
+	else:
+		request.session['edit'] = False
 
 
 	# on récupère toutes les lignes du mandat
@@ -290,6 +299,73 @@ def binet_compta_history(request):
 @login_required
 def import_lignes(request):
 	"""this view allows the user to import compta operations"""
+	try:
+		mandat = Mandat.objects.get(
+			id = request.session['id_mandat'])
+	except KeyError:
+		return redirect('../')
+
+	# on vérifie qui est autorisé à importer des opérations
+	authorized = mandat.get_authorized_users()
+	if request.user not in authorized['edit'] and not(request.user.is_staff):
+		return redirect('/compta/journal')
+
+	if request.method == 'POST':
+		if request.POST['validation'] == 'Upload':
+			import_form = ImportFileForm(request.POST, request.FILES)
+
+			if import_form.is_valid():
+				# on copie l'import en mémoire
+				date = datetime.today()
+				pathname = 'imports/logs/lignes_imports/import_compta_'+\
+					str(mandat)+'_'+str(date.year)+'_'+\
+					str(date.month)+'_'+str(date.day)+' '+str(
+					date.hour)+'_'+str(date.minute)
+				
+				request.session['pathname'] = pathname
+				# on enregistre le fichier temporaire
+				file_handler(request.FILES['excel_file'], pathname)
+
+				# on redirige vers la validation
+				sent = False
+				# on lit les données importées et on les met dans un dict
+				imported_lignes = pandas.read_excel(open(pathname, 'rb'), sheetname=0, na_values = ['-'])
+				imported_lignes = imported_lignes.transpose().to_dict().values()
+				# On affiche les binets
+				imported_lignes_list = []
+				for ligne in imported_lignes:
+					# si les imports sont en nan, on les transforme en None
+					if not float(ligne['Débit']) > 0:
+						ligne['Débit'] = None
+					if not float(ligne['Crédit']) > 0:
+						ligne['Crédit'] = None
+					imported_lignes_list.append(
+						(ligne['Date'], ligne['Description'], ligne['Débit'], ligne['Crédit']))
+				request.session['messages'] = []
+				request.session['messages'].append('Copied the file in the database')
+
+				return render(request, 'compta/import_lignes_confirm.html', locals())
+		else:
+			if request.POST['validation'] == 'Valider':
+				imported_lignes = pandas.read_excel(open(request.session[
+					'pathname'], 'rb'), sheetname=0, na_values = ['-'])
+				imported_lignes = imported_lignes.transpose().to_dict().values()
+				create_lignes_compta(request, imported_lignes, mandat)
+				# on supprime le fichier temporaire
+				del request.session['pathname']
+				sent = True
+
+
+			if request.POST['validation'] == 'Annuler':
+				# on supprime le fichier temporaire
+				del request.session['pathname']
+				request.session['messages'] = ['Requête annulée']
+				sent = True
+
+			return redirect('/compta/journal')
+
+	else:
+		import_form = ImportFileForm()
 
 	request.session['active_tab'] = 'Importer des opérations'
 	return render(request, 'compta/import_lignes.html', locals())

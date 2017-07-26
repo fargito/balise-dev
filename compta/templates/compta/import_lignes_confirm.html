@@ -1,0 +1,47 @@
+{% extends 'compta/journal.html' %}
+{# cette page récupère le menu de la page journal #}
+{% load static %}
+
+
+{% block compta_page %}
+	{% if sent %}
+	C'est envoyé mon gros
+	{% else %}
+	<h1>Opérations à confirmer</h1>
+	<div id="compta-table-container">
+		<table id="compta-table">
+			<thead>
+				<tr>
+					<th>
+						Effectée le
+					</th>
+					<th class="compta-form-description">
+						Description
+					</th>
+					<th class="compta-form-montant">
+						Débit
+					</th>
+					<th class="compta-form-montant">
+						Crédit
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for date, description, debit, credit in imported_lignes_list %}
+				<tr class="ligne-compta">
+					<td class="compta-form-date">{{ date|date:'d/m/Y' }}</td>
+					<td class="compta-form-description">{{ description }}</td>
+					<td class="compta-form-montant">{% if debit %}{{ debit|default_if_none:"" }}{% endif %}</td>
+					<td class="compta-form-montant">{% if credit %}{{ credit|default_if_none:"" }}{% endif %}</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+		<form method="post" action=".">
+		    {% csrf_token %}
+		    <input type="submit" name="validation" value="Valider" />
+		    <input type="submit" name="validation" value="Annuler" />
+		</form>
+	</div>
+	{% endif %}
+{% endblock %}
