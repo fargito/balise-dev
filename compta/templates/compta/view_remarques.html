@@ -16,8 +16,7 @@
 						<div class="input-align-right"><input type="submit" value="Valider"/></div>
 					</form>
 				{% else %}
-					Commentaires généraux sur le mandat
-					{{ mandat.description }}
+					{{ mandat.description|default_if_none:"Ce binet ne possède pas de commentaire général" }}
 				{% endif %}
 			</div>
 			{% for ligne in lignes %}
