@@ -18,7 +18,6 @@ from imports.file_handlers import file_handler, create_lignes_compta
 
 from datetime import datetime
 import pandas
-import numpy as np
 
 
 @login_required
