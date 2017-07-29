@@ -91,7 +91,7 @@ class BaseDeblocageSubventionFormSet(BaseFormSet):
 			except KeyError:
 				pass
 
-		if(self.data['debit'] and float(self.data['debit']) < somme_deblocages):
+		if(self.data['debit'] and self.data['debit'] < str(somme_deblocages)):
 			raise forms.ValidationError('Impossible de débloquer des subventions supérieures au montant de la dépense')
 
 		for k in range(len(self.subventions_list)):
@@ -123,18 +123,20 @@ class CustomDeblocageSubventionFormSet(BaseInlineFormSet):
 				if deblocage['montant'] < 0:
 					raise forms.ValidationError('Impossible de débloquer des subventions négatives')
 
-				if deblocage['id'].montant and deblocage['montant'] > deblocage['id'].subvention.get_rest()+deblocage['id'].montant:
-					msg = "Déblocage trop important sur {} {}: vous pouvez débloquer {}".format(
-						str(deblocage['id'].subvention.vague.type_subvention), 
-						str(deblocage['id'].subvention.vague.annee), 
-						deblocage['id'].subvention.get_rest()+deblocage['id'].montant)
-					raise forms.ValidationError(msg)
-				elif deblocage['montant'] > deblocage['id'].subvention.get_rest():
-					msg = "Déblocage trop important sur {} {}: vous pouvez débloquer {}".format(
-						str(deblocage['id'].subvention.vague.type_subvention), 
-						str(deblocage['id'].subvention.vague.annee), 
-						deblocage['id'].subvention.get_rest())
-					raise forms.ValidationError(msg)
+				if deblocage['id'].montant:
+					if deblocage['montant'] > deblocage['id'].subvention.get_rest()+deblocage['id'].montant:
+						msg = "Déblocage trop important sur {} {}: vous pouvez débloquer {}".format(
+							str(deblocage['id'].subvention.vague.type_subvention), 
+							str(deblocage['id'].subvention.vague.annee), 
+							deblocage['id'].subvention.get_rest()+deblocage['id'].montant)
+						raise forms.ValidationError(msg)
+				else:
+					if deblocage['montant'] > deblocage['id'].subvention.get_rest():
+						msg = "Déblocage trop important sur {} {}: vous pouvez débloquer {}".format(
+							str(deblocage['id'].subvention.vague.type_subvention), 
+							str(deblocage['id'].subvention.vague.annee), 
+							deblocage['id'].subvention.get_rest())
+						raise forms.ValidationError(msg)
 
 
 
@@ -150,6 +152,6 @@ class CustomDeblocageSubventionFormSet(BaseInlineFormSet):
 				except KeyError:
 					pass
 
-		if(self.data['debit'] and float(self.data['debit']) < somme_deblocages):
+		if(self.data['debit'] and self.data['debit'] < str(somme_deblocages)):
 			print(somme_deblocages)
 			raise forms.ValidationError('Impossible de débloquer des subventions supérieures au montant de la dépense')
