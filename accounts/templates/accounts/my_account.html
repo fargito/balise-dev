@@ -15,5 +15,16 @@
 	<p>Promo : {{user.eleve.promotion}}</p>
 	<p><a href="password_change">Changer mon mot de passe</a></p>
 </div>
+<div class='col-sm-12'>
+	{% if user.is_staff %}
+		Kessier
+	{% else %}
+	<ul>
+		{% for mandat in user.eleve.get_mandats %}
+			<li><a href={{ mandat.binet.get_history_url }}>{{ mandat }}</a></li>
+		{% endfor %}
+	</ul>
+	{% endif %}
+</div>
 </div></div>
 {% endblock %}
