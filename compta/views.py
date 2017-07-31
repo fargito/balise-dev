@@ -189,10 +189,8 @@ def edit_ligne(request, id_ligne):
 
 				ligne.save()
 
-				ligne_form = LigneComptaForm(instance=ligne)
-				# on construit le formset des formulaires pour les déblocages en précisant les instances à modifier
-				DeblocageSubventionFormSet = inlineformset_factory(LigneCompta, DeblocageSubvention, fields=('montant',), extra=0)
-				deblocage_edit_formset = DeblocageSubventionFormSet(instance=ligne)
+				return redirect('../')
+				
 
 	else:
 		ligne_form = LigneComptaForm(instance=ligne)
