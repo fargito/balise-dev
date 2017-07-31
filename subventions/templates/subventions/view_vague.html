@@ -21,6 +21,7 @@
 						<th class="subventions-montant">Somme accordée</th>
 						<th class='subventions-postes'>Postes de dépenses</th>
 						{% if request.user.is_staff %}
+							<th class='subventions-montant'>Type de binet</td>
 							<th class='subventions-montant'>Débloqué</td>
 							<th class='subventions-montant'>Reste</td>
 						{% endif %}
@@ -40,6 +41,7 @@
 						<td class='subventions-postes'>{{ subvention.postes|linebreaks }}</td>
 						{# pour les admins, on met aussi les déblocages #}
 						{% if request.user.is_staff %}
+							<td class='subventions-montant'>{{ subvention.mandat.type_binet }}</td>
 							<td class='subventions-montant'>{{ subvention.get_deblocages_total }}</td>
 							<td class='subventions-montant'>{{ subvention.get_rest }}</td>
 						{% endif %}
@@ -51,7 +53,7 @@
 						<th class="subventions-nom-binet">Total</th>
 						<th class="subventions-montant">{{ total_demande }}</th>
 						<th class="subventions-montant">{{ total_accorde }}</th>
-						<th></th>
+						<th colspan='2'></th>
 						{% if request.user.is_staff %}
 							<th class='subventions-montant'>{{ total_debloque }}</td>
 							<th class='subventions-montant'>{{ total_rest }}</td>

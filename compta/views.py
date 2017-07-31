@@ -107,10 +107,17 @@ def mandat_journal(request):
 		request.session['edit'] = False
 
 
+	# ici on récupère les lignes du mandat, en les ordonnant selon les filtres donnés
+	
+
+
+
+
+
 	# on récupère toutes les lignes du mandat
 	lignes = LigneCompta.objects.filter(mandat=mandat)
 
-	
+	# on récupère les totaux pour le mandat
 	debit_subtotal, credit_subtotal = mandat.get_subtotals()
 	debit_total, credit_total = mandat.get_totals()
 	balance = credit_total-debit_total
