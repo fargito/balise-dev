@@ -25,6 +25,7 @@ class Mandat(models.Model):
 	"""correspondance entre le binet et ses membres"""
 	binet = models.ForeignKey('Binet')
 	type_binet = models.ForeignKey('TypeBinet', verbose_name = "Type du binet")
+	is_active = models.BooleanField(verbose_name = "Actif", default=True)
 	president = models.ForeignKey(User, related_name = "president")
 	tresorier = models.ForeignKey(User, related_name = "tresorier")
 	promotion = models.ForeignKey('accounts.Promotion', verbose_name = "Promo")
@@ -65,15 +66,10 @@ class Mandat(models.Model):
 			credit_total += subvention.get_deblocages_total()
 		return (debit_total, credit_total)
 
-
 	def get_balance(self):
 		"""retourne la balance actuelle du binet"""
 		debit, credit = self.get_totals()
 		return credit-debit
-
-	def is_current(self):
-		"""returns if the mandat is currently the last"""
-		return self.promotion == self.binet.current_promotion
 
 	def get_authorized_users(self):
 		"""returns a dict of edit and view users. 
@@ -88,10 +84,10 @@ class Mandat(models.Model):
 			authorized['view'].append(future_mandat.tresorier)
 		authorized['view'].append(self.president)
 		authorized['view'].append(self.tresorier)
-		if self.is_current():
-			# actuellement le seul critère pour savoir si les membres
-			# d'un binet peuvent éditer leur compta est qu'ils n'aient pas
-			# de successeurs. A changer avec le  module passation ?
+		if self.is_active:
+			# is_active est défini pour tous les binets par défaut sur True
+			# lorsque la compta a été vérifiée, elle passe à false et les membres ne peuvent plus modifier
+			# les admins peuvent toujours
 			authorized['edit'].append(self.president)
 			authorized['edit'].append(self.tresorier)
 		return authorized
@@ -127,3 +123,7 @@ class Binet(models.Model):
 		return Mandat.objects.filter(
 			binet=self,
 			promotion__lte=user.eleve.promotion)
+
+	def get_latest_mandat(self):
+		"""returns the last mandat"""
+		return Mandat.objects.filter(binet=self)[0]

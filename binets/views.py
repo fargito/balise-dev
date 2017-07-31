@@ -5,7 +5,7 @@ from .models import Binet, Mandat
 def all_binets(request):
 	"""sur cette page on peut accéder à la liste des binets
 	actifs avec les responsables"""
-	liste_binets = Binet.objects.filter(is_active=True)
+	liste_binets = Binet.objects.all()
 	return render(request, 'binets/all_binets.html', locals())
 
 

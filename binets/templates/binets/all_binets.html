@@ -15,13 +15,13 @@
 				{% for binet in liste_binets %}
 					<tr class="mandat">
 						<td class="nom-binet">
-							Binet <strong><a href={{ binet.get_history_url }}>{{ binet.nom }}</a> </strong> ({{ binet.current_promotion }})
+							Binet <strong><a href={{ binet.get_history_url }}>{{ binet.nom }}</a> </strong> ({{ binet.get_latest_mandat.promotion }})
 						</td>
 						<td class="binet-user">
-							<a href={{ binet.current_president.eleve.get_infos_url }}>{{ binet.current_president }}</a>
+							<a href={{ binet.get_latest_mandat.president.eleve.get_infos_url }}>{{ binet.get_latest_mandat.president }}</a>
 						</td>
 						<td class="binet-user">
-							<a href={{ binet.current_tresorier.eleve.get_infos_url }}>{{ binet.current_tresorier }}</a>
+							<a href={{ binet.get_latest_mandat.tresorier.eleve.get_infos_url }}>{{ binet.get_latest_mandat.tresorier }}</a>
 						</td>
 					</tr>
 
