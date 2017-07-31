@@ -12,6 +12,7 @@ tr.subvention-ligne:nth-child(odd) {background: #DDD;}
 
 .subventions-nom-binet {
 	min-width: 15em;
+	padding-left: 1em;
 }
 
 .subventions-postes {
