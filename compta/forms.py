@@ -91,7 +91,7 @@ class BaseDeblocageSubventionFormSet(BaseFormSet):
 			except KeyError:
 				pass
 
-		if(self.data['debit'] and self.data['debit'] < str(somme_deblocages)):
+		if(self.data['debit'] and float(self.data['debit']) < (somme_deblocages)):
 			raise forms.ValidationError('Impossible de débloquer des subventions supérieures au montant de la dépense')
 
 		for k in range(len(self.subventions_list)):

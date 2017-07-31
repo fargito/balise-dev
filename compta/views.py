@@ -108,14 +108,30 @@ def mandat_journal(request):
 
 
 	# ici on récupère les lignes du mandat, en les ordonnant selon les filtres donnés
-	
-
-
-
-
+	# ces filtres sont donnés par ordre dans la liste d'attributs donnée
+	# ces attribut n'incluent pas les subventions, qu'on peut isoler dans la partie subventions
 
 	# on récupère toutes les lignes du mandat
 	lignes = LigneCompta.objects.filter(mandat=mandat)
+
+
+	# paramètre d'ordonnance
+	ordering = request.GET.get('o', None)
+	
+
+	if ordering:
+		print(ordering.split('.'))
+		attributes = ['date', 'debit', 'credit']
+		# il faut commencer par ordonner selon le paramètre le moins important
+		for index in reversed(ordering.split('.')):
+			try:
+				lignes = lignes.order_by(attributes[int(index)])
+			except:
+				pass
+
+
+
+
 
 	# on récupère les totaux pour le mandat
 	debit_subtotal, credit_subtotal = mandat.get_subtotals()
