@@ -1,21 +1,27 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<div id="page-title">Liste des binets actifs</div>
+	<div id="page-title">Liste des binets</div>
 	<section id="table-container">
 		<table id="liste-binets">
 			<thead class="liste-binets">
 				<tr>
-					<th class="nom-binet-head">Binet</th>
-					<th class="binet-user-head">Président</th>
-					<th class="binet-user-head">Trésorier</th>
+					<th class="nom-binet">Binet</th>
+					<th class="binet-promotion">Promotion</th>
+					<th class="binet-description">Description</th>
+					<th class="binet-user">Président</th>
+					<th class="binet-user">Trésorier</th>
 				</tr>
 			</thead>
 			<tbody>
 				{% for binet in liste_binets %}
 					<tr class="mandat">
 						<td class="nom-binet">
-							Binet <strong><a href={{ binet.get_history_url }}>{{ binet.nom }}</a> </strong> ({{ binet.get_latest_mandat.promotion }})
+							<strong><a href={{ binet.get_history_url }}>{{ binet.nom }}</a> </strong>
+						</td>
+						<td class="binet-promotion">{{ binet.get_latest_mandat.promotion }}</td>
+						<td class="binet-description">
+							{{ binet.description }}
 						</td>
 						<td class="binet-user">
 							<a href={{ binet.get_latest_mandat.president.eleve.get_infos_url }}>{{ binet.get_latest_mandat.president }}</a>

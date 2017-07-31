@@ -82,8 +82,8 @@
 			<div class="view-ligne-infos-container">
 				<ul class="view-ligne-infos">
 					<li>Mandat : {{ ligne.mandat }}</li>
-					<li>Création : {{ ligne.add_date }} par {{ ligne.auteur }}</li>
-					<li>Dernière modification : {{ ligne.edit_date }} par {{ ligne.modificateur }}</li>
+					<li>Création : {{ ligne.add_date }} par <a href={{ ligne.auteur.eleve.get_infos_url }}>{{ ligne.auteur }}</a></li>
+				<li>Dernière modification : {{ ligne.edit_date }} par <a href={{ ligne.modificateur.eleve.get_infos_url }}>{{ ligne.modificateur }}</a></li>
 				</ul>
 
 				<div class="ligne-comment">

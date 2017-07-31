@@ -24,5 +24,5 @@ def view_vague(request, id_vague):
 	"""affiche une vague de subventions"""
 	vague = VagueSubventions.objects.get(id=id_vague)
 	subventions = Subvention.objects.filter(vague=vague)
-	total_demande, total_accorde = vague.get_totals()
+	total_demande, total_accorde, total_debloque, total_rest = vague.get_totals()
 	return render(request, 'subventions/view_vague.html', locals())

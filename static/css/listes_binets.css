@@ -1,5 +1,5 @@
 #liste-binets {
-	width: 70%;
+	width: 100%;
 	min-width: 40em;
 	margin: auto;
 	border-collapse: collapse;
@@ -7,16 +7,29 @@
 
 td.nom-binet {
 	padding: 1em;
+	min-width: 15em;
 }
 
-td.role-in-binet {
+th.nom-binet {
+	padding-left: 1em;
+}
+
+.role-in-binet {
 	text-align: center;
 	width: 6em;
 }
 
-th.role-in-binet-head {
-	text-align: center;
-	width: 6em;
+.binet-description {
+	min-width: 30em;
+}
+
+td.binet-description {
+	padding: 1em;
+	padding-left: 2em;
+}
+
+th.binet-description {
+	padding-left: 2em;
 }
 
 .binet-user {
@@ -24,6 +37,10 @@ th.role-in-binet-head {
 	width: 10em;
 }
 
-th.binet-user-head {
+.binet-promotion {
 	text-align: center;
+	width: 3em;
 }
+
+tr.mandat:nth-child(even) {background: #FFF}
+tr.mandat:nth-child(odd) {background: #DDD}

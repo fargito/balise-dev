@@ -41,9 +41,10 @@ def my_binets(request):
 def mandat_set(request, id_mandat):
 	"""this function's only purpose is to set
 	the session variable to id and then redirect to
-	mandat_journal"""
+	mandat_journal, or to the optional 'next' parameter"""
 	request.session['id_mandat'] = id_mandat
-	return redirect('.')
+	# on utilise .get and set default to '.'
+	return redirect(request.GET.get('next', '.'))
 
 
 @login_required

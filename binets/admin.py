@@ -4,16 +4,15 @@ from .models import Binet, Mandat, TypeBinet
 # définit les critères d'affichage dans l'interface admin
 
 class BinetAdmin(admin.ModelAdmin):
-	list_display = ('nom', 'current_promotion', 'current_president','current_tresorier', 'type_binet', 'is_active',
-	 'description', 'remarques_admins',)
-	list_filter = ('nom', 'is_active', 'type_binet', 'current_promotion')
-	ordering = ('nom', 'current_promotion')
-	search_fields = ('nom', 'current_president', 'current_tresorier')
+	list_display = ('nom', 'description', 'remarques_admins',)
+	list_filter = ('nom',)
+	ordering = ('nom',)
+	search_fields = ('nom',)
 
 
 class MandatAdmin(admin.ModelAdmin):
-	list_display = ('binet', 'promotion', 'president', 'tresorier',)
-	list_filter = ('binet', 'promotion', 'president', 'tresorier',)
+	list_display = ('binet', 'promotion', 'president', 'tresorier', 'type_binet', 'is_active', 'description', 'remarques_admins')
+	list_filter = ('binet', 'promotion', 'president', 'tresorier', 'type_binet', 'is_active')
 	ordering = ('binet','promotion')
 	search_fields = ('binet', 'promotion', 'president', 'tresorier',)
 

@@ -45,6 +45,7 @@ class Mandat(models.Model):
 		"""returns the link to the mandat journal"""
 		return ('mandat_journal', [self.id])
 
+
 	def get_subtotals(self):
 		"""returns the total credits and debits attached
 		to this mandat without the subventions"""
@@ -97,23 +98,19 @@ class Binet(models.Model):
 	"""table dans la BDD représentant l'ensemble des binets"""
 	nom = models.CharField(max_length=100)
 	description = models.TextField(blank=True, null = True) # facultatif
-	type_binet = models.ForeignKey('TypeBinet', verbose_name = "Type du binet")
 	remarques_admins = models.TextField(blank=True, null = True) # facultatif
-	is_active = models.BooleanField(verbose_name = "Actif", default=True)
-	current_president = models.ForeignKey(User, verbose_name = "Président", related_name = "current_president")
-	current_tresorier = models.ForeignKey(User, verbose_name = "Trésorier", related_name = "current_tresorier")
-	current_promotion = models.ForeignKey('accounts.Promotion', verbose_name = "Promo")
 
-	@models.permalink
-	def get_history_url(self):
-		return ('binet_history', [self.id])
-
+	
 	class Meta:
-		ordering = ('current_promotion', 'nom',)
+		ordering = ('nom',)
 		unique_together = ('nom',)
 
 	def __str__(self):
 		return self.nom
+
+	@models.permalink
+	def get_history_url(self):
+		return ('binet_history', [self.id])
 
 	def get_available_mandats(self, user):
 		"""retourne la liste des mandats auquel l'utilisateur a accès"""
