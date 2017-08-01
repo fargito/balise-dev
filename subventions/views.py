@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 from .models import VagueSubventions, Subvention
 
@@ -6,6 +7,7 @@ from .helpers import generate_ordering_links
 from .helpers import generate_ordering_arguments
 
 
+@login_required
 def subventions_home(request):
 	"""affiche des liens vers les subventions triés par année"""
 	all_vagues_subventions = VagueSubventions.objects.all()
@@ -23,6 +25,7 @@ def subventions_home(request):
 	return render(request, 'subventions/subventions_home.html', locals())
 
 
+@login_required
 def view_vague(request, id_vague):
 	"""affiche une vague de subventions"""
 	vague = VagueSubventions.objects.get(id=id_vague)

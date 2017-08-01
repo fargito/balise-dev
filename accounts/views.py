@@ -46,7 +46,7 @@ def my_account(request):
 	"""shows the user his infos"""
 	return render(request, 'accounts/my_account.html')
 
-
+@login_required
 def view_account(request, id_user):
 	"""displays the useful infos concerning this eleve"""
 	viewed_user = User.objects.get(

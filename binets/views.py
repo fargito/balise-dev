@@ -4,6 +4,8 @@ from .models import Binet, Mandat
 
 from subventions.helpers import generate_ordering_arguments, generate_ordering_links
 
+
+@login_required
 def all_binets(request):
 	"""sur cette page on peut accéder à la liste des binets
 	actifs avec les responsables. On dispose des filtres définis dans attributes"""
@@ -32,7 +34,7 @@ def all_binets(request):
 	return render(request, 'binets/all_binets.html', locals())
 
 
-
+@login_required
 def binet_history(request, id_binet):
 	"""generates the view for the binet history"""
 	binet = Binet.objects.get(

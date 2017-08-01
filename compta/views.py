@@ -135,7 +135,6 @@ def mandat_journal(request):
 	ordering_links = list(reversed(generate_ordering_links(ordering, attributes, links_base)))
 	
 
-
 	# on récupère les totaux pour le mandat
 	debit_subtotal, credit_subtotal = mandat.get_subtotals()
 	debit_total, credit_total = mandat.get_totals()
