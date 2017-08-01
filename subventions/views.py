@@ -2,6 +2,9 @@ from django.shortcuts import render
 
 from .models import VagueSubventions, Subvention
 
+from .helpers import generate_ordering_links
+from .helpers import generate_ordering_arguments
+
 
 def subventions_home(request):
 	"""affiche des liens vers les subventions triés par année"""
@@ -29,59 +32,22 @@ def view_vague(request, id_vague):
 	ordering = request.GET.get('o', None)
 	
 	attributes = ['mandat__binet', 'mandat__promotion', 'mandat__type_binet']
-	if ordering:		
-		arguments = []
-		# on met tous les paramètres dans une liste pour faire l'ordonnance d'un seul coup (sinon ça
-		# fait de la merde)
-		for index in ordering.split('.'):
-			try:
-				if '-' in index:
-					arguments.append('-'+attributes[abs(int(index))])
-				else:
-					arguments.append(attributes[int(index)])
-			except:
-				pass
+
+	# on génère les arguments d'ordonnance de la liste
+	arguments = generate_ordering_arguments(ordering, attributes)
+
+	# on récupère les arguments filtrés
+	if arguments:		
 		subventions = Subvention.objects.filter(vague=vague).order_by(*arguments)
-
-		# on génère les liens qui serviront à l'ordonnance
-		links_base = '?o='
-
-		print(ordering)
-
-		ordering_links = []
-		for i in range(len(attributes)):
-			if '-'+str(i) in ordering:
-				sp = ''.join(''.join(ordering.split('-'+str(i))).split('.'))
-				if sp:
-					ordering_link = links_base + str(i) + '.'+ sp
-				else:
-					ordering_link = links_base + str(i)
-				ordering_links.append(ordering_link)
-
-			elif str(i) in ordering:
-				sp = ''.join(''.join(ordering.split(str(i))).split('.'))
-				if sp:
-					ordering_link = links_base + '-' + str(i) + '.'+ sp
-				else:
-					ordering_link = links_base + '-' + str(i)
-				ordering_links.append(ordering_link)
-			else:
-				ordering_links.append(
-					links_base + str(i) + '.' + ordering)
-
-		print(ordering_links)
-
 	else:
 		subventions = Subvention.objects.filter(vague=vague)
-		# on génère les liens qui serviront à l'ordonnance dans la page
-		# si aucun n'a été activé, par défault c'est par nom de binet
-		links_base = '?o='
-		ordering_links = [links_base+'-0']
-		for i in range(1, len(attributes)):
-			ordering_links.append(links_base+str(i))
 
 
+	# on génère les liens qui serviront à l'ordonnance dans la page
+	# si aucun n'a été activé, par défault c'est par nom de binet (index 0)
 	# sachant qu'on va accéder aux éléments par pop(), on doit inverser l'ordre
-	ordering_links = list(reversed(ordering_links))
+	links_base = '?o='
+	ordering_links = list(reversed(generate_ordering_links(ordering, attributes, links_base)))
+
 
 	return render(request, 'subventions/view_vague.html', locals())

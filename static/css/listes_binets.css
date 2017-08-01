@@ -37,6 +37,10 @@ th.binet-description {
 	width: 10em;
 }
 
+th.binet-user div {
+	justify-content: center;
+}
+
 .binet-promotion {
 	text-align: center;
 	width: 3em;
