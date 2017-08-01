@@ -60,6 +60,15 @@ th.compta-form-montant {
 	padding-right: 1em;
 }
 
+.compta-form-montant input {
+	width: 7em;
+	text-align: right;
+}
+
+th.compta-form-montant div {
+	justify-content: flex-end;
+}
+
 .compta-deblocage {
 	font-style: italic;
 }
@@ -86,11 +95,6 @@ td.compta-form-date {
 
 #id_description {
 	width: 100%;
-}
-
-.compta-form-montant input {
-	width: 7em;
-	text-align: right;
 }
 
 #id_commentaire {

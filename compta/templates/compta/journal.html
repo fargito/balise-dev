@@ -96,16 +96,16 @@
 				<thead>
 					<tr>
 						<th>
-							Effectée le
+							<div class='title-order-container'><div>Date</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par binet"/></a></div>
 						</th>
 						<th class="compta-form-description">
-							Description - facture
+							<div class='title-order-container'><div>Description - facture</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par binet"/></a></div>
 						</th>
 						<th class="compta-form-montant">
-							Débit
+							<div class='title-order-container'><div>Débit</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par binet"/></a></div>
 						</th>
 						<th class="compta-form-montant">
-							Crédit
+							<div class='title-order-container'><div>Crédit</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par binet"/></a></div>
 						</th>
 						{% for subvention_name in subventions_names %}
 						<th class="compta-form-montant">{{ subvention_name }}</th>

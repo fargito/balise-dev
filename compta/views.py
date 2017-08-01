@@ -16,6 +16,8 @@ from imports.forms import ImportFileForm
 
 from imports.file_handlers import file_handler, create_lignes_compta
 
+from subventions.helpers import generate_ordering_arguments, generate_ordering_links
+
 from datetime import datetime
 import pandas
 
@@ -111,26 +113,27 @@ def mandat_journal(request):
 	# ces filtres sont donnés par ordre dans la liste d'attributs donnée
 	# ces attribut n'incluent pas les subventions, qu'on peut isoler dans la partie subventions
 
-	# on récupère toutes les lignes du mandat
-	lignes = LigneCompta.objects.filter(mandat=mandat)
+	
 
 
 	# paramètre d'ordonnance
 	ordering = request.GET.get('o', None)
+	attributes = ['date', 'description', 'debit', 'credit']
+	# on génère les arguments d'ordonnance de la liste
+	arguments = generate_ordering_arguments(ordering, attributes)
+	# on récupère toutes les lignes du mandat
+	# on récupère les arguments filtrés
+	if arguments:
+		lignes = LigneCompta.objects.filter(mandat=mandat).order_by(*arguments)
+	else:
+		lignes = LigneCompta.objects.filter(mandat=mandat)
+
+	# on génère les liens qui serviront à l'ordonnance dans la page
+	# si aucun n'a été activé, par défault c'est par date (index 0)
+	# sachant qu'on va accéder aux éléments par pop(), on doit inverser l'ordre
+	links_base = '?o='
+	ordering_links = list(reversed(generate_ordering_links(ordering, attributes, links_base)))
 	
-
-	if ordering:
-		print(ordering.split('.'))
-		attributes = ['date', 'debit', 'credit']
-		# il faut commencer par ordonner selon le paramètre le moins important
-		for index in reversed(ordering.split('.')):
-			try:
-				lignes = lignes.order_by(attributes[int(index)])
-			except:
-				pass
-
-
-
 
 
 	# on récupère les totaux pour le mandat
