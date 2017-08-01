@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 
@@ -7,8 +8,12 @@
 		<table id="liste-binets">
 			<thead class="liste-binets">
 				<tr>
-					<th class="nom-binet">Binet</th>
-					<th class="binet-promotion">Promotion</th>
+					<th class="nom-binet">
+						<div class='title-order-container'><div>Binet</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par binet"/></a></div>
+					</th>
+					<th class="binet-promotion">
+						<div class='title-order-container'><div>Promotion</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par promo"/></a></div>
+					</th>
 					<th class="binet-description">Description</th>
 					<th class="role-in-binet">Rôle</th>
 				</tr>

@@ -30,12 +30,42 @@ def my_binets(request):
 	It will be implied in the compta module that this Object is in
 	th session parameters"""
 
+	# paramètre d'ordonnance
+	ordering = request.GET.get('o', None)
+	
+	attributes = ['binet', 'promotion', 'type_binet', 'is_active']
+
+	# on génère les arguments d'ordonnance de la liste
+	arguments = generate_ordering_arguments(ordering, attributes)
+
+	
+	# on génère les liens qui serviront à l'ordonnance dans la page
+	# si aucun n'a été activé, par défault c'est par nom de binet (index 0)
+	# sachant qu'on va accéder aux éléments par pop(), on doit inverser l'ordre
+	links_base = '?o='
+	ordering_links = list(reversed(generate_ordering_links(ordering, attributes, links_base)))
+
+
+
+
+
+	# on récupère les binets en fonction du statut de l'utilisateur et des choix d'ordre
+
 	if request.user.is_staff:
-		liste_mandats = Mandat.objects.all()
+		if arguments:
+			liste_mandats = Mandat.objects.all().order_by(*arguments)
+		else:
+			liste_mandats = Mandat.objects.all()
 	else:
-		liste_mandats = Mandat.objects.filter(
-			Q(president=request.user) | 
-			Q(tresorier=request.user))
+		if arguments:
+			liste_mandats = Mandat.objects.filter(
+				Q(president=request.user) | 
+				Q(tresorier=request.user)).order_by(*arguments)
+		else:
+			liste_mandats = Mandat.objects.filter(
+				Q(president=request.user) | 
+				Q(tresorier=request.user))
+
 	return render(request, 'compta/my_binets.html', locals())
 
 
@@ -112,8 +142,6 @@ def mandat_journal(request):
 	# ici on récupère les lignes du mandat, en les ordonnant selon les filtres donnés
 	# ces filtres sont donnés par ordre dans la liste d'attributs donnée
 	# ces attribut n'incluent pas les subventions, qu'on peut isoler dans la partie subventions
-
-	
 
 
 	# paramètre d'ordonnance
