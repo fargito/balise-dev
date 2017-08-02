@@ -33,6 +33,7 @@
 				<table class="subventions-deblocage-lignes">
 					<thead>
 						<tr>
+							<th></th>
 							<th>
 								Effectée le
 							</th>
@@ -50,9 +51,27 @@
 					<tbody class="subventions-deblocage-lignes">
 					{% for deblocage in subvention.get_deblocages_list %}
 						<tr class="ligne-compta">
+							<td class="compta-button-container">
+								{# l'admin possède les liens pour lock la ligne, pas le modificateur normal #}
+								{% if request.user.is_staff %}
+									<a href={{ deblocage.ligne_compta.lock_unlock_self_link }}?next={{ request.get_full_path }}>
+										{% if deblocage.ligne_compta.is_locked %}
+											<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="Déverrouiller la ligne">
+										{% else %}
+											<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="Verrouiller la ligne">
+										{% endif %}
+									</a>
+								{% else %}
+									{% if deblocage.ligne_compta.is_locked %}
+										<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="Ligne verrouillée">
+									{% else %}
+										<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="">		
+									{% endif %}
+								{% endif %}
+							</td>
 							<td class="compta-form-date">{{ deblocage.ligne_compta.date|date:'d/m/Y' }}</td>
 							{# si l'utilisateur peut éditer le journal, le lien de la description l'amène directement à edit. Sinon à view #}
-							{% if request.session.edit %}
+							{% if request.session.edit and not deblocage.ligne_compta.is_locked or request.user.is_staff %}
 								<td class="compta-form-description"><a href={{ deblocage.ligne_compta.edit_self_link }}>{{ deblocage.ligne_compta.description }}</a></td>
 							{% else %}
 								<td class="compta-form-description"><a href={{ deblocage.ligne_compta.view_self_link }}>{{ deblocage.ligne_compta.description }}</a></td>

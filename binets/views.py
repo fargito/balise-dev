@@ -24,6 +24,10 @@ def all_binets(request):
 	else:
 		liste_binets = Binet.objects.all()
 
+	# on génère une liste de mandats plutôt qu'une liste de 
+	liste_mandats = []
+
+
 	# on génère les liens qui serviront à l'ordonnance dans la page
 	# si aucun n'a été activé, par défault c'est par nom de binet (index 0)
 	# sachant qu'on va accéder aux éléments par pop(), on doit inverser l'ordre

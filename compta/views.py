@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.core.urlresolvers import reverse
 
 from binets.models import Mandat
@@ -143,7 +143,6 @@ def mandat_journal(request):
 	# ces filtres sont donnés par ordre dans la liste d'attributs donnée
 	# ces attribut n'incluent pas les subventions, qu'on peut isoler dans la partie subventions
 
-
 	# paramètre d'ordonnance
 	ordering = request.GET.get('o', None)
 	attributes = ['date', 'description', 'debit', 'credit']
@@ -188,7 +187,10 @@ def delete_ligne(request, id_ligne):
 	# à supprimer la ligne
 	authorized = mandat.get_authorized_users()
 	if request.user in authorized['edit'] or request.user.is_staff:
-		LigneCompta.objects.get(id=id_ligne).delete()
+		ligne =	LigneCompta.objects.get(id=id_ligne)
+		if not ligne.is_locked or request.user.is_staff:
+			# si l'écriture est locked, seuls les admins peuvent la supprimer
+			ligne.delete()
 	return redirect('../')
 
 
@@ -216,8 +218,12 @@ def edit_ligne(request, id_ligne):
 	if request.user not in authorized['edit'] and not(request.user.is_staff):
 		return redirect('../')
 
-
 	ligne = LigneCompta.objects.get(id=id_ligne)
+
+	if ligne.is_locked and not request.user.is_staff:
+		# si la ligne est locked, seuls les admins peuvent la supprimer
+		return redirect('../')
+
 	if request.method == 'POST':
 		ligne_form = LigneComptaForm(request.POST, instance=ligne)
 		
@@ -253,6 +259,40 @@ def edit_ligne(request, id_ligne):
 		deblocage_edit_formset = DeblocageSubventionFormSet(instance=ligne)
 
 	return render(request, 'compta/edit_ligne.html', locals())
+
+
+@permission_required('is_staff')
+def lock_unlock_ligne(request, id_ligne):
+	"""permet de verrouiller ou de déverrouiller une ligne Accessible uniquement pour les admins"""
+	if not request.user.is_staff:
+		return redirect(request.GET.get('next', '../'))
+	ligne = LigneCompta.objects.get(id=id_ligne)
+	ligne.is_locked =  not (ligne.is_locked)
+	ligne.save()
+	return redirect(request.GET.get('next', '../'))
+
+
+@permission_required('is_staff')
+def lock_unlock_all(request):
+	"""permet de verrouiller toutes les opérations d'un binet.
+	Accessible uniquement aux admins"""
+	if not request.user.is_staff:
+		return redirect(request.GET.get('next', '../'))
+
+	try:
+		mandat = Mandat.objects.get(
+			id = request.session['id_mandat'])
+	except KeyError:
+		return redirect('../')
+
+	lignes = LigneCompta.objects.filter(mandat=mandat)
+	# si toutes les lignes sont locked, il faut tout unlock
+	to_put = not mandat.is_all_locked()
+	for ligne in lignes:
+		ligne.is_locked = to_put
+		ligne.save()
+
+	return redirect(request.GET.get('next', '../'))
 
 
 @login_required

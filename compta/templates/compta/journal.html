@@ -96,6 +96,19 @@
 				<thead>
 					<tr>
 						<th>
+							{% if request.user.is_staff %}
+								<a href='lock_unlock_all/?next={{ request.get_full_path }}'>
+									{% if mandat.is_all_locked %}
+										<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="Déverrouiller toutes les lignes">
+									{% else %}
+										<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="Verrouiller toutes les lignes">
+									{% endif %}
+								</a>
+							{% else %}
+								<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="">
+							{% endif %}
+						</th>
+						<th class="compta-form-date">
 							<div class='title-order-container'><div>Date</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par date"/></a></div>
 						</th>
 						<th class="compta-form-description">
@@ -139,6 +152,7 @@
 							</tr>
 
 							<tr id="new-ligne-compta-form">
+								<td><!-- <img src="{% static 'img/locked.ico' %}"> --></td>
 								<td class="compta-form-date">
 									{{ ligne_form.date }}
 								</td>
@@ -166,9 +180,27 @@
 				{% endif %}
 				{% for ligne in lignes %}
 					<tr class="ligne-compta">
+						<td class="compta-button-container">
+							{# l'admin possède les liens pour lock la ligne, pas le modificateur normal #}
+							{% if request.user.is_staff %}
+								<a href={{ ligne.lock_unlock_self_link }}?next={{ request.get_full_path }}>
+									{% if ligne.is_locked %}
+										<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="Déverrouiller la ligne">
+									{% else %}
+										<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="Verrouiller la ligne">
+									{% endif %}
+								</a>
+							{% else %}
+								{% if ligne.is_locked %}
+									<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="Ligne verrouillée">
+								{% else %}
+									<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="">
+								{% endif %}
+							{% endif %}
+						</td>
 						<td class="compta-form-date">{{ ligne.date|date:'d/m/Y' }}</td>
 						{# si l'utilisateur peut éditer le journal, le lien de la description l'amène directement à edit. Sinon à view #}
-						{% if request.session.edit %}
+						{% if request.session.edit and not ligne.is_locked or request.user.is_staff %}
 							<td class="compta-form-description"><a href={{ ligne.edit_self_link }}>{{ ligne.description }}</a></td>
 						{% else %}
 							<td class="compta-form-description"><a href={{ ligne.view_self_link }}>{{ ligne.description }}</a></td>
@@ -182,7 +214,7 @@
 								</div>
 							</td>
 						{% endfor %}
-						{% if request.session.edit %}
+						{% if request.session.edit and not ligne.is_locked or request.user.is_staff %}
 							<td class="compta-button-container">
 								<a href={{ ligne.edit_self_link }}>
 									<img src="{% static 'img/edit.ico' %}" alt="Edit icone" class='edit_icon' title="Modifier la ligne"/>
@@ -193,6 +225,8 @@
 									<img src="{% static 'img/delete.ico' %}" alt="Delete icone" class='delete_icon' title="Supprimer la ligne"/>
 								</a>
 							</td>
+						{% else %}
+							<td colspan="2">
 						{% endif %}
 					</tr>
 				{% endfor %}
@@ -201,7 +235,7 @@
 				{# pour la dernière ligne on affiche les totaux #}
 					<div class="last-line">
 						<tr>
-							<th colspan="2"></th>
+							<th colspan="3"></th>
 							<th class="compta-form-montant">{{ debit_subtotal }}</th>
 							<th class="compta-form-montant">{{ credit_subtotal }}</th>
 							{% for subvention in subventions_binet %}
@@ -212,7 +246,7 @@
 						</tr>
 						{% for subvention in subventions_binet %}
 							<tr>
-								<td></td>
+								<td colspan="2"></td>
 								<td class="compta-form-description">
 									<div class="compta-deblocage">
 										<a href="../binet_subventions">Déblocage {{ subvention.vague }}</a>
@@ -227,12 +261,12 @@
 							</tr>
 						{% endfor %}
 						<tr>
-							<th colspan="2"></th>
+							<th colspan="3"></th>
 							<th class="compta-form-montant">{{ debit_total }}</th>
 							<th class="compta-form-montant">{{ credit_total }}</th>
 						</tr>
 						<tr>
-							<th colspan="2"></th>
+							<th colspan="3"></th>
 							<th class="compta-form-montant">Balance :</th>
 							<th class="compta-form-montant">
 								{% if is_positive %}

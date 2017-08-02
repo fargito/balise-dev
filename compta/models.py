@@ -20,6 +20,7 @@ class LigneCompta(models.Model):
 	commentaire = models.TextField(blank=True, null=True)
 	debit = models.DecimalField(null=True, blank=True,max_digits=9, decimal_places=2)
 	credit = models.DecimalField(null=True, blank=True,max_digits=9, decimal_places=2)
+	is_locked = models.BooleanField(default=False)
 
 	def __str__(self):
 		return self.description
@@ -41,6 +42,11 @@ class LigneCompta(models.Model):
 	def view_self_link(self):
 		"""retourne le lien vers la vue qui modifie cette ligne"""
 		return ('view_ligne', [self.id])
+
+	@models.permalink
+	def lock_unlock_self_link(self):
+		"""permet de passer is_locked à sa valeur contraire"""
+		return ('lock_unlock_ligne', [self.id])
 
 
 	def get_deblocages(self):

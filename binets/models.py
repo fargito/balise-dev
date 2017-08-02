@@ -45,7 +45,6 @@ class Mandat(models.Model):
 		"""returns the link to the mandat journal"""
 		return ('mandat_journal', [self.id])
 
-
 	def get_subtotals(self):
 		"""returns the total credits and debits attached
 		to this mandat without the subventions"""
@@ -92,6 +91,16 @@ class Mandat(models.Model):
 			authorized['edit'].append(self.president)
 			authorized['edit'].append(self.tresorier)
 		return authorized
+
+	def is_all_locked(self):
+		"""returns true if all the lines of this mandat have been checked"""
+		lignes = LigneCompta.objects.filter(mandat=self)
+		locked = True
+		k = 0
+		while locked and k < len(lignes):
+			locked = locked and lignes[k].is_locked
+			k += 1
+		return locked
 
 
 class Binet(models.Model):

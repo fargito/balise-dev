@@ -86,6 +86,10 @@ td.compta-form-date {
 	text-align: center;
 }
 
+th.compta-form-date {
+	padding-left: 0.7em;
+}
+
 .compta-form-description {
 	padding-left: 1em;
 	padding-right: 1em;
@@ -108,6 +112,14 @@ td.compta-form-date {
 
 .edit_icon {
 	margin-left: 1em;
+}
+
+.lock_icon {
+	margin-right: 0.3em;
+}
+
+.blank_icon {
+	margin-right: 0.3em;
 }
 
 .compta-button-container {
