@@ -150,8 +150,10 @@ class CustomDeblocageSubventionFormSet(BaseInlineFormSet):
 
 
 		if(self.data['credit'] != '' and float(self.data['credit']) > 0):
-			"""on ne peut pas subventionner une recette"""
-			raise forms.ValidationError("Impossible de débloquer des subventions sur une recette")
+			if deblocage['montant']:
+				if deblocage['montant'] > 0:
+					"""on ne peut pas subventionner une recette"""
+					raise forms.ValidationError("Impossible de débloquer des subventions sur une recette")
 
 		somme_deblocages = 0
 		for deblocage in self.cleaned_data:
@@ -164,3 +166,18 @@ class CustomDeblocageSubventionFormSet(BaseInlineFormSet):
 		if(self.data['debit'] and self.data['debit'] < str(somme_deblocages)):
 			print(somme_deblocages)
 			raise forms.ValidationError('Impossible de débloquer des subventions supérieures au montant de la dépense')
+
+class PosteDepenseForm(forms.ModelForm):
+	"""définit le formulaire pour créer un nouveau poste de dépense"""
+	class Meta:
+		model = PosteDepense
+		exclude = ('mandat',)
+
+	def clean(self):
+		"""on vérifie que le poste n'est pas dans les postes pour tous dont le mandat est None)"""
+		cleaned_data = super(PosteDepenseForm, self).clean()
+		nom = cleaned_data.get('nom')
+
+		if nom in PosteDepense.objects.filter(mandat=None):
+			msg = 'Ce nom existe déjà est réservé'
+			self.add_error('nom', msg)

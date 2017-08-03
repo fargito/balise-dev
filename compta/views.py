@@ -11,6 +11,7 @@ from django.db.models import Q
 
 from django import forms
 from .forms import LigneComptaForm, DeblocageSubventionForm, BaseDeblocageSubventionFormSet, CustomDeblocageSubventionFormSet
+from .forms import PosteDepenseForm
 from binets.forms import DescriptionForm
 from django.forms import formset_factory, inlineformset_factory
 from imports.forms import ImportFileForm
@@ -337,6 +338,13 @@ def view_ligne(request, id_ligne):
 	except KeyError:
 		return redirect('../')
 
+	# on récupère la liste des utilisateurs habilités
+	# à supprimer la ligne
+	authorized = mandat.get_authorized_users()
+	if request.user not in authorized['view'] and not(request.user.is_staff):
+		return redirect('../')
+
+
 	# on récupère toutes les subventions du binet
 	subventions_binet = Subvention.objects.filter(mandat=mandat)
 
@@ -345,12 +353,7 @@ def view_ligne(request, id_ligne):
 	for subvention in subventions_binet:
 		subventions_names.append(
 			subvention.vague.type_subvention.nom+' '+subvention.vague.annee)
-
-	# on récupère la liste des utilisateurs habilités
-	# à supprimer la ligne
-	authorized = mandat.get_authorized_users()
-	if request.user not in authorized['view'] and not(request.user.is_staff):
-		return redirect('../')
+	
 	ligne = LigneCompta.objects.get(id=id_ligne)
 	return render(request, 'compta/view_ligne.html', locals())
 
@@ -392,7 +395,7 @@ def binet_subventions(request):
 	except KeyError:
 		return redirect('../')
 	# on récupère la liste des utilisateurs habilités
-	# à supprimer la ligne
+	# à voir les subventions
 	authorized = mandat.get_authorized_users()
 	if request.user not in authorized['view'] and not(request.user.is_staff):
 		return redirect('../')
@@ -413,6 +416,13 @@ def binet_compta_history(request):
 			id = request.session['id_mandat'])
 	except KeyError:
 		return redirect('../')
+
+	# on récupère la liste des utilisateurs habilités
+	# à voir l'historique
+	authorized = mandat.get_authorized_users()
+	if request.user not in authorized['view'] and not(request.user.is_staff):
+		return redirect('../')
+
 
 	liste_mandats = mandat.binet.get_available_mandats(request.user)
 
@@ -493,3 +503,30 @@ def import_lignes(request):
 
 	request.session['active_tab'] = 'Importer des opérations'
 	return render(request, 'compta/import_lignes.html', locals())
+
+
+@login_required
+def create_poste_depense(request):
+	"""permet de créer un poste de dépense pour le mandat"""
+	try:
+		mandat = Mandat.objects.get(
+			id = request.session['id_mandat'])
+	except KeyError:
+		return redirect('../')
+
+	# on vérifie qui est autorisé à créer des postes
+	authorized = mandat.get_authorized_users()
+	if request.user not in authorized['edit'] and not(request.user.is_staff):
+		return redirect('/compta/journal')
+
+	poste_depense_form = PosteDepenseForm(request.POST or None)
+
+	if request.method == POST:
+		if poste_depense_form.is_valid():
+			created_poste_depense = poste_depense_form.save(commit=False)
+			created_poste_depense.mandat = mandat
+			created_poste_depense.save()
+
+			return redirect(request.GET.get('next', '../'))
+
+	return render()

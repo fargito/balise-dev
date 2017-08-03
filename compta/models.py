@@ -106,6 +106,7 @@ class PosteDepense(models.Model):
 
 	class Meta:
 		ordering = ('nom',)
+		unique_together = ('nom', 'mandat',)
 
 
 	def get_default_index(self):
