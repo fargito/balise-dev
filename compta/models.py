@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
 from subventions.models import Subvention, DeblocageSubvention
 
@@ -94,12 +95,20 @@ class LigneCompta(models.Model):
 class PosteDepense(models.Model):
 	"""definit un poste de dépense. Ces postes sont associés à des mandats, pour éviter que chaque mandat
 	se retrouve avec les postes de tout le monde.
-	Les noms réservés sont Polymédia"""
+	Les postes qui ont un mandat None sont attribués à tout le monde.
+	C'est le cas de Polymédia par exemple"""
+
 	nom = models.CharField(max_length=10)
-	mandat = models.ForeignKey('binets.Mandat', null=True)
+	mandat = models.ForeignKey('binets.Mandat', null=True, blank=True)
 
 	def __str__(self):
-		return nom
+		return self.nom
 
 	class Meta:
 		ordering = ('nom',)
+
+
+	def get_default_index(self):
+		"""pour ligne_edit, retourne le rang du choix par défault de"""
+		return PosteDepense.objects.filter(
+				Q(mandat=self.mandat) | Q(mandat=None)).filter(nom__lt=self.nom).count()

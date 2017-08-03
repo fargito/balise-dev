@@ -5,10 +5,11 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.urlresolvers import reverse
 
 from binets.models import Mandat
-from .models import LigneCompta
+from .models import LigneCompta, PosteDepense
 from subventions.models import VagueSubventions, Subvention, DeblocageSubvention, TypeSubvention
 from django.db.models import Q
 
+from django import forms
 from .forms import LigneComptaForm, DeblocageSubventionForm, BaseDeblocageSubventionFormSet, CustomDeblocageSubventionFormSet
 from binets.forms import DescriptionForm
 from django.forms import formset_factory, inlineformset_factory
@@ -101,6 +102,12 @@ def mandat_journal(request):
 	if request.user in authorized['edit'] or request.user.is_staff:
 		# on ne met le formulaire en place que si l'user a le doit de modif
 		request.session['edit'] = True
+
+		# comme le champ poste_depense a besoin du mandat pour être instancié, on doit le créer juste avant l'instanciation
+		# du formulaire
+		LigneComptaForm.base_fields['poste_depense'] = forms.ModelChoiceField(
+			queryset=PosteDepense.objects.filter(
+				Q(mandat=mandat) | Q(mandat=None)), required=False, empty_label="Aucun")
 		ligne_form = LigneComptaForm(request.POST or None)
 
 
@@ -125,6 +132,11 @@ def mandat_journal(request):
 			ligne.modificateur = request.user
 			ligne.mandat = mandat
 			ligne.save()
+			# comme le champ poste_depense a besoin du mandat pour être instancié, on doit le créer juste avant l'instanciation
+			# du formulaire
+			LigneComptaForm.base_fields['poste_depense'] = forms.ModelChoiceField(
+				queryset=PosteDepense.objects.filter(
+					Q(mandat=mandat) | Q(mandat=None)), required=False, empty_label="Aucun")
 			ligne_form = LigneComptaForm(None)
 
 			# on crée les déblocages de subvention qui vont avec la ligne
@@ -145,7 +157,7 @@ def mandat_journal(request):
 
 	# paramètre d'ordonnance
 	ordering = request.GET.get('o', None)
-	attributes = ['date', 'description', 'debit', 'credit']
+	attributes = ['date', 'description', 'poste_depense', 'debit', 'credit']
 	# on génère les arguments d'ordonnance de la liste
 	arguments = generate_ordering_arguments(ordering, attributes)
 	# on récupère toutes les lignes du mandat
@@ -225,6 +237,16 @@ def edit_ligne(request, id_ligne):
 		return redirect('../')
 
 	if request.method == 'POST':
+		# comme le champ poste_depense a besoin du mandat pour être instancié, on doit le créer juste avant l'instanciation
+		# du formulaire
+		# on calcule le rang du choix par défaut
+		if ligne.poste_depense:
+			initial_choice_index = ligne.poste_depense.get_default_index()
+		else:
+			initial_choice_index = 0
+		LigneComptaForm.base_fields['poste_depense'] = forms.ModelChoiceField(
+			queryset=PosteDepense.objects.filter(
+				Q(mandat=mandat) | Q(mandat=None)), required=False, empty_label="Aucun", initial=initial_choice_index)
 		ligne_form = LigneComptaForm(request.POST, instance=ligne)
 		
 		# on construit le formset des formulaires pour les déblocages en précisant les instances à modifier
@@ -253,6 +275,17 @@ def edit_ligne(request, id_ligne):
 				
 
 	else:
+		# comme le champ poste_depense a besoin du mandat pour être instancié, on doit le créer juste avant l'instanciation
+		# du formulaire
+
+		if ligne.poste_depense:
+			initial_choice_index = ligne.poste_depense.get_default_index()
+		else:
+			initial_choice_index = 0
+
+		LigneComptaForm.base_fields['poste_depense'] = forms.ModelChoiceField(
+			queryset=PosteDepense.objects.filter(
+				Q(mandat=mandat) | Q(mandat=None)), required=False, empty_label="Aucun", initial=initial_choice_index)
 		ligne_form = LigneComptaForm(instance=ligne)
 		# on construit le formset des formulaires pour les déblocages en précisant les instances à modifier
 		DeblocageSubventionFormSet = inlineformset_factory(LigneCompta, DeblocageSubvention, fields=('montant',), extra=0)

@@ -114,6 +114,9 @@
 						<th class="compta-form-description">
 							<div class='title-order-container'><div>Description - facture</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par description"/></a></div>
 						</th>
+						<th class="compta-form-poste">
+							<div class='title-order-container'><div>Poste</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par poste"/></a><a href=""><img class='add-icon' src="{% static 'img/add2.ico' %}" alt="Add Icon" title="Nouveau poste"/></a></div>
+						</th>
 						<th class="compta-form-montant">
 							<div class='title-order-container'><div>Débit</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par débit"/></a></div>
 						</th>
@@ -129,14 +132,18 @@
 				{% if request.session.edit %}
 					<div class="new-ligne-compta">
 						<form method='post' action='.'>
-							{# on met en forme manuellement le formulaires permettant de rentrer une nouvelle ligne #}
+							{# on met en forme manuellement le formulaire permettant de rentrer une nouvelle ligne #}
 							{{ ligne_form.non_field_errors }}
 							<tr id="new-ligne-compta-errors">
+								<td></td>
 								<td class="compta-form-errors-container">
 									{{ ligne_form.date.errors }}
 								</td>
 								<td class="compta-form-errors-container">
 									{{ ligne_form.description.errors }}
+								</td>
+								<td class="compta-form-errors-container">
+									{{ ligne_form.poste_depense.errors }}
 								</td>
 								<td colspan="2" class="compta-form-errors-container">
 									{# on regroupe les messages des montants dans la même case #}
@@ -152,12 +159,15 @@
 							</tr>
 
 							<tr id="new-ligne-compta-form">
-								<td><!-- <img src="{% static 'img/locked.ico' %}"> --></td>
+								<td></td>
 								<td class="compta-form-date">
 									{{ ligne_form.date }}
 								</td>
 								<td class="compta-form-description">
 									{{ ligne_form.description }}
+								</td>
+								<td class="compta-form-poste">
+									{{ ligne_form.poste_depense }}
 								</td>
 								<td class="compta-form-montant">
 									{{ ligne_form.debit }}
@@ -205,6 +215,7 @@
 						{% else %}
 							<td class="compta-form-description"><a href={{ ligne.view_self_link }}>{{ ligne.description }}</a></td>
 						{% endif %}
+						<td class="compta-form-poste">{{ ligne.poste_depense|default_if_none:"" }}</td>
 						<td class="compta-form-montant">{% if ligne.debit %}{{ ligne.debit|default_if_none:"" }}{% endif %}</td>
 						<td class="compta-form-montant">{% if ligne.credit %}{{ ligne.credit|default_if_none:"" }}{% endif %}</td>
 						{% for nom_vague, deblocage in ligne.get_deblocages %}
@@ -235,7 +246,7 @@
 				{# pour la dernière ligne on affiche les totaux #}
 					<div class="last-line">
 						<tr>
-							<th colspan="3"></th>
+							<th colspan="4"></th>
 							<th class="compta-form-montant">{{ debit_subtotal }}</th>
 							<th class="compta-form-montant">{{ credit_subtotal }}</th>
 							{% for subvention in subventions_binet %}
@@ -252,7 +263,7 @@
 										<a href="../binet_subventions">Déblocage {{ subvention.vague }}</a>
 									</div>
 								</td>
-								<td></td>
+								<td colspan="2"></td>
 								<td class="compta-form-montant">
 									<div class="compta-deblocage">
 										{{ subvention.get_deblocages_total }}
@@ -261,12 +272,12 @@
 							</tr>
 						{% endfor %}
 						<tr>
-							<th colspan="3"></th>
+							<th colspan="4"></th>
 							<th class="compta-form-montant">{{ debit_total }}</th>
 							<th class="compta-form-montant">{{ credit_total }}</th>
 						</tr>
 						<tr>
-							<th colspan="3"></th>
+							<th colspan="4"></th>
 							<th class="compta-form-montant">Balance :</th>
 							<th class="compta-form-montant">
 								{% if is_positive %}

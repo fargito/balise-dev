@@ -17,6 +17,7 @@
 					<th class="compta-form-description">
 						Description
 					</th>
+					<th>Poste</th>
 					<th class="compta-form-montant">
 						Débit
 					</th>
@@ -50,6 +51,7 @@
 					</td>
 					<td class="compta-form-date">{{ ligne.date|date:'d/m/Y' }}</td>
 					<td class="compta-form-description">{{ ligne.description }}</td>
+					<td class="compta-form-montant">{{ ligne.poste_depense|default_if_none:"" }}</td>
 					<td class="compta-form-montant">{{ ligne.debit|default_if_none:"" }}</td>
 					<td class="compta-form-montant">{{ ligne.credit|default_if_none:"" }}</td>
 					{% for nom_vague, deblocage in ligne.get_deblocages %}

@@ -69,6 +69,12 @@ th.compta-form-montant div {
 	justify-content: flex-end;
 }
 
+.compta-form-poste {
+	width: 7em;
+	text-align: left;
+	padding-right: 0.9em;
+}
+
 .compta-deblocage {
 	font-style: italic;
 }

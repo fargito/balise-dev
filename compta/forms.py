@@ -1,5 +1,5 @@
 from django import forms
-from .models import LigneCompta
+from .models import LigneCompta, PosteDepense
 from subventions.models import DeblocageSubvention
 from django.forms import BaseFormSet, BaseInlineFormSet
 
@@ -7,12 +7,21 @@ from django.forms import BaseFormSet, BaseInlineFormSet
 
 class LigneComptaForm(forms.ModelForm):
 	"""this form is used in the compta journal to enter
-	a new compta opération"""
+	a new compta opération or edit an existing one
+	on définit à part le champ pour le poste de dépense pour pouvoir gérer les possessions de postes
+	attentio il doit être défini avant l'instanciation du formulaire avec 
+
+	LigneComptaForm.base_fields['poste_depense'] = forms.ModelChoiceField(
+			queryset=PosteDepense.objects.filter(
+				Q(mandat=mandat) | Q(mandat=None)), required=False, empty_label="Aucun")
+	"""
+
 	
 	class Meta:
 		model = LigneCompta
-		exclude = ('mandat','auteur','modificateur', 'add_date', 'edit_date')
-		required = {'credit': False, 'debit': False}
+		exclude = ('mandat','auteur','modificateur', 'add_date', 'edit_date', 'is_locked')
+		required = {'credit': False, 'debit': False, 'poste_depense': False}
+
 
 	def clean(self):
 		"""on définit la validation : les montants ne peuvent pas

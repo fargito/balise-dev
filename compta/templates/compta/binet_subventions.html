@@ -40,6 +40,7 @@
 							<th class="compta-form-description">
 								Description
 							</th>
+							<th>Poste</th>
 							<th class="compta-form-montant">
 								Débit
 							</th>
@@ -76,6 +77,7 @@
 							{% else %}
 								<td class="compta-form-description"><a href={{ deblocage.ligne_compta.view_self_link }}>{{ deblocage.ligne_compta.description }}</a></td>
 							{% endif %}
+							<td class="compta-form-montant">{{ deblocage.ligne_compta.poste_depense|default_if_none:"" }}</td>
 							<td class="compta-form-montant">{% if deblocage.ligne_compta.debit %}{{ deblocage.ligne_compta.debit|default_if_none:"" }}{% endif %}</td>
 							{% for nom_vague, montant_deblocage in deblocage.ligne_compta.get_deblocages %}
 								<td class="compta-form-montant">
