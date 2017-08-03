@@ -1,0 +1,22 @@
+{% extends 'compta/journal.html' %}
+{# cette page récupère le menu de la page journal #}
+{% load static %}
+
+{% block compta_page %}
+	<div id="compta-table-container">
+		<div id="view-ligne-title">
+			<div class='txtcentre'>
+				Nouveau poste de dépenses
+			</div>
+		</div>
+
+		<form method='post' action='.'>
+			<div id="poste-form-container">
+				{{ poste_depense_form }}
+				{% csrf_token %}
+				<input type="submit" name="validation" value="Valider" />
+			</div>
+		</form>
+
+	</div>
+{% endblock %}

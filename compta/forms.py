@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Q
 from .models import LigneCompta, PosteDepense
 from subventions.models import DeblocageSubvention
 from django.forms import BaseFormSet, BaseInlineFormSet
@@ -169,6 +170,10 @@ class CustomDeblocageSubventionFormSet(BaseInlineFormSet):
 
 class PosteDepenseForm(forms.ModelForm):
 	"""définit le formulaire pour créer un nouveau poste de dépense"""
+	def __init__(self, mandat, *args, **kwargs):
+		super(PosteDepenseForm, self).__init__(*args, **kwargs)
+		self.mandat = mandat
+
 	class Meta:
 		model = PosteDepense
 		exclude = ('mandat',)
@@ -176,8 +181,9 @@ class PosteDepenseForm(forms.ModelForm):
 	def clean(self):
 		"""on vérifie que le poste n'est pas dans les postes pour tous dont le mandat est None)"""
 		cleaned_data = super(PosteDepenseForm, self).clean()
+		print('validating')
 		nom = cleaned_data.get('nom')
 
-		if nom in PosteDepense.objects.filter(mandat=None):
-			msg = 'Ce nom existe déjà est réservé'
+		if nom in list(PosteDepense.objects.filter(Q(mandat=None) | Q(mandat=self.mandat)).values_list('nom', flat=True)):
+			msg = 'Ce nom existe déjà ou est réservé'
 			self.add_error('nom', msg)

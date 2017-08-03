@@ -98,7 +98,7 @@ class PosteDepense(models.Model):
 	Les postes qui ont un mandat None sont attribués à tout le monde.
 	C'est le cas de Polymédia par exemple"""
 
-	nom = models.CharField(max_length=10)
+	nom = models.CharField(max_length=15)
 	mandat = models.ForeignKey('binets.Mandat', null=True, blank=True)
 
 	def __str__(self):

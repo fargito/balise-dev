@@ -70,7 +70,7 @@ th.compta-form-montant div {
 }
 
 .compta-form-poste {
-	width: 7em;
+	width: 4em;
 	text-align: left;
 	padding-right: 0.9em;
 }
@@ -197,4 +197,15 @@ div.ligne-comment {
 	height: 5em;
 	padding-top: 2em;
 	font-size: 1.5em;
+}
+
+#poste-form-container {
+	display: flex;
+	justify-content: center;
+	margin-top: 2em;
+}
+
+#poste-form-container input {
+	margin-right: 0.5em;
+	margin-left: 0.5em;
 }

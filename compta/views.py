@@ -519,9 +519,9 @@ def create_poste_depense(request):
 	if request.user not in authorized['edit'] and not(request.user.is_staff):
 		return redirect('/compta/journal')
 
-	poste_depense_form = PosteDepenseForm(request.POST or None)
+	poste_depense_form = PosteDepenseForm(mandat, request.POST or None)
 
-	if request.method == POST:
+	if request.method == 'POST':
 		if poste_depense_form.is_valid():
 			created_poste_depense = poste_depense_form.save(commit=False)
 			created_poste_depense.mandat = mandat
@@ -529,4 +529,4 @@ def create_poste_depense(request):
 
 			return redirect(request.GET.get('next', '../'))
 
-	return render()
+	return render(request, 'compta/create_poste_depense.html', locals())

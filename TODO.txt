@@ -6,7 +6,9 @@ Importer la liste binets officielle
 
 versement de subventions : sortir une feuille avec tous les déblocages + Pouvoir débloquer toutes les subventions pour un binet
 
-Gestion Polymedia, postes de dépenses pour les binets
+[Done] Postes de dépenses pour les binets
+
+Gestion Polymedia
 
 Subventions non déblocables (corps)
 
