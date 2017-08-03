@@ -4,6 +4,7 @@
 
 *.pyc
 
+venv
 
 secret.key
 my.cnf
