@@ -25,7 +25,7 @@ def create_binets(request,imported_binets):
 			# la même que celle du prez et du trez
 			promotion = Promotion.objects.get(nom=binet['Promotion'])
 			prez = User.objects.get(username=binet['Président'])
-			trez = user=User.objects.get(username=binet['Trésorier'])
+			trez = User.objects.get(username=binet['Trésorier'])
 			if ((promotion != prez.eleve.promotion) or 
 				(prez.eleve.promotion != trez.eleve.promotion) or
 				(trez.eleve.promotion != promotion)):
@@ -34,18 +34,14 @@ def create_binets(request,imported_binets):
 			else:
 				created_binet, binet_was_created = Binet.objects.update_or_create(
 					nom=binet['Binet'], defaults={
-					'description': binet['Description'],
-					'type_binet': TypeBinet.objects.get(nom=binet['Type']),
-					'current_president': prez,
-					'current_tresorier': trez,
-					'current_promotion': promotion})
+					'description': binet['Description']})
 				created_binet.save()
 				created_mandat, mandat_was_created = Mandat.objects.update_or_create(
 					binet=created_binet,
 					president=prez,
 					tresorier=trez,
 					promotion=promotion,
-					type_binet=created_binet.type_binet)
+					type_binet=TypeBinet.objects.get(nom=binet['Type']))
 				created_mandat.save()
 				# si le mandat vient d'être créé on donne
 				# aux utilisateurs le droit de modif sur la

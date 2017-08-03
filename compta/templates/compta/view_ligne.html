@@ -10,12 +10,14 @@
 		<table id="compta-table">
 			<thead>
 				<tr>
+					<th></th>
 					<th>
 						Effectée le
 					</th>
 					<th class="compta-form-description">
 						Description
 					</th>
+					<th>Poste</th>
 					<th class="compta-form-montant">
 						Débit
 					</th>
@@ -29,8 +31,27 @@
 			</thead>
 			<tbody>
 				<tr class="ligne-compta">
+					<td class="compta-button-container">
+						{# l'admin possède les liens pour lock la ligne, pas le modificateur normal #}
+						{% if request.user.is_staff %}
+							<a href={{ ligne.lock_unlock_self_link }}?next={{ request.get_pull_path }}>
+								{% if ligne.is_locked %}
+									<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="Déverrouiller la ligne">
+								{% else %}
+									<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="Verrouiller la ligne">
+								{% endif %}
+							</a>
+						{% else %}
+							{% if ligne.is_locked %}
+								<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="Ligne verrouillée">
+							{% else %}
+								<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="">
+							{% endif %}
+						{% endif %}
+					</td>
 					<td class="compta-form-date">{{ ligne.date|date:'d/m/Y' }}</td>
 					<td class="compta-form-description">{{ ligne.description }}</td>
+					<td class="compta-form-montant">{{ ligne.poste_depense|default_if_none:"" }}</td>
 					<td class="compta-form-montant">{{ ligne.debit|default_if_none:"" }}</td>
 					<td class="compta-form-montant">{{ ligne.credit|default_if_none:"" }}</td>
 					{% for nom_vague, deblocage in ligne.get_deblocages %}
@@ -40,7 +61,7 @@
 							</div>
 						</td>
 					{% endfor %}
-					{% if request.session.edit %}
+					{% if request.session.edit and not ligne.is_locked or request.user.is_staff %}
 						<td class="compta-button-container">
 							<a href={{ ligne.edit_self_link }}>
 								<img src="{% static 'img/edit.ico' %}" alt="Edit icone" class='edit_icon' title="Modifier la ligne"/>
@@ -51,6 +72,8 @@
 								<img src="{% static 'img/delete.ico' %}" alt="Delete icone" class='delete_icon' title="Supprimer la ligne"/>
 							</a>
 						</td>
+					{% else %}
+						<td colspan="2"></td>
 					{% endif %}
 				</tr>
 			</tbody>
@@ -58,8 +81,8 @@
 		<div class="view-ligne-infos-container">
 			<ul class="view-ligne-infos">
 				<li>Mandat : {{ ligne.mandat }}</li>
-				<li>Création : {{ ligne.add_date }} par {{ ligne.auteur }}</li>
-				<li>Dernière modification : {{ ligne.edit_date }} par {{ ligne.modificateur }}</li>
+				<li>Création : {{ ligne.add_date }} par <a href={{ ligne.auteur.eleve.get_infos_url }}>{{ ligne.auteur }}</a></li>
+				<li>Dernière modification : {{ ligne.edit_date }} par <a href={{ ligne.modificateur.eleve.get_infos_url }}>{{ ligne.modificateur }}</a></li>
 			</ul>
 
 			<div class="ligne-comment">

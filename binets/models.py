@@ -25,6 +25,7 @@ class Mandat(models.Model):
 	"""correspondance entre le binet et ses membres"""
 	binet = models.ForeignKey('Binet')
 	type_binet = models.ForeignKey('TypeBinet', verbose_name = "Type du binet")
+	is_active = models.BooleanField(verbose_name = "Actif", default=True)
 	president = models.ForeignKey(User, related_name = "president")
 	tresorier = models.ForeignKey(User, related_name = "tresorier")
 	promotion = models.ForeignKey('accounts.Promotion', verbose_name = "Promo")
@@ -65,15 +66,10 @@ class Mandat(models.Model):
 			credit_total += subvention.get_deblocages_total()
 		return (debit_total, credit_total)
 
-
 	def get_balance(self):
 		"""retourne la balance actuelle du binet"""
 		debit, credit = self.get_totals()
 		return credit-debit
-
-	def is_current(self):
-		"""returns if the mandat is currently the last"""
-		return self.promotion == self.binet.current_promotion
 
 	def get_authorized_users(self):
 		"""returns a dict of edit and view users. 
@@ -88,36 +84,36 @@ class Mandat(models.Model):
 			authorized['view'].append(future_mandat.tresorier)
 		authorized['view'].append(self.president)
 		authorized['view'].append(self.tresorier)
-		if self.is_current():
-			# actuellement le seul critère pour savoir si les membres
-			# d'un binet peuvent éditer leur compta est qu'ils n'aient pas
-			# de successeurs. A changer avec le  module passation ?
+		if self.is_active:
+			# is_active est défini pour tous les binets par défaut sur True
+			# lorsque la compta a été vérifiée, elle passe à false et les membres ne peuvent plus modifier
+			# les admins peuvent toujours
 			authorized['edit'].append(self.president)
 			authorized['edit'].append(self.tresorier)
 		return authorized
+
+	def is_all_locked(self):
+		"""returns true if all the lines of this mandat have been checked"""
+		return len(LigneCompta.objects.filter(mandat=self, is_locked=False)) == 0
 
 
 class Binet(models.Model):
 	"""table dans la BDD représentant l'ensemble des binets"""
 	nom = models.CharField(max_length=100)
 	description = models.TextField(blank=True, null = True) # facultatif
-	type_binet = models.ForeignKey('TypeBinet', verbose_name = "Type du binet")
 	remarques_admins = models.TextField(blank=True, null = True) # facultatif
-	is_active = models.BooleanField(verbose_name = "Actif", default=True)
-	current_president = models.ForeignKey(User, verbose_name = "Président", related_name = "current_president")
-	current_tresorier = models.ForeignKey(User, verbose_name = "Trésorier", related_name = "current_tresorier")
-	current_promotion = models.ForeignKey('accounts.Promotion', verbose_name = "Promo")
 
-	@models.permalink
-	def get_history_url(self):
-		return ('binet_history', [self.id])
-
+	
 	class Meta:
-		ordering = ('current_promotion', 'nom',)
+		ordering = ('nom',)
 		unique_together = ('nom',)
 
 	def __str__(self):
 		return self.nom
+
+	@models.permalink
+	def get_history_url(self):
+		return ('binet_history', [self.id])
 
 	def get_available_mandats(self, user):
 		"""retourne la liste des mandats auquel l'utilisateur a accès"""
@@ -127,3 +123,7 @@ class Binet(models.Model):
 		return Mandat.objects.filter(
 			binet=self,
 			promotion__lte=user.eleve.promotion)
+
+	def get_latest_mandat(self):
+		"""returns the last mandat"""
+		return Mandat.objects.filter(binet=self)[0]

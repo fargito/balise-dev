@@ -31,15 +31,17 @@ class VagueSubventions(models.Model):
 		ordering = ('-annee',)
 
 	def get_totals(self):
-		"""retourne la somme totale demandée et la somme totale accordée"""
+		"""retourne la somme totale demandée et la somme totale accordée
+		ainsi que la somme des déblocages et le reste"""
 		subventions = Subvention.objects.filter(vague=self)
-		total_demande, total_accorde = 0,0
+		total_demande, total_accorde, total_debloque = 0, 0, 0
 		for subvention in subventions:
 			total_demande += subvention.demande
 			total_accorde += subvention.accorde
-		return total_demande, total_accorde
+			total_debloque += subvention.get_deblocages_total()
+		total_rest = total_accorde - total_debloque
+		return total_demande, total_accorde, total_debloque, total_rest
 		
-
 
 	@models.permalink
 	def view_self_url(self):

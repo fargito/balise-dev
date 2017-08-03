@@ -1,5 +1,6 @@
 from django import forms
-from .models import LigneCompta
+from django.db.models import Q
+from .models import LigneCompta, PosteDepense
 from subventions.models import DeblocageSubvention
 from django.forms import BaseFormSet, BaseInlineFormSet
 
@@ -7,12 +8,21 @@ from django.forms import BaseFormSet, BaseInlineFormSet
 
 class LigneComptaForm(forms.ModelForm):
 	"""this form is used in the compta journal to enter
-	a new compta opération"""
+	a new compta opération or edit an existing one
+	on définit à part le champ pour le poste de dépense pour pouvoir gérer les possessions de postes
+	attentio il doit être défini avant l'instanciation du formulaire avec 
+
+	LigneComptaForm.base_fields['poste_depense'] = forms.ModelChoiceField(
+			queryset=PosteDepense.objects.filter(
+				Q(mandat=mandat) | Q(mandat=None)), required=False, empty_label="Aucun")
+	"""
+
 	
 	class Meta:
 		model = LigneCompta
-		exclude = ('mandat','auteur','modificateur', 'add_date', 'edit_date')
-		required = {'credit': False, 'debit': False}
+		exclude = ('mandat','auteur','modificateur', 'add_date', 'edit_date', 'is_locked')
+		required = {'credit': False, 'debit': False, 'poste_depense': False}
+
 
 	def clean(self):
 		"""on définit la validation : les montants ne peuvent pas
@@ -91,7 +101,7 @@ class BaseDeblocageSubventionFormSet(BaseFormSet):
 			except KeyError:
 				pass
 
-		if(self.data['debit'] and float(self.data['debit']) < somme_deblocages):
+		if(self.data['debit'] and float(self.data['debit']) < (somme_deblocages)):
 			raise forms.ValidationError('Impossible de débloquer des subventions supérieures au montant de la dépense')
 
 		for k in range(len(self.subventions_list)):
@@ -123,24 +133,28 @@ class CustomDeblocageSubventionFormSet(BaseInlineFormSet):
 				if deblocage['montant'] < 0:
 					raise forms.ValidationError('Impossible de débloquer des subventions négatives')
 
-				if deblocage['id'].montant and deblocage['montant'] > deblocage['id'].subvention.get_rest()+deblocage['id'].montant:
-					msg = "Déblocage trop important sur {} {}: vous pouvez débloquer {}".format(
-						str(deblocage['id'].subvention.vague.type_subvention), 
-						str(deblocage['id'].subvention.vague.annee), 
-						deblocage['id'].subvention.get_rest()+deblocage['id'].montant)
-					raise forms.ValidationError(msg)
-				elif deblocage['montant'] > deblocage['id'].subvention.get_rest():
-					msg = "Déblocage trop important sur {} {}: vous pouvez débloquer {}".format(
-						str(deblocage['id'].subvention.vague.type_subvention), 
-						str(deblocage['id'].subvention.vague.annee), 
-						deblocage['id'].subvention.get_rest())
-					raise forms.ValidationError(msg)
+				if deblocage['id'].montant:
+					if deblocage['montant'] > deblocage['id'].subvention.get_rest()+deblocage['id'].montant:
+						msg = "Déblocage trop important sur {} {}: vous pouvez débloquer {}".format(
+							str(deblocage['id'].subvention.vague.type_subvention), 
+							str(deblocage['id'].subvention.vague.annee), 
+							deblocage['id'].subvention.get_rest()+deblocage['id'].montant)
+						raise forms.ValidationError(msg)
+				else:
+					if deblocage['montant'] > deblocage['id'].subvention.get_rest():
+						msg = "Déblocage trop important sur {} {}: vous pouvez débloquer {}".format(
+							str(deblocage['id'].subvention.vague.type_subvention), 
+							str(deblocage['id'].subvention.vague.annee), 
+							deblocage['id'].subvention.get_rest())
+						raise forms.ValidationError(msg)
 
 
 
 		if(self.data['credit'] != '' and float(self.data['credit']) > 0):
-			"""on ne peut pas subventionner une recette"""
-			raise forms.ValidationError("Impossible de débloquer des subventions sur une recette")
+			if deblocage['montant']:
+				if deblocage['montant'] > 0:
+					"""on ne peut pas subventionner une recette"""
+					raise forms.ValidationError("Impossible de débloquer des subventions sur une recette")
 
 		somme_deblocages = 0
 		for deblocage in self.cleaned_data:
@@ -150,6 +164,26 @@ class CustomDeblocageSubventionFormSet(BaseInlineFormSet):
 				except KeyError:
 					pass
 
-		if(self.data['debit'] and float(self.data['debit']) < somme_deblocages):
+		if(self.data['debit'] and self.data['debit'] < str(somme_deblocages)):
 			print(somme_deblocages)
 			raise forms.ValidationError('Impossible de débloquer des subventions supérieures au montant de la dépense')
+
+class PosteDepenseForm(forms.ModelForm):
+	"""définit le formulaire pour créer un nouveau poste de dépense"""
+	def __init__(self, mandat, *args, **kwargs):
+		super(PosteDepenseForm, self).__init__(*args, **kwargs)
+		self.mandat = mandat
+
+	class Meta:
+		model = PosteDepense
+		exclude = ('mandat',)
+
+	def clean(self):
+		"""on vérifie que le poste n'est pas dans les postes pour tous dont le mandat est None)"""
+		cleaned_data = super(PosteDepenseForm, self).clean()
+		print('validating')
+		nom = cleaned_data.get('nom')
+
+		if nom in list(PosteDepense.objects.filter(Q(mandat=None) | Q(mandat=self.mandat)).values_list('nom', flat=True)):
+			msg = 'Ce nom existe déjà ou est réservé'
+			self.add_error('nom', msg)

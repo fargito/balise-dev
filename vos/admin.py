@@ -2,10 +2,10 @@ from django.contrib import admin
 from .models import VOS, MontantCheque, Section, EleveVos
 
 class VOSAdmin(admin.ModelAdmin):
-	list_display = ('section', 'current_promotion',)
-	list_filter = ('current_promotion', 'section',)
-	ordering = ('current_promotion', 'section',)
-	search_fields = ('current_promotion', 'section',)
+	list_display = ('section',) 
+	list_filter = ('section',)
+	ordering = ('section',)
+	search_fields = ('section',)
 
 class SectionAdmin(admin.ModelAdmin):
 	ordering = ('-nom', )

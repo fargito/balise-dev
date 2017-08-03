@@ -1,20 +1,24 @@
 #-*- coding: utf-8 -*-
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.core.urlresolvers import reverse
 
 from binets.models import Mandat
-from .models import LigneCompta
+from .models import LigneCompta, PosteDepense
 from subventions.models import VagueSubventions, Subvention, DeblocageSubvention, TypeSubvention
 from django.db.models import Q
 
+from django import forms
 from .forms import LigneComptaForm, DeblocageSubventionForm, BaseDeblocageSubventionFormSet, CustomDeblocageSubventionFormSet
+from .forms import PosteDepenseForm
 from binets.forms import DescriptionForm
 from django.forms import formset_factory, inlineformset_factory
 from imports.forms import ImportFileForm
 
 from imports.file_handlers import file_handler, create_lignes_compta
+
+from subventions.helpers import generate_ordering_arguments, generate_ordering_links
 
 from datetime import datetime
 import pandas
@@ -28,12 +32,42 @@ def my_binets(request):
 	It will be implied in the compta module that this Object is in
 	th session parameters"""
 
+	# paramètre d'ordonnance
+	ordering = request.GET.get('o', None)
+	
+	attributes = ['binet', 'promotion', 'type_binet', 'is_active']
+
+	# on génère les arguments d'ordonnance de la liste
+	arguments = generate_ordering_arguments(ordering, attributes)
+
+	
+	# on génère les liens qui serviront à l'ordonnance dans la page
+	# si aucun n'a été activé, par défault c'est par nom de binet (index 0)
+	# sachant qu'on va accéder aux éléments par pop(), on doit inverser l'ordre
+	links_base = '?o='
+	ordering_links = list(reversed(generate_ordering_links(ordering, attributes, links_base)))
+
+
+
+
+
+	# on récupère les binets en fonction du statut de l'utilisateur et des choix d'ordre
+
 	if request.user.is_staff:
-		liste_mandats = Mandat.objects.all()
+		if arguments:
+			liste_mandats = Mandat.objects.all().order_by(*arguments)
+		else:
+			liste_mandats = Mandat.objects.all()
 	else:
-		liste_mandats = Mandat.objects.filter(
-			Q(president=request.user) | 
-			Q(tresorier=request.user))
+		if arguments:
+			liste_mandats = Mandat.objects.filter(
+				Q(president=request.user) | 
+				Q(tresorier=request.user)).order_by(*arguments)
+		else:
+			liste_mandats = Mandat.objects.filter(
+				Q(president=request.user) | 
+				Q(tresorier=request.user))
+
 	return render(request, 'compta/my_binets.html', locals())
 
 
@@ -41,9 +75,10 @@ def my_binets(request):
 def mandat_set(request, id_mandat):
 	"""this function's only purpose is to set
 	the session variable to id and then redirect to
-	mandat_journal"""
+	mandat_journal, or to the optional 'next' parameter"""
 	request.session['id_mandat'] = id_mandat
-	return redirect('.')
+	# on utilise .get and set default to '.'
+	return redirect(request.GET.get('next', '.'))
 
 
 @login_required
@@ -68,6 +103,12 @@ def mandat_journal(request):
 	if request.user in authorized['edit'] or request.user.is_staff:
 		# on ne met le formulaire en place que si l'user a le doit de modif
 		request.session['edit'] = True
+
+		# comme le champ poste_depense a besoin du mandat pour être instancié, on doit le créer juste avant l'instanciation
+		# du formulaire
+		LigneComptaForm.base_fields['poste_depense'] = forms.ModelChoiceField(
+			queryset=PosteDepense.objects.filter(
+				Q(mandat=mandat) | Q(mandat=None)), required=False, empty_label="Aucun")
 		ligne_form = LigneComptaForm(request.POST or None)
 
 
@@ -92,6 +133,11 @@ def mandat_journal(request):
 			ligne.modificateur = request.user
 			ligne.mandat = mandat
 			ligne.save()
+			# comme le champ poste_depense a besoin du mandat pour être instancié, on doit le créer juste avant l'instanciation
+			# du formulaire
+			LigneComptaForm.base_fields['poste_depense'] = forms.ModelChoiceField(
+				queryset=PosteDepense.objects.filter(
+					Q(mandat=mandat) | Q(mandat=None)), required=False, empty_label="Aucun")
 			ligne_form = LigneComptaForm(None)
 
 			# on crée les déblocages de subvention qui vont avec la ligne
@@ -106,10 +152,30 @@ def mandat_journal(request):
 		request.session['edit'] = False
 
 
-	# on récupère toutes les lignes du mandat
-	lignes = LigneCompta.objects.filter(mandat=mandat)
+	# ici on récupère les lignes du mandat, en les ordonnant selon les filtres donnés
+	# ces filtres sont donnés par ordre dans la liste d'attributs donnée
+	# ces attribut n'incluent pas les subventions, qu'on peut isoler dans la partie subventions
 
+	# paramètre d'ordonnance
+	ordering = request.GET.get('o', None)
+	attributes = ['date', 'description', 'poste_depense', 'debit', 'credit']
+	# on génère les arguments d'ordonnance de la liste
+	arguments = generate_ordering_arguments(ordering, attributes)
+	# on récupère toutes les lignes du mandat
+	# on récupère les arguments filtrés
+	if arguments:
+		lignes = LigneCompta.objects.filter(mandat=mandat).order_by(*arguments)
+	else:
+		lignes = LigneCompta.objects.filter(mandat=mandat)
+
+	# on génère les liens qui serviront à l'ordonnance dans la page
+	# si aucun n'a été activé, par défault c'est par date (index 0)
+	# sachant qu'on va accéder aux éléments par pop(), on doit inverser l'ordre
+	links_base = '?o='
+	ordering_links = list(reversed(generate_ordering_links(ordering, attributes, links_base)))
 	
+
+	# on récupère les totaux pour le mandat
 	debit_subtotal, credit_subtotal = mandat.get_subtotals()
 	debit_total, credit_total = mandat.get_totals()
 	balance = credit_total-debit_total
@@ -134,7 +200,10 @@ def delete_ligne(request, id_ligne):
 	# à supprimer la ligne
 	authorized = mandat.get_authorized_users()
 	if request.user in authorized['edit'] or request.user.is_staff:
-		LigneCompta.objects.get(id=id_ligne).delete()
+		ligne =	LigneCompta.objects.get(id=id_ligne)
+		if not ligne.is_locked or request.user.is_staff:
+			# si l'écriture est locked, seuls les admins peuvent la supprimer
+			ligne.delete()
 	return redirect('../')
 
 
@@ -162,9 +231,23 @@ def edit_ligne(request, id_ligne):
 	if request.user not in authorized['edit'] and not(request.user.is_staff):
 		return redirect('../')
 
-
 	ligne = LigneCompta.objects.get(id=id_ligne)
+
+	if ligne.is_locked and not request.user.is_staff:
+		# si la ligne est locked, seuls les admins peuvent la supprimer
+		return redirect('../')
+
 	if request.method == 'POST':
+		# comme le champ poste_depense a besoin du mandat pour être instancié, on doit le créer juste avant l'instanciation
+		# du formulaire
+		# on calcule le rang du choix par défaut
+		if ligne.poste_depense:
+			initial_choice_index = ligne.poste_depense.get_default_index()
+		else:
+			initial_choice_index = 0
+		LigneComptaForm.base_fields['poste_depense'] = forms.ModelChoiceField(
+			queryset=PosteDepense.objects.filter(
+				Q(mandat=mandat) | Q(mandat=None)), required=False, empty_label="Aucun", initial=initial_choice_index)
 		ligne_form = LigneComptaForm(request.POST, instance=ligne)
 		
 		# on construit le formset des formulaires pour les déblocages en précisant les instances à modifier
@@ -189,18 +272,61 @@ def edit_ligne(request, id_ligne):
 
 				ligne.save()
 
-				ligne_form = LigneComptaForm(instance=ligne)
-				# on construit le formset des formulaires pour les déblocages en précisant les instances à modifier
-				DeblocageSubventionFormSet = inlineformset_factory(LigneCompta, DeblocageSubvention, fields=('montant',), extra=0)
-				deblocage_edit_formset = DeblocageSubventionFormSet(instance=ligne)
+				return redirect('../')
+				
 
 	else:
+		# comme le champ poste_depense a besoin du mandat pour être instancié, on doit le créer juste avant l'instanciation
+		# du formulaire
+
+		if ligne.poste_depense:
+			initial_choice_index = ligne.poste_depense.get_default_index()
+		else:
+			initial_choice_index = 0
+
+		LigneComptaForm.base_fields['poste_depense'] = forms.ModelChoiceField(
+			queryset=PosteDepense.objects.filter(
+				Q(mandat=mandat) | Q(mandat=None)), required=False, empty_label="Aucun", initial=initial_choice_index)
 		ligne_form = LigneComptaForm(instance=ligne)
 		# on construit le formset des formulaires pour les déblocages en précisant les instances à modifier
 		DeblocageSubventionFormSet = inlineformset_factory(LigneCompta, DeblocageSubvention, fields=('montant',), extra=0)
 		deblocage_edit_formset = DeblocageSubventionFormSet(instance=ligne)
 
 	return render(request, 'compta/edit_ligne.html', locals())
+
+
+@permission_required('is_staff')
+def lock_unlock_ligne(request, id_ligne):
+	"""permet de verrouiller ou de déverrouiller une ligne Accessible uniquement pour les admins"""
+	if not request.user.is_staff:
+		return redirect(request.GET.get('next', '../'))
+	ligne = LigneCompta.objects.get(id=id_ligne)
+	ligne.is_locked =  not (ligne.is_locked)
+	ligne.save()
+	return redirect(request.GET.get('next', '../'))
+
+
+@permission_required('is_staff')
+def lock_unlock_all(request):
+	"""permet de verrouiller toutes les opérations d'un binet.
+	Accessible uniquement aux admins"""
+	if not request.user.is_staff:
+		return redirect(request.GET.get('next', '../'))
+
+	try:
+		mandat = Mandat.objects.get(
+			id = request.session['id_mandat'])
+	except KeyError:
+		return redirect('../')
+
+	lignes = LigneCompta.objects.filter(mandat=mandat)
+	# si toutes les lignes sont locked, il faut tout unlock
+	to_put = not mandat.is_all_locked()
+	for ligne in lignes:
+		ligne.is_locked = to_put
+		ligne.save()
+
+	return redirect(request.GET.get('next', '../'))
 
 
 @login_required
@@ -212,6 +338,13 @@ def view_ligne(request, id_ligne):
 	except KeyError:
 		return redirect('../')
 
+	# on récupère la liste des utilisateurs habilités
+	# à supprimer la ligne
+	authorized = mandat.get_authorized_users()
+	if request.user not in authorized['view'] and not(request.user.is_staff):
+		return redirect('../')
+
+
 	# on récupère toutes les subventions du binet
 	subventions_binet = Subvention.objects.filter(mandat=mandat)
 
@@ -220,12 +353,7 @@ def view_ligne(request, id_ligne):
 	for subvention in subventions_binet:
 		subventions_names.append(
 			subvention.vague.type_subvention.nom+' '+subvention.vague.annee)
-
-	# on récupère la liste des utilisateurs habilités
-	# à supprimer la ligne
-	authorized = mandat.get_authorized_users()
-	if request.user not in authorized['view'] and not(request.user.is_staff):
-		return redirect('../')
+	
 	ligne = LigneCompta.objects.get(id=id_ligne)
 	return render(request, 'compta/view_ligne.html', locals())
 
@@ -267,7 +395,7 @@ def binet_subventions(request):
 	except KeyError:
 		return redirect('../')
 	# on récupère la liste des utilisateurs habilités
-	# à supprimer la ligne
+	# à voir les subventions
 	authorized = mandat.get_authorized_users()
 	if request.user not in authorized['view'] and not(request.user.is_staff):
 		return redirect('../')
@@ -288,6 +416,13 @@ def binet_compta_history(request):
 			id = request.session['id_mandat'])
 	except KeyError:
 		return redirect('../')
+
+	# on récupère la liste des utilisateurs habilités
+	# à voir l'historique
+	authorized = mandat.get_authorized_users()
+	if request.user not in authorized['view'] and not(request.user.is_staff):
+		return redirect('../')
+
 
 	liste_mandats = mandat.binet.get_available_mandats(request.user)
 
@@ -368,3 +503,30 @@ def import_lignes(request):
 
 	request.session['active_tab'] = 'Importer des opérations'
 	return render(request, 'compta/import_lignes.html', locals())
+
+
+@login_required
+def create_poste_depense(request):
+	"""permet de créer un poste de dépense pour le mandat"""
+	try:
+		mandat = Mandat.objects.get(
+			id = request.session['id_mandat'])
+	except KeyError:
+		return redirect('../')
+
+	# on vérifie qui est autorisé à créer des postes
+	authorized = mandat.get_authorized_users()
+	if request.user not in authorized['edit'] and not(request.user.is_staff):
+		return redirect('/compta/journal')
+
+	poste_depense_form = PosteDepenseForm(mandat, request.POST or None)
+
+	if request.method == 'POST':
+		if poste_depense_form.is_valid():
+			created_poste_depense = poste_depense_form.save(commit=False)
+			created_poste_depense.mandat = mandat
+			created_poste_depense.save()
+
+			return redirect(request.GET.get('next', '../'))
+
+	return render(request, 'compta/create_poste_depense.html', locals())

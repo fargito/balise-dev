@@ -5,20 +5,21 @@
 <html lang="fr">
 
 <head>
-   <link rel="stylesheet" href="{% static 'css/style.css' %}" />
-   <link rel="stylesheet" href="{% static 'css/dist/css/bootstrap.min.css' %}" />
-   <link rel="stylesheet" href="{% static 'css/listes_binets.css' %}" />
-   <link rel="stylesheet" href="{% static 'css/compta.css' %}" />
-   <link rel="stylesheet" href="{% static 'css/subventions.css' %}" />
-    <script src="{% static 'css/jquery.js' %}"></script>
-    <script src="{% static 'css/dist/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'css/dist/js/bootstrap.js' %}"></script>
-   <title>{% block title %}Balise{% endblock %}</title>
+  <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}"/>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/dist/css/bootstrap.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/listes_binets.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/compta.css' %}" />
+  <link rel="stylesheet" href="{% static 'css/subventions.css' %}" />
+  <script src="{% static 'css/jquery.js' %}"></script>
+  <script src="{% static 'css/dist/js/bootstrap.min.js' %}"></script>
+  <script src="{% static 'css/dist/js/bootstrap.js' %}"></script>
+  <title>{% block title %}Balise{% endblock %}</title>
 </head>
 
 <body>
   <header>
-    <a href="/"><img src="{% static 'img/Balise_2.png' %}" alt="Logo Balise" class='centre' /></a>
+    <a href="/"><img src="{% static 'img/balise_vectorisee_logo_sans_fond.svg' %}" alt="Logo Balise" class='centre' /></a>
   </header>
 
   <nav class='navbar navbar-default'>

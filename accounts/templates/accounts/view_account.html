@@ -1,27 +1,29 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class='container'>
 <div class='row'>
-<div class='col-sm-12 txtcentre'>
-	<h2>Infos utilisateur</h2>
-</div></div>
+	<div class='col-sm-12 txtcentre'>
+		<h2>Infos utilisateur</h2>
+	</div>
+</div>
 <div class='row'><br/></div>
 <div class='row'>
-<div class='col-sm-12'>
-	<!--On accède ici aux infos de connexion-->
-	<p>Nom : {{viewed_user.eleve.nom}}</p>
-	<p>Prénom : {{viewed_user.eleve.prenom}}</p>
-	<p>Promo : {{viewed_user.eleve.promotion}}</p>
+	<div class='col-sm-12'>
+		<!--On accède ici aux infos de connexion-->
+		<p>Nom : {{viewed_user.eleve.nom}}</p>
+		<p>Prénom : {{viewed_user.eleve.prenom}}</p>
+		<p>Promo : {{viewed_user.eleve.promotion}}</p>
+	</div>
+	<div class='col-sm-12'>
+		{% if viewed_user.is_staff %}
+			Kessier
+		{% else %}
+		<ul>
+			{% for mandat in viewed_user.eleve.get_mandats %}
+				<li><a href={{ mandat.binet.get_history_url }}>{{ mandat }}</a></li>
+			{% endfor %}
+		</ul>
+		{% endif %}
+	</div>
 </div>
-	{% if viewed_user.is_staff %}
-		Kessier
-	{% else %}
-	<ul>
-		{% for mandat in viewed_user.eleve.get_mandats %}
-			<li><a href={{ mandat.binet.get_history_url }}>{{ mandat }}</a></li>
-		{% endfor %}
-	</ul>
-	{% endif %}
-</div></div>
 {% endblock %}

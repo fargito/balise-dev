@@ -1,5 +1,5 @@
 from django.db import models
-from binets.models import Binet
+from binets.models import Binet, Mandat
 
 class Section(models.Model):
 	"""table des sections"""
@@ -20,7 +20,7 @@ class EleveVos(models.Model):
 		
 	
 
-class VOS(Binet):
+class VOS(Mandat):
 	"""ici un VOS. L'attribut promotion correspond à la promotion organisatrice"""
 	section = models.ForeignKey('vos.Section')
 	#def __init__(self):

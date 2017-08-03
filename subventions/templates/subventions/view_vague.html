@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 	<section id="compta-title-and-return">
@@ -16,28 +17,51 @@
 			<table id="subventions-table">
 				<thead>
 					<tr>
-						<th class="subventions-nom-binet">Binet</th>
+						<th class="subventions-nom-binet"><div class='title-order-container'><div>Binet</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par binet"/></a></div></th>
+						<th class="subventions-promotion"><div class='title-order-container'><div>Promotion</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par promo"/></a></div></th>
 						<th class="subventions-montant">Somme demandée</th>
 						<th class="subventions-montant">Somme accordée</th>
 						<th class='subventions-postes'>Postes de dépenses</th>
+						{% if request.user.is_staff %}
+							<th class='txtcentre'><div class='title-order-container'><div>Type de binet</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par type de binet"/></a></div></th>
+							<th class='subventions-montant'><div>Débloqué</th>
+							<th class='subventions-montant'><div>Reste</th>
+						{% endif %}
 					</tr>
 				</thead>
 				<tbody>
 					{% for subvention in subventions %}
 					<tr class="subvention-ligne">
 						<td class="subventions-nom-binet">
-							<a href={{ subvention.mandat.binet.get_history_url }}>{{ subvention.mandat }}</a></td>
+							{% if request.user.is_staff %}
+								<a href={{ subvention.mandat.get_mandat_journal }}?next=binet_subventions>{{ subvention.mandat.binet }}</a></td>
+							{% else %}
+								<a href={{ subvention.mandat.binet.get_history_url }}>{{ subvention.mandat.binet }}</a></td>
+							{% endif %}
+						<td class="subventions-promotion">{{ subvention.mandat.promotion }}</th>				
 						<td class="subventions-montant">{{ subvention.demande }}</td>
 						<td class="subventions-montant">{{ subvention.accorde }}</td>
 						<td class='subventions-postes'>{{ subvention.postes|linebreaks }}</td>
+						{# pour les admins, on met aussi les déblocages #}
+						{% if request.user.is_staff %}
+							<td class='txtcentre'>{{ subvention.mandat.type_binet }}</td>
+							<td class='subventions-montant'>{{ subvention.get_deblocages_total }}</td>
+							<td class='subventions-montant'>{{ subvention.get_rest }}</td>
+						{% endif %}
 					</tr>
 					{% endfor %}
 				</tbody>
 				<tfoot>
 					<tr>
-						<th>Total</th>
+						<th class="subventions-nom-binet">Total</th>
+						<th></th>
 						<th class="subventions-montant">{{ total_demande }}</th>
 						<th class="subventions-montant">{{ total_accorde }}</th>
+						<th colspan='2'></th>
+						{% if request.user.is_staff %}
+							<th class='subventions-montant'>{{ total_debloque }}</td>
+							<th class='subventions-montant'>{{ total_rest }}</td>
+						{% endif %}
 					</tr>
 				</tfoot>
 			</table>

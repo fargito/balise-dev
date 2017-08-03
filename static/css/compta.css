@@ -60,6 +60,21 @@ th.compta-form-montant {
 	padding-right: 1em;
 }
 
+.compta-form-montant input {
+	width: 7em;
+	text-align: right;
+}
+
+th.compta-form-montant div {
+	justify-content: flex-end;
+}
+
+.compta-form-poste {
+	width: 4em;
+	text-align: left;
+	padding-right: 0.9em;
+}
+
 .compta-deblocage {
 	font-style: italic;
 }
@@ -77,6 +92,10 @@ td.compta-form-date {
 	text-align: center;
 }
 
+th.compta-form-date {
+	padding-left: 0.7em;
+}
+
 .compta-form-description {
 	padding-left: 1em;
 	padding-right: 1em;
@@ -86,11 +105,6 @@ td.compta-form-date {
 
 #id_description {
 	width: 100%;
-}
-
-.compta-form-montant input {
-	width: 7em;
-	text-align: right;
 }
 
 #id_commentaire {
@@ -104,6 +118,14 @@ td.compta-form-date {
 
 .edit_icon {
 	margin-left: 1em;
+}
+
+.lock_icon {
+	margin-right: 0.3em;
+}
+
+.blank_icon {
+	margin-right: 0.3em;
 }
 
 .compta-button-container {
@@ -175,4 +197,15 @@ div.ligne-comment {
 	height: 5em;
 	padding-top: 2em;
 	font-size: 1.5em;
+}
+
+#poste-form-container {
+	display: flex;
+	justify-content: center;
+	margin-top: 2em;
+}
+
+#poste-form-container input {
+	margin-right: 0.5em;
+	margin-left: 0.5em;
 }

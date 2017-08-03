@@ -11,7 +11,8 @@ tr.subvention-ligne:nth-child(odd) {background: #DDD;}
 
 
 .subventions-nom-binet {
-	min-width: 15em;
+	min-width: 12em;
+	padding-left: 1em;
 }
 
 .subventions-postes {
@@ -26,7 +27,7 @@ tr.subvention-ligne:nth-child(odd) {background: #DDD;}
 }
 
 td.subventions-montant {
-	min-width: 9em;
+	min-width: 7em;
 	text-align: right;
 	padding-top: 0.2em;
 	padding-bottom: 0.2em;
@@ -34,7 +35,7 @@ td.subventions-montant {
 }
 
 th.subventions-montant {
-	width: 4em;
+	width: 5em;
 	text-align: right;
 	padding-top: 1em;
 	padding-right: 1em;
@@ -87,4 +88,18 @@ tbody.subventions-deblocage-lignes {
 	font-size: 1.5em;
 	margin-top: 1.5em;
 	margin-bottom: 0.8em;
+}
+
+.subventions-promotion {
+	text-align: center;
+}
+
+.title-order-container {
+	display: flex;
+	align-items: center;
+}
+
+img.order-icon {
+	margin-left: 0.2em;
+	margin-right: 0.2em;
 }

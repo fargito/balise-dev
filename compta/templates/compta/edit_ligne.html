@@ -11,11 +11,15 @@
 			<table id="compta-table">
 				<thead>
 					<tr>
+						<th></th>
 						<th>
 							Effectée le
 						</th>
 						<th class="compta-form-description">
 							Description
+						</th>
+						<th>
+							Poste
 						</th>
 						<th class="compta-form-montant">
 							Débit
@@ -34,11 +38,15 @@
 							{# on met en forme manuellement le formulaires permettant de rentrer une nouvelle ligne #}
 							{{ ligne_form.non_field_errors }}
 							<tr id="new-ligne-compta-errors">
+								<td></td>
 								<td class="compta-form-errors-container">
 									{{ ligne_form.date.errors }}
 								</td>
 								<td class="compta-form-errors-container">
 									{{ ligne_form.description.errors }}
+								</td>
+								<td class="compta-form-errors-container">
+									{{ ligne_form.poste_depense.errors }}
 								</td>
 								<td colspan="2" class="compta-form-errors-container">
 									{# on regroupe les messages des montants dans la même case #}
@@ -54,11 +62,32 @@
 							</tr>
 
 							<tr id="new-ligne-compta-form">
+								<td class="compta-button-container">
+									{# l'admin possède les liens pour lock la ligne, pas le modificateur normal #}
+									{% if request.user.is_staff %}
+										<a href={{ ligne.lock_unlock_self_link }}?next={{ request.get_full_path }}>
+											{% if ligne.is_locked %}
+												<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="Déverrouiller la ligne">
+											{% else %}
+												<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="Verrouiller la ligne">
+											{% endif %}
+										</a>
+									{% else %}
+										{% if ligne.is_locked %}
+											<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="Ligne verrouillée">
+										{% else %}
+											<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="">
+										{% endif %}
+									{% endif %}
+								</td>
 								<td class="compta-form-date">
 									{{ ligne_form.date }}
 								</td>
 								<td class="compta-form-description">
 									{{ ligne_form.description }}
+								</td>
+								<td class="compta-form-montant">
+									{{ ligne_form.poste_depense }}
 								</td>
 								<td class="compta-form-montant">
 									{{ ligne_form.debit }}
@@ -72,7 +101,7 @@
 								{% endfor %}
 								<td class="compta-form-validate" colspan="2">
 									{% csrf_token %}
-									<input type="submit" name="validation" value="Ajouter" />
+									<input type="submit" name="validation" value="Modifier" />
 								</td>
 							<tr>
 						</div>
@@ -82,8 +111,8 @@
 			<div class="view-ligne-infos-container">
 				<ul class="view-ligne-infos">
 					<li>Mandat : {{ ligne.mandat }}</li>
-					<li>Création : {{ ligne.add_date }} par {{ ligne.auteur }}</li>
-					<li>Dernière modification : {{ ligne.edit_date }} par {{ ligne.modificateur }}</li>
+					<li>Création : {{ ligne.add_date }} par <a href={{ ligne.auteur.eleve.get_infos_url }}>{{ ligne.auteur }}</a></li>
+				<li>Dernière modification : {{ ligne.edit_date }} par <a href={{ ligne.modificateur.eleve.get_infos_url }}>{{ ligne.modificateur }}</a></li>
 				</ul>
 
 				<div class="ligne-comment">
