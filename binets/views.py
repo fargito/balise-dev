@@ -25,8 +25,14 @@ def all_binets(request):
 		liste_binets = Binet.objects.all()
 
 	# on génère une liste de mandats plutôt qu'une liste de 
-	liste_mandats = []
+	# liste_mandats = Mandat.objects.none()
 
+
+	# for binet in liste_binets:
+	# 	liste_mandats = liste_mandats | Mandat.objects.filter(binet=binet)[0]
+		# liste_mandats.append(Mandat.objects.filter(binet=binet)[0])
+
+	# print(liste_mandats)
 
 	# on génère les liens qui serviront à l'ordonnance dans la page
 	# si aucun n'a été activé, par défault c'est par nom de binet (index 0)

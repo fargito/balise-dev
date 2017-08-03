@@ -21,6 +21,7 @@ class LigneCompta(models.Model):
 	debit = models.DecimalField(null=True, blank=True,max_digits=9, decimal_places=2)
 	credit = models.DecimalField(null=True, blank=True,max_digits=9, decimal_places=2)
 	is_locked = models.BooleanField(default=False)
+	poste_depense = models.ForeignKey('PosteDepense', null=True)
 
 	def __str__(self):
 		return self.description
@@ -87,3 +88,18 @@ class LigneCompta(models.Model):
 			else:
 				ligne_deblocages.append({'montant': deblocage[0].montant})
 		return ligne_deblocages
+
+
+
+class PosteDepense(models.Model):
+	"""definit un poste de dépense. Ces postes sont associés à des mandats, pour éviter que chaque mandat
+	se retrouve avec les postes de tout le monde.
+	Les noms réservés sont Polymédia"""
+	nom = models.CharField(max_length=10)
+	mandat = models.ForeignKey('binets.Mandat', null=True)
+
+	def __str__(self):
+		return nom
+
+	class Meta:
+		ordering = ('nom',)

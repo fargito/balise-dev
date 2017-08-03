@@ -94,13 +94,7 @@ class Mandat(models.Model):
 
 	def is_all_locked(self):
 		"""returns true if all the lines of this mandat have been checked"""
-		lignes = LigneCompta.objects.filter(mandat=self)
-		locked = True
-		k = 0
-		while locked and k < len(lignes):
-			locked = locked and lignes[k].is_locked
-			k += 1
-		return locked
+		return len(LigneCompta.objects.filter(mandat=self, is_locked=False)) == 0
 
 
 class Binet(models.Model):
