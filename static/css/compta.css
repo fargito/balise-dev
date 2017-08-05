@@ -209,3 +209,8 @@ div.ligne-comment {
 	margin-right: 0.5em;
 	margin-left: 0.5em;
 }
+
+.compta-import-error {
+	min-width: 7em;
+	margin-right: 1em;
+}

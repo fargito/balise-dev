@@ -6,7 +6,8 @@ from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 
 
-def create_binets(request,imported_binets):
+
+def create_binets(request, imported_binets):
 	"""allows you to create binets from a dict with
 	the correct keys"""
 	print('Creating or updating binets:')
@@ -35,12 +36,15 @@ def create_binets(request,imported_binets):
 				created_binet, binet_was_created = Binet.objects.update_or_create(
 					nom=binet['Binet'], defaults={
 					'description': binet['Description']})
+				if binet_was_created:
+					created_binet.creator = request.user
 				created_binet.save()
 				created_mandat, mandat_was_created = Mandat.objects.update_or_create(
 					binet=created_binet,
 					president=prez,
 					tresorier=trez,
 					promotion=promotion,
+					creator=request.user,
 					type_binet=TypeBinet.objects.get(nom=binet['Type']))
 				created_mandat.save()
 				# si le mandat vient d'être créé on donne

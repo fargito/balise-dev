@@ -7,17 +7,25 @@
 	{% if sent %}
 	C'est envoyé mon gros
 	{% else %}
-	<h1>Opérations à confirmer</h1>
+	<div id="view-deblocages-title">
+		{% if is_valid %}{# si l'import n'est pas valide, on affiche les erreurs #}
+			Confirmer les opérations suivantes ?
+		{% else %}
+			Erreur lors du traitement des données
+		{% endif %}
+	</div>
 	<div id="compta-table-container">
 		<table id="compta-table">
 			<thead>
 				<tr>
+					{% if not is_valid %}<th class='compta-import-error'>Erreurs</th>{% endif %}
 					<th>
 						Effectée le
 					</th>
 					<th class="compta-form-description">
 						Description
 					</th>
+					<th class="compta-form-poste">Poste</th>
 					<th class="compta-form-montant">
 						Débit
 					</th>
@@ -27,21 +35,39 @@
 				</tr>
 			</thead>
 			<tbody>
-			{% for date, description, debit, credit in imported_lignes_list %}
+			{% for ligne in parsed_import_list %}
 				<tr class="ligne-compta">
-					<td class="compta-form-date">{{ date|date:'d/m/Y' }}</td>
-					<td class="compta-form-description">{{ description }}</td>
-					<td class="compta-form-montant">{% if debit %}{{ debit|default_if_none:"" }}{% endif %}</td>
-					<td class="compta-form-montant">{% if credit %}{{ credit|default_if_none:"" }}{% endif %}</td>
+					{% if not is_valid %}
+						<td class='compta-import-error'>
+							{% for error in ligne.errors %}
+								{{ error }}
+							{% endfor %}
+						</td>
+					{% endif %}
+					<td class="compta-form-date">{{ ligne.date|date:'d/m/Y' }}</td>
+					<td class="compta-form-description">{{ ligne.description }}</td>
+					<td class='compta-form-poste'>{{ ligne.poste|default_if_none:"" }}
+					<td class="compta-form-montant">{{ ligne.debit|default_if_none:"" }}</td>
+					<td class="compta-form-montant">{{ ligne.credit|default_if_none:"" }}</td>
 				</tr>
 			{% endfor %}
 			</tbody>
 		</table>
-		<form method="post" action=".">
-		    {% csrf_token %}
-		    <input type="submit" name="validation" value="Valider" />
-		    <input type="submit" name="validation" value="Annuler" />
-		</form>
+		{% if is_valid %}
+			<form method="post" action=".">
+			    {% csrf_token %}
+			    <input type="submit" name="validation" value="Valider" />
+			    <input type="submit" name="validation" value="Annuler" />
+			</form>
+		{% else %}
+			<div class="import-form-container">
+				<form enctype="multipart/form-data" method="post" action=".">
+				    {% csrf_token %}
+				    {{ import_form.as_p }}
+					<input type="submit" name="validation" value="Upload" />
+				</form>
+			</div>
+		{% endif %}
 	</div>
 	{% endif %}
 {% endblock %}

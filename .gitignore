@@ -8,3 +8,4 @@ venv
 
 secret.key
 my.cnf
+imports/file_handlers/default.pwd

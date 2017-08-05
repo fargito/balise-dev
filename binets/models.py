@@ -31,6 +31,12 @@ class Mandat(models.Model):
 	promotion = models.ForeignKey('accounts.Promotion', verbose_name = "Promo")
 	description = models.TextField(blank=True, null = True) # facultatif
 	remarques_admins = models.TextField(blank=True, null = True) # facultatif
+	
+	create_date = models.DateTimeField(auto_now_add=True, auto_now=False,
+								verbose_name="Date de création")
+	passed_date = models.DateTimeField(default=None, null=True, blank=True, auto_now_add=False, auto_now=False,
+								verbose_name="Date de passation")
+	creator = models.ForeignKey(User)
 
 
 	class Meta:
@@ -102,6 +108,10 @@ class Binet(models.Model):
 	nom = models.CharField(max_length=100)
 	description = models.TextField(blank=True, null = True) # facultatif
 	remarques_admins = models.TextField(blank=True, null = True) # facultatif
+
+	create_date = models.DateTimeField(auto_now_add=True, auto_now=False,
+								verbose_name="Date de création")
+	creator = models.ForeignKey(User)
 
 	
 	class Meta:

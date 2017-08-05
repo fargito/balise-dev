@@ -1,22 +1,24 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from imports.forms import ImportFileForm
 from django.contrib.auth.decorators import permission_required
+from django.contrib.admin.views.decorators import staff_member_required
 from imports.file_handlers import file_handler
 from imports.file_handlers import create_eleves, create_binets, create_subventions
+from imports.file_handlers import parse_liste_binets_officielle, create_binet_from_liste_officielle
 from .forms import VagueForm
 import pandas, os
 from datetime import datetime
 
 
 
-@permission_required('is_staff')
+@staff_member_required
 def backend_home(request):
 	"""is only accessible to the kessiers"""
 	return render(request, 'backend/backend_home.html')
 
 
-@permission_required('is_staff')
+@staff_member_required
 def import_eleves(request):
 	"""permet d'importer un fichier excel contenant
 	une liste d'eleves et la crée dans la base de données"""
@@ -68,7 +70,7 @@ def import_eleves(request):
 
 	
 
-@permission_required('is_staff')
+@staff_member_required
 def import_binets(request):
 	"""permet d'importer une liste de binets, avec leurs
 	président et trésoriers actuels. Si le binet existe déjà,
@@ -133,7 +135,7 @@ def import_binets(request):
 
 
 
-@permission_required('is_staff')
+@staff_member_required
 def import_subventions(request):
 	"""permet d'importer une vague de subventions
 	une vague de subventions ne peut être remplie qu'une fois.
@@ -199,3 +201,56 @@ def import_subventions(request):
 		vague_form = VagueForm()
 		import_form = ImportFileForm()
 	return render(request, 'backend/import_subventions.html', locals())
+
+
+
+
+@staff_member_required
+def import_liste_binets_officielle(request):
+	"""permet d'importer la liste officielle des binets tenue par Zaza"""
+	if request.method == 'POST':
+		if request.POST['validation'] == 'Upload':
+			# l'utilisateur a appuyé sur le bouton upload
+			import_form = ImportFileForm(request.POST, request.FILES)
+			if import_form.is_valid():
+				# on copie l'import en mémoire
+				date = datetime.today()
+				pathname = 'imports/logs/binets_imports/import_liste_binets_officielle_'+str(date.year)+'_'+\
+					str(date.month)+'_'+str(date.day)+' '+str(
+					date.hour)+'_'+str(date.minute)
+				request.session['pathname'] = pathname
+				file_handler(request.FILES['excel_file'], pathname)
+				# on redirige vers la validation
+				sent = False
+				# on lit les données importées et on les met dans un dict
+				imported_binets = pandas.read_excel(open(pathname, 'rb'), sheetname=0)
+				imported_binets = imported_binets.transpose().to_dict().values()
+			
+				# on met en forme la liste selon notre format
+				parsed_binets_list = parse_liste_binets_officielle(imported_binets)
+
+				request.session['messages'] = []
+				request.session['messages'].append('Copied the file in the database')
+				return render(request, 'backend/confirm_import_liste_binets_officielle.html', locals())
+		else:
+			if request.POST['validation'] == 'Valider':
+				# dans ce cas on crée les objets élèves correspondants
+				imported_binets = pandas.read_excel(open(request.session[
+					'pathname'], 'rb'), sheetname=0)
+				imported_binets = imported_binets.transpose().to_dict().values()
+				parsed_binets_list = parse_liste_binets_officielle(imported_binets)
+				create_binet_from_liste_officielle(request, parsed_binets_list)
+				# on supprime le fichier temporaire
+				del request.session['pathname']
+				sent = True
+			else:
+				# on supprime le fichier temporaire
+				del request.session['pathname']
+				request.session['messages'] = ['Requête annulée']
+				sent = True
+				print('on annule tout')
+
+			return redirect('/binets')
+	else:
+		import_form = ImportFileForm()
+	return render(request, 'backend/import_liste_binets_officielle.html', locals())

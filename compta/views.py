@@ -2,6 +2,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
 
 from binets.models import Mandat
@@ -16,7 +17,7 @@ from binets.forms import DescriptionForm
 from django.forms import formset_factory, inlineformset_factory
 from imports.forms import ImportFileForm
 
-from imports.file_handlers import file_handler, create_lignes_compta
+from imports.file_handlers import file_handler, create_lignes_compta, validate_import_lignes
 
 from subventions.helpers import generate_ordering_arguments, generate_ordering_links
 
@@ -295,7 +296,7 @@ def edit_ligne(request, id_ligne):
 	return render(request, 'compta/edit_ligne.html', locals())
 
 
-@permission_required('is_staff')
+@staff_member_required
 def lock_unlock_ligne(request, id_ligne):
 	"""permet de verrouiller ou de déverrouiller une ligne Accessible uniquement pour les admins"""
 	if not request.user.is_staff:
@@ -306,7 +307,7 @@ def lock_unlock_ligne(request, id_ligne):
 	return redirect(request.GET.get('next', '../'))
 
 
-@permission_required('is_staff')
+@staff_member_required
 def lock_unlock_all(request):
 	"""permet de verrouiller toutes les opérations d'un binet.
 	Accessible uniquement aux admins"""
@@ -465,16 +466,11 @@ def import_lignes(request):
 				# on lit les données importées et on les met dans un dict
 				imported_lignes = pandas.read_excel(open(pathname, 'rb'), sheetname=0, na_values = ['-'])
 				imported_lignes = imported_lignes.transpose().to_dict().values()
-				# On affiche les binets
-				imported_lignes_list = []
-				for ligne in imported_lignes:
-					# si les imports sont en nan, on les transforme en None
-					if not float(ligne['Débit']) > 0:
-						ligne['Débit'] = None
-					if not float(ligne['Crédit']) > 0:
-						ligne['Crédit'] = None
-					imported_lignes_list.append(
-						(ligne['Date'], ligne['Description'], ligne['Débit'], ligne['Crédit']))
+
+
+				# on vérifie que l'import est correct
+				is_valid, parsed_import_list = validate_import_lignes(request, imported_lignes, mandat)
+
 				request.session['messages'] = []
 				request.session['messages'].append('Copied the file in the database')
 
@@ -484,7 +480,10 @@ def import_lignes(request):
 				imported_lignes = pandas.read_excel(open(request.session[
 					'pathname'], 'rb'), sheetname=0, na_values = ['-'])
 				imported_lignes = imported_lignes.transpose().to_dict().values()
-				create_lignes_compta(request, imported_lignes, mandat)
+				# on vérifie que l'import est correct et on obtient la liste nettoyée
+				is_valid, parsed_import_list = validate_import_lignes(request, imported_lignes, mandat)
+
+				create_lignes_compta(request, parsed_import_list, mandat)
 				# on supprime le fichier temporaire
 				del request.session['pathname']
 				sent = True

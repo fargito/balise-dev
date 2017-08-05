@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+	<div id="view-deblocages-title">
+		Confirmer les modifications depuis le dernier import
+	</div>
+	<form method="post" action=".">
+		    {% csrf_token %}
+		    <input type="submit" name="validation" value="Valider" />
+		    <input type="submit" name="validation" value="Annuler" />
+		</form>
+	<div id="compta-table-container">
+		<table id="compta-table">
+			<caption>Imports valides</caption>
+			<thead class="liste-binets">
+				<tr>
+					<th class="import-status">Statut</th>
+					<th class="nom-binet">Binet</th>
+					<th class="binet-promotion">Promotion</th>
+					<th class="binet-user">Type</th>
+					<th class="binet-description">Description</th>
+					<th class="binet-user">Président</th>
+					<th class="binet-user">Trésorier</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for binet in parsed_binets_list %}
+					{% if binet.success and binet.edit %}
+						<tr class="mandat">
+							<td class="import-status">
+								{{ binet.status.binet }}
+							</td>
+							<td class="nom-binet">
+								<strong>{{ binet.nom }}</strong>
+							</td>
+							<td class="binet-promotion">{{ binet.promotion }}</td>
+							<td class="binet-user">{{ binet.type_binet }}</td>
+							<td class="binet-description">
+								{{ binet.description }}
+							</td>
+							<td class="binet-user">
+								<strong>{{ binet.status.prez|default_if_none:"" }}</strong> {{ binet.prez_name }} {{ binet.prez_surname }} {{ binet.prez_username }}
+							</td>
+							<td class="binet-user">
+								<strong>{{ binet.status.trez|default_if_none:"" }}</strong> {{ binet.trez_name }} {{ binet.trez_surname }} {{ binet.trez_username }}
+							</td>
+						</tr>
+					{% endif %}
+				{% endfor %}
+			</tbody>
+		</table>
+		<table id="compta-table">
+			<caption>Imports invalides</caption>
+			<thead class="liste-binets">
+				<tr>
+					<th class="nom-binet">Statut</th>
+					<th class="nom-binet">Binet</th>
+					<th class="binet-promotion">Promotion</th>
+					<th class="binet-user">Type</th>
+					<th class="binet-description">Description</th>
+					<th class="binet-user">Président</th>
+					<th class="binet-user">Trésorier</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for binet in parsed_binets_list %}
+					{% if not binet.success %}
+						<tr class="mandat">
+							<td class="nom-binet">
+								{{ binet.errors }}
+							</td>
+							<td class="nom-binet">
+								<strong>{{ binet.nom }}</strong>
+							</td>
+							<td class="binet-promotion">{{ binet.promotion }}</td>
+							<td class="binet-user">{{ binet.type_binet }}</td>
+							<td class="binet-description">
+								{{ binet.description }}
+							</td>
+							<td class="binet-user">
+								{{ binet.prez_name }} {{ binet.prez_surname }} {{ binet.prez_username }}
+							</td>
+							<td class="binet-user">
+								<strong>{{ binet.status.trez }}</strong> {{ binet.trez_name }} {{ binet.trez_surname }} {{ binet.trez_username }}
+							</td>
+						</tr>
+					{% endif %}
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endblock %}
