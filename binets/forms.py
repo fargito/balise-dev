@@ -8,3 +8,8 @@ class DescriptionForm(forms.ModelForm):
 		model = Mandat
 		fields = ('description',)
 		labels = {'description': 'Commentaires généraux sur votre mandat'}
+
+
+class SearchForm(forms.Form):
+	"""permet de rechercher les binets par nom"""
+	search = forms.CharField(max_length=100, label="Rechercher", required=False)

@@ -6,11 +6,13 @@ import os
 from balisedev import settings
 
 
-def parse_liste_binets_officielle(imported_binets):
+def parse_liste_binets_officielle(imported_binets, sans_echecs=False):
 	"""permet de mettre les éléments de la liste officielle des binets suivant le format qui nous intéresse
 	Chaque binet possède son indicateur de succès (les infos dans l'excel sont bonnes) et son indicateur de statut
 	En effet on n'affiche à l'utilisateur que les modifications effectuées par rapport à la base de données. Cela permet
-	de réimporter le fichier de temps en temps et de vérifier que les modifications sont cohérentes"""
+	de réimporter le fichier de temps en temps et de vérifier que les modifications sont cohérentes
+	Le mode sans échec n'est à utiliser que pour le premier import. Il permet d'entrer les anciens binets dont les utilisateurs
+	n'ont pas d'identifiants"""
 	parsed_binets = []
 	for binet in imported_binets:
 		parsed_binet = {'errors': [], 'success': True, 'edit': False, 'status': {'binet': None, 'prez': None, 'trez': None}}
@@ -30,18 +32,22 @@ def parse_liste_binets_officielle(imported_binets):
 		try:
 			parsed_binet['prez_username'] = binet['Mail Président'].split('@polytechnique.edu')[0]
 		except:
-			# parsed_binet['prez_username'] = 'Inconnu'
-			parsed_binet['prez_username'] = None
-			parsed_binet['success'] = False
-			parsed_binet['errors'].append("Pas d'identifiant du président")
+			if sans_echecs:
+				parsed_binet['prez_username'] = 'Inconnu'
+			else:
+				parsed_binet['prez_username'] = None
+				parsed_binet['success'] = False
+				parsed_binet['errors'].append("Pas d'identifiant du président")
 
 		try:
 			parsed_binet['trez_username'] = binet['Mail Trésorier'].split('@polytechnique.edu')[0]
 		except:
-			# parsed_binet['trez_username'] = 'Inconnu'
-			parsed_binet['trez_username'] = None
-			parsed_binet['success'] = False
-			parsed_binet['errors'].append("Pas d'identifiant du trésorier")
+			if sans_echecs:
+					parsed_binet['trez_username'] = 'Inconnu'
+			else:
+				parsed_binet['trez_username'] = None
+				parsed_binet['success'] = False
+				parsed_binet['errors'].append("Pas d'identifiant du trésorier")
 
 
 		# type du binet

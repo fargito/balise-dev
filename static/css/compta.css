@@ -203,6 +203,7 @@ div.ligne-comment {
 	display: flex;
 	justify-content: center;
 	margin-top: 2em;
+	margin-bottom: 2em;
 }
 
 #poste-form-container input {

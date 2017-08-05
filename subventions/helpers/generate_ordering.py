@@ -50,7 +50,7 @@ def generate_ordering_links(ordering, attributes, links_base, default_order=0):
 
 
 
-def generate_ordering_arguments(ordering, attributes):
+def generate_ordering_arguments(ordering, attributes, only_one=False):
 	"""generates the arguments used to filter a list of objects. Return None if no arg"""
 	arguments = None
 
@@ -66,5 +66,8 @@ def generate_ordering_arguments(ordering, attributes):
 					arguments.append(attributes[int(index)])
 			except:
 				pass
+
+	if only_one and arguments:
+		return [arguments[0]]
 
 	return arguments

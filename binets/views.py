@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Binet, Mandat
+from .forms import SearchForm
+from django.db.models import Q
 
 from subventions.helpers import generate_ordering_arguments, generate_ordering_links
 
@@ -10,24 +12,45 @@ def all_binets(request):
 	"""sur cette page on peut accéder à la liste des binets
 	actifs avec les responsables. On dispose des filtres définis dans attributes"""
 
-	# paramètre d'ordonnance
+	search_arguments = None
+	search_form = SearchForm(request.POST or None)
+	if search_form.is_valid():
+		search_arguments = search_form.cleaned_data['search']
+
+
+	# on récupère le paramètre d'ordonnance depuis l'url
 	ordering = request.GET.get('o', None)
-	search = request.GET.get('q', None)
-	
 	attributes = ['nom', 'current_mandat__promotion']
 
 	# on génère les arguments d'ordonnance de la liste
-	arguments = generate_ordering_arguments(ordering, attributes)
+	arguments = generate_ordering_arguments(ordering, attributes, only_one=True)
+	print(arguments)
 
-	# on récupère les arguments filtrés
-	if arguments:
-		liste_binets = Binet.objects.all().order_by(*arguments)
+	# on récupères les binets correspondants à la recherche
+	if search_arguments:
+		# on transfome la chaine brute en liste pour traiter séparément les mots
+		search_arguments = search_arguments.split()
+		# on construit une liste d'argments Q
+		search_list = [Q(nom__icontains=q) for q in search_arguments]
+		# on concatène ces arguments
+		search = search_list.pop()
+		for item in search_list:
+			search |= item
+
+
+		if arguments:
+			liste_binets = Binet.objects.filter(search).order_by(*arguments)
+		else:
+			liste_binets = Binet.objects.filter(search)
 	else:
-		liste_binets = Binet.objects.all()
+		if arguments:
+			liste_binets = Binet.objects.all().order_by(*arguments)
+		else:
+			liste_binets = Binet.objects.all()
+	# on ordonne les résultats
+	if arguments:
+		liste_binets = liste_binets.order_by(*arguments)
 
-	print(request.get_full_path())
-	print(request.path)
-	print(request.get_full_path().split(request.path)[1])
 
 	# on génère les liens qui serviront à l'ordonnance dans la page
 	# si aucun n'a été activé, par défault c'est par nom de binet (index 0)
