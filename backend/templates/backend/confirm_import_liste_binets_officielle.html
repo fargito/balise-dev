@@ -65,7 +65,7 @@
 			</thead>
 			<tbody>
 				{% for binet in parsed_binets_list %}
-					{% if not binet.success %}
+					{% if not binet.success and binet.edit %}
 						<tr class="mandat">
 							<td class="nom-binet">
 								{{ binet.errors }}

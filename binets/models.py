@@ -112,6 +112,9 @@ class Binet(models.Model):
 	create_date = models.DateTimeField(auto_now_add=True, auto_now=False,
 								verbose_name="Date de création")
 	creator = models.ForeignKey(User)
+	# ce champ est facultatif et ne sert que pour bien ordonner les listes de binets
+	current_mandat = models.ForeignKey('Mandat', default=None, null=True, blank=True,
+		related_name='current_mandat')
 
 	
 	class Meta:
@@ -136,4 +139,6 @@ class Binet(models.Model):
 
 	def get_latest_mandat(self):
 		"""returns the last mandat"""
-		return Mandat.objects.filter(binet=self)[0]
+		mandat = Mandat.objects.filter(binet=self)[0]
+		self.current_mandat = mandat
+		return mandat

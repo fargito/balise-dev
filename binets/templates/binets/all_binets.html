@@ -4,6 +4,12 @@
 
 {% block content %}
 	<div id="page-title">Liste des binets</div>
+	<form id="searchform" action="{{ request.get_full_path }}" method="get" accept-charset="utf-8">
+      <input class="searchfield" id="searchbox" name="q" type="text" placeholder="Rechercher">
+      <button class="searchbutton" type="submit" value="Rechercher">
+<!--         <i class="fa fa-search"></i>
+ -->      </button>
+    </form>
 	<section id="table-container">
 		<table id="liste-binets">
 			<thead class="liste-binets">

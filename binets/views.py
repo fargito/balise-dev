@@ -12,8 +12,9 @@ def all_binets(request):
 
 	# paramètre d'ordonnance
 	ordering = request.GET.get('o', None)
+	search = request.GET.get('q', None)
 	
-	attributes = ['nom', 'mandat__promotion']
+	attributes = ['nom', 'current_mandat__promotion']
 
 	# on génère les arguments d'ordonnance de la liste
 	arguments = generate_ordering_arguments(ordering, attributes)
@@ -24,15 +25,9 @@ def all_binets(request):
 	else:
 		liste_binets = Binet.objects.all()
 
-	# on génère une liste de mandats plutôt qu'une liste de 
-	# liste_mandats = Mandat.objects.none()
-
-
-	# for binet in liste_binets:
-	# 	liste_mandats = liste_mandats | Mandat.objects.filter(binet=binet)[0]
-		# liste_mandats.append(Mandat.objects.filter(binet=binet)[0])
-
-	# print(liste_mandats)
+	print(request.get_full_path())
+	print(request.path)
+	print(request.get_full_path().split(request.path)[1])
 
 	# on génère les liens qui serviront à l'ordonnance dans la page
 	# si aucun n'a été activé, par défault c'est par nom de binet (index 0)

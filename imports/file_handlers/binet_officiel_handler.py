@@ -30,6 +30,7 @@ def parse_liste_binets_officielle(imported_binets):
 		try:
 			parsed_binet['prez_username'] = binet['Mail Président'].split('@polytechnique.edu')[0]
 		except:
+			# parsed_binet['prez_username'] = 'Inconnu'
 			parsed_binet['prez_username'] = None
 			parsed_binet['success'] = False
 			parsed_binet['errors'].append("Pas d'identifiant du président")
@@ -37,6 +38,7 @@ def parse_liste_binets_officielle(imported_binets):
 		try:
 			parsed_binet['trez_username'] = binet['Mail Trésorier'].split('@polytechnique.edu')[0]
 		except:
+			# parsed_binet['trez_username'] = 'Inconnu'
 			parsed_binet['trez_username'] = None
 			parsed_binet['success'] = False
 			parsed_binet['errors'].append("Pas d'identifiant du trésorier")
@@ -118,7 +120,7 @@ def parse_liste_binets_officielle(imported_binets):
 			parsed_binet['trez_name'] = None
 			parsed_binet['trez_surname'] = None
 			parsed_binet['success'] = False
-			parsed_binet['errors'].append("Nom du président invalide")
+			parsed_binet['errors'].append("Nom du trésorier invalide")
 
 
 		######################################################################
@@ -153,6 +155,8 @@ def parse_liste_binets_officielle(imported_binets):
 			parsed_binet['errors'].append('Cas président non dévoilé')
 
 
+		parsed_binets.append(parsed_binet)
+
 	return parsed_binets
 
 
@@ -160,7 +164,6 @@ def create_binet_from_liste_officielle(request, parsed_binets):
 	"""permet d'importer la totalité de la liste des binets officielle.
 	En revanche tous les binets ne possédant pas les bonnes infos seront ignorés (les vieux)"""
 	print('Creating or updating binets and eleves')
-
 	for parsed_binet in parsed_binets:
 		if parsed_binet['success'] and parsed_binet['edit']:
 			print(parsed_binet)
