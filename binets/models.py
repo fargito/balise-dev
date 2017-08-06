@@ -26,6 +26,7 @@ class Mandat(models.Model):
 	binet = models.ForeignKey('Binet')
 	type_binet = models.ForeignKey('TypeBinet', verbose_name = "Type du binet")
 	is_active = models.BooleanField(verbose_name = "Actif", default=True)
+	is_displayed = models.BooleanField(verbose_name = "Visible", default=True)
 	president = models.ForeignKey(User, related_name = "president")
 	tresorier = models.ForeignKey(User, related_name = "tresorier")
 	promotion = models.ForeignKey('accounts.Promotion', verbose_name = "Promo")
@@ -112,9 +113,7 @@ class Binet(models.Model):
 	create_date = models.DateTimeField(auto_now_add=True, auto_now=False,
 								verbose_name="Date de création")
 	creator = models.ForeignKey(User)
-	# ce champ est facultatif et ne sert que pour bien ordonner les listes de binets
-	current_mandat = models.ForeignKey('Mandat', default=None, null=True, blank=True,
-		related_name='current_mandat')
+
 
 	
 	class Meta:
@@ -128,6 +127,10 @@ class Binet(models.Model):
 	def get_history_url(self):
 		return ('binet_history', [self.id])
 
+	@models.permalink
+	def edit_binet_url(self):
+		return ('edit_binet', [self.id])
+
 	def get_available_mandats(self, user):
 		"""retourne la liste des mandats auquel l'utilisateur a accès"""
 		if user.is_staff:
@@ -139,6 +142,4 @@ class Binet(models.Model):
 
 	def get_latest_mandat(self):
 		"""returns the last mandat"""
-		mandat = Mandat.objects.filter(binet=self)[0]
-		self.current_mandat = mandat
-		return mandat
+		return Mandat.objects.filter(binet=self)[0]

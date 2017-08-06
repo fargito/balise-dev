@@ -2,7 +2,7 @@ Système de passations efficace
 
 [Done] Quand on réimporte la liste des utilisateurs via excel, que ça ne réinitialise pas les privilèges d'admin des utilisateurs
 
-Importer la liste binets officielle
+[Done] Importer la liste binets officielle
 
 versement de subventions : sortir une feuille avec tous les déblocages + Pouvoir débloquer toutes les subventions pour un binet
 
@@ -12,6 +12,6 @@ Gestion Polymedia
 
 Subventions non déblocables (corps)
 
-Possibilité de verrouiller des opérations (par admin)
+[Done] Possibilité de verrouiller des opérations (par admin)
 
 expiration de la session après un certain temps d'inactivité

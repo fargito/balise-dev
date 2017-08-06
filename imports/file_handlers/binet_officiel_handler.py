@@ -130,30 +130,29 @@ def parse_liste_binets_officielle(imported_binets, sans_echecs=False):
 
 
 		######################################################################
-		# détermination du statut de l'import
-		if parsed_binet['success']:
-			# pour le binet
-			if len(Binet.objects.filter(nom=parsed_binet['nom'])) == 0:
-				# le binet n'existe pas et il faut le créer
+		# on détermine le statut de l'import
+		# pour le binet
+		if len(Binet.objects.filter(nom=parsed_binet['nom'])) == 0:
+			# le binet n'existe pas et il faut le créer
+			parsed_binet['edit'] = True
+			parsed_binet['status']['binet'] = 'Créer'
+		else:
+			# pour le mandat
+			binet = Binet.objects.get(nom=parsed_binet['nom'])
+			promotion, promotion_was_created = Promotion.objects.get_or_create(nom=parsed_binet['promotion'])
+			if len(Mandat.objects.filter(binet=binet, promotion=promotion)) == 0:
 				parsed_binet['edit'] = True
-				parsed_binet['status']['binet'] = 'Créer'
-			else:
-				# pour le mandat
-				binet = Binet.objects.get(nom=parsed_binet['nom'])
-				promotion, promotion_was_created = Promotion.objects.get_or_create(nom=parsed_binet['promotion'])
-				if len(Mandat.objects.filter(binet=binet, promotion=promotion)) == 0:
-					parsed_binet['edit'] = True
-					parsed_binet['status']['binet'] = 'Mettre à jour'
+				parsed_binet['status']['binet'] = 'Mettre à jour'
 
-			# pour le président
-			if len(User.objects.filter(username=parsed_binet['prez_username'])) == 0:
-				parsed_binet['edit'] = True
-				parsed_binet['status']['prez'] = 'Créer'
+		# pour le président
+		if len(User.objects.filter(username=parsed_binet['prez_username'])) == 0:
+			parsed_binet['edit'] = True
+			parsed_binet['status']['prez'] = 'Créer'
 
-			# pour le trésorier
-			if len(User.objects.filter(username=parsed_binet['trez_username'])) == 0:
-				parsed_binet['edit'] = True
-				parsed_binet['status']['trez'] = 'Créer'
+		# pour le trésorier
+		if len(User.objects.filter(username=parsed_binet['trez_username'])) == 0:
+			parsed_binet['edit'] = True
+			parsed_binet['status']['trez'] = 'Créer'
 
 
 
@@ -172,7 +171,6 @@ def create_binet_from_liste_officielle(request, parsed_binets):
 	print('Creating or updating binets and eleves')
 	for parsed_binet in parsed_binets:
 		if parsed_binet['success'] and parsed_binet['edit']:
-			print(parsed_binet)
 
 			promotion, promotion_was_created = Promotion.objects.get_or_create(nom=parsed_binet['promotion'])
 

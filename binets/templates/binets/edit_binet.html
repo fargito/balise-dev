@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+	<div id="page-title">Modifier le binet {{ binet.nom }}</div>
+	<form method='post' action=''>
+		<input type="submit" name="validation" value="Valider" />
+		{{ binet_edit_form.as_p }}
+		{% csrf_token %}
+	</form>
+{% endblock %}

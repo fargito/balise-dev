@@ -29,10 +29,10 @@
 					{% if binet.success and binet.edit %}
 						<tr class="mandat">
 							<td class="import-status">
-								{{ binet.status.binet }}
+								<strong>{{ binet.status.binet }}</strong>
 							</td>
 							<td class="nom-binet">
-								<strong>{{ binet.nom }}</strong>
+								{{ binet.nom }}
 							</td>
 							<td class="binet-promotion">{{ binet.promotion }}</td>
 							<td class="binet-user">{{ binet.type_binet }}</td>
@@ -79,7 +79,7 @@
 								{{ binet.description }}
 							</td>
 							<td class="binet-user">
-								{{ binet.prez_name }} {{ binet.prez_surname }} {{ binet.prez_username }}
+								<strong>{{ binet.status.prez }}</strong> {{ binet.prez_name }} {{ binet.prez_surname }} {{ binet.prez_username }}
 							</td>
 							<td class="binet-user">
 								<strong>{{ binet.status.trez }}</strong> {{ binet.trez_name }} {{ binet.trez_surname }} {{ binet.trez_username }}

@@ -8,6 +8,13 @@
 			Liens vers les mandats précédents
 		</div>
 		<table id="liste-binets">
+			<thead>
+				<tr class="">
+					<th><div class="txtcentre">Mandat<div></th>
+					<th>Président</th>
+					<th>Trésorier</th>
+				</tr>
+			</thead>
 			<tbody>
 				{% for available_mandat in liste_mandats %}
 					<tr class="mandat">
@@ -17,6 +24,8 @@
 								<strong><a href={{ available_mandat.get_mandat_journal }}>{{ available_mandat.binet }} ({{ available_mandat.promotion }})</a></strong>
 							</div>
 						</td>
+						<td><a href={{ available_mandat.president.eleve.get_infos_url }}>{{ available_mandat.president }}</a></td>
+						<td><a href={{ available_mandat.tresorier.eleve.get_infos_url }}>{{ available_mandat.tresorier }}</a></td>
 					</tr>
 				{% endfor %}
 			</tbody>

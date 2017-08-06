@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from .models import Binet, Mandat
-from .forms import SearchForm
+from .forms import SearchForm, BinetEditForm, MandatEditForm
 from django.db.models import Q
 
 from subventions.helpers import generate_ordering_arguments, generate_ordering_links
@@ -20,11 +21,10 @@ def all_binets(request):
 
 	# on récupère le paramètre d'ordonnance depuis l'url
 	ordering = request.GET.get('o', None)
-	attributes = ['nom', 'current_mandat__promotion']
+	attributes = ['binet__nom', 'promotion', 'type_binet']
 
 	# on génère les arguments d'ordonnance de la liste
 	arguments = generate_ordering_arguments(ordering, attributes, only_one=True)
-	print(arguments)
 
 	# on récupères les binets correspondants à la recherche
 	if search_arguments:
@@ -39,17 +39,17 @@ def all_binets(request):
 
 
 		if arguments:
-			liste_binets = Binet.objects.filter(search).order_by(*arguments)
+			liste_mandats = Mandat.objects.filter(search, is_displayed=True).order_by(*arguments)
 		else:
-			liste_binets = Binet.objects.filter(search)
+			liste_mandats = Mandat.objects.filter(search, is_displayed=True)
 	else:
 		if arguments:
-			liste_binets = Binet.objects.all().order_by(*arguments)
+			liste_mandats = Mandat.objects.filter(is_displayed=True).order_by(*arguments)
 		else:
-			liste_binets = Binet.objects.all()
+			liste_mandats = Mandat.objects.filter(is_displayed=True)
 	# on ordonne les résultats
 	if arguments:
-		liste_binets = liste_binets.order_by(*arguments)
+		liste_mandats = liste_mandats.order_by(*arguments)
 
 
 	# on génère les liens qui serviront à l'ordonnance dans la page
@@ -70,3 +70,14 @@ def binet_history(request, id_binet):
 	liste_mandats = Mandat.objects.filter(
 		binet=binet)
 	return render(request, 'binets/binet_history.html', locals())
+
+
+@staff_member_required
+def edit_binet(request, id_binet):
+	binet = Binet.objects.get(id=id_binet)
+
+	binet_edit_form = BinetEditForm(request.POST or None, instance=binet)
+	if binet_edit_form.is_valid():
+		binet_edit_form.save()
+
+	return render(request, 'binets/edit_binet.html', locals())
