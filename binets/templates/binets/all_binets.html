@@ -3,16 +3,23 @@
 {% load static %}
 
 {% block content %}
-	<div id="page-title">Liste des binets</div>
-
-	<form method='post' action='.'>
-		<div id="poste-form-container">
-			{{ search_form }}
-			{% csrf_token %}
-			<input type="submit" name="validation" value="Valider" />
+	<div class='binet-title-and-return-container'>
+		<div class="binets-return-button">
 		</div>
-	</form>
-
+		<h3>Liste des binets</h3>
+		<div class='binets-side-button'>
+			{% if request.user.is_staff %}
+				<a href={{ binet.new_mandat_for_self_url }}><img src="{% static 'img/add.png' %}" alt="Add icon large" class='add-icon-large' title="Nouveau binet"></a>
+			{% endif %}
+		</div>
+	</div>
+	<div class='binets-search-container'><div class='binets-search-subcontainer'>
+		<form id="searchform" action="" method="get" accept-charset="utf-8">
+		    <input class="searchfield" id="searchbox" name="q" type="text" placeholder="Rechercher" value='{{ search_arguments|default_if_none:'' }}'>
+		    <input type='submit' value='Valider'>
+	    </form>
+	</div></div>
+	
 	<section id="table-container">
 		<table id="liste-binets">
 			<thead class="liste-binets">

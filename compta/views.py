@@ -78,6 +78,8 @@ def mandat_set(request, id_mandat):
 	the session variable to id and then redirect to
 	mandat_journal, or to the optional 'next' parameter"""
 	request.session['id_mandat'] = id_mandat
+	# setting the return button to go where we come from
+	request.session['previous'] = request.GET.get('previous', '../')
 	# on utilise .get and set default to '.'
 	return redirect(request.GET.get('next', '.'))
 
@@ -94,7 +96,7 @@ def mandat_journal(request):
 	# à accéder à la page
 	authorized = mandat.get_authorized_users()
 	if request.user not in authorized['view'] and not(request.user.is_staff):
-		return redirect('../')
+		return redirect(request.session['previous'])
 
 	# on récupère toutes les subventions du binet
 	subventions_binet = Subvention.objects.filter(mandat=mandat)
@@ -371,7 +373,7 @@ def view_remarques(request):
 	# à supprimer la ligne
 	authorized = mandat.get_authorized_users()
 	if request.user not in authorized['view'] and not(request.user.is_staff):
-		return redirect('../')
+		return redirect(request.session['previous'])
 
 	commentaire_form = DescriptionForm(request.POST or None, instance=mandat)
 
@@ -399,7 +401,7 @@ def binet_subventions(request):
 	# à voir les subventions
 	authorized = mandat.get_authorized_users()
 	if request.user not in authorized['view'] and not(request.user.is_staff):
-		return redirect('../')
+		return redirect(request.session['previous'])
 
 	# on récupère toutes les subventions du binet
 	subventions = Subvention.objects.filter(mandat=mandat)
@@ -422,7 +424,7 @@ def binet_compta_history(request):
 	# à voir l'historique
 	authorized = mandat.get_authorized_users()
 	if request.user not in authorized['view'] and not(request.user.is_staff):
-		return redirect('../')
+		return redirect(request.session['previous'])
 
 
 	liste_mandats = mandat.binet.get_available_mandats(request.user)

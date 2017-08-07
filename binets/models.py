@@ -52,6 +52,21 @@ class Mandat(models.Model):
 		"""returns the link to the mandat journal"""
 		return ('mandat_journal', [self.id])
 
+	@models.permalink
+	def edit_self_url(self):
+		"""link to the edit page"""
+		return ('edit_mandat', [self.binet.id, self.id])
+
+	@models.permalink
+	def view_unview_self_url(self):
+		"""return the link to the view where it goes from is_displayed to not is_displayed"""
+		return ('mandat_view_unview', [self.id])
+
+	@models.permalink
+	def activate_deactivate_self_url(self):
+		"""returns the link to the view that activates or deactivates this mandat"""
+		return ('mandat_activate_deactivate', [self.id])
+
 	def get_subtotals(self):
 		"""returns the total credits and debits attached
 		to this mandat without the subventions"""
@@ -128,8 +143,12 @@ class Binet(models.Model):
 		return ('binet_history', [self.id])
 
 	@models.permalink
-	def edit_binet_url(self):
+	def edit_self_url(self):
 		return ('edit_binet', [self.id])
+
+	@models.permalink
+	def new_mandat_for_self_url(self):
+		return ('new_mandat', [self.id])
 
 	def get_available_mandats(self, user):
 		"""retourne la liste des mandats auquel l'utilisateur a accès"""

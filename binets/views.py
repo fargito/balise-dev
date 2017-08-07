@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import Binet, Mandat
-from .forms import SearchForm, BinetEditForm, MandatEditForm
+from .forms import BinetEditForm, MandatEditForm
 from django.db.models import Q
+
+import datetime
 
 from subventions.helpers import generate_ordering_arguments, generate_ordering_links
 
@@ -13,11 +15,8 @@ def all_binets(request):
 	"""sur cette page on peut accéder à la liste des binets
 	actifs avec les responsables. On dispose des filtres définis dans attributes"""
 
-	search_arguments = None
-	search_form = SearchForm(request.POST or None)
-	if search_form.is_valid():
-		search_arguments = search_form.cleaned_data['search']
-
+	# on récupère le paramètre de recherche
+	search_arguments = request.GET.get('q', None)
 
 	# on récupère le paramètre d'ordonnance depuis l'url
 	ordering = request.GET.get('o', None)
@@ -29,9 +28,9 @@ def all_binets(request):
 	# on récupères les binets correspondants à la recherche
 	if search_arguments:
 		# on transfome la chaine brute en liste pour traiter séparément les mots
-		search_arguments = search_arguments.split()
+		search_arguments_list = search_arguments.split()
 		# on construit une liste d'argments Q
-		search_list = [Q(nom__icontains=q) for q in search_arguments]
+		search_list = [Q(binet__nom__icontains=q) for q in search_arguments_list]
 		# on concatène ces arguments
 		search = search_list.pop()
 		for item in search_list:
@@ -55,7 +54,10 @@ def all_binets(request):
 	# on génère les liens qui serviront à l'ordonnance dans la page
 	# si aucun n'a été activé, par défault c'est par nom de binet (index 0)
 	# sachant qu'on va accéder aux éléments par pop(), on doit inverser l'ordre
-	links_base = '?o='
+	if search_arguments:
+		links_base = 'q=' + search_arguments + '&o='
+	else:
+		links_base = '?o='
 	ordering_links = list(reversed(generate_ordering_links(ordering, attributes, links_base)))
 
 
@@ -74,10 +76,112 @@ def binet_history(request, id_binet):
 
 @staff_member_required
 def edit_binet(request, id_binet):
-	binet = Binet.objects.get(id=id_binet)
+	try:
+		binet = Binet.objects.get(id=id_binet)
+	except KeyError:
+		return redirect('../')
+
+	next = request.GET.get('next', binet.get_history_url())
 
 	binet_edit_form = BinetEditForm(request.POST or None, instance=binet)
+
 	if binet_edit_form.is_valid():
-		binet_edit_form.save()
+		if request.POST['validation'] == 'Valider':
+			binet_edit_form.save()
+		return redirect(next)
 
 	return render(request, 'binets/edit_binet.html', locals())
+
+
+@staff_member_required
+def edit_mandat(request, id_binet, id_mandat):
+	try:
+		mandat = Mandat.objects.get(
+			id = id_mandat)
+		binet = Binet.objects.get(id=id_binet)
+	except KeyError:
+		return redirect('../')
+
+	next = request.GET.get('next', binet.get_history_url())
+
+	# le False correspond à create=False dans le formulaire, ce qui permet d'éditer des mandats existants
+	mandat_edit_form = MandatEditForm(binet, False, request.POST or None, instance=mandat)
+
+	if mandat_edit_form.is_valid():
+		if request.POST['validation'] == 'Valider':
+			mandat_edit_form.save()
+		return redirect(next)
+
+	return render(request, 'binets/edit_mandat.html', locals())
+
+
+@staff_member_required
+def new_mandat(request, id_binet):
+	try:
+		binet = Binet.objects.get(id=id_binet)
+	except KeyError:
+		return redirect('../')
+
+	next = request.GET.get('next', binet.get_history_url())
+
+	mandat_edit_form = MandatEditForm(binet, True, request.POST or None, initial={'type_binet': binet.get_latest_mandat().type_binet})
+
+	if mandat_edit_form.is_valid():
+		if request.POST['validation'] == 'Valider':
+			created_mandat = mandat_edit_form.save(commit=False)
+			created_mandat.binet = binet
+			created_mandat.creator = request.user
+			created_mandat.save()
+		return redirect(next)
+
+	return render(request, 'binets/new_mandat.html', locals())
+
+
+# @staff_member_required
+# def new_binet(request):
+# 	binet_edit_form = BinetEditForm(request.POST or None)
+
+# 	if binet_edit_form.is_valid():
+# 		if request.POST['validation'] == 'Valider':
+# 			binet_edit_form.save()
+# 			return redirect(binet.get_history_url())
+
+# 		return redirect('liste_binets')
+
+# 	return render(request, 'binets/edit_binet.html', locals())
+
+
+
+@staff_member_required
+def mandat_view_unview(request, id_mandat):
+	try:
+		mandat = Mandat.objects.get(
+			id = id_mandat)
+	except KeyError:
+		return redirect('../')
+
+	previous = request.GET.get('previous', mandat.binet.get_history_url())
+
+	mandat.is_displayed = not mandat.is_displayed
+	mandat.save()
+
+	return redirect(previous)
+
+
+@staff_member_required
+def mandat_activate_deactivate(request, id_mandat):
+	try:
+		mandat = Mandat.objects.get(
+			id = id_mandat)
+	except KeyError:
+		return redirect('../')
+
+	previous = request.GET.get('previous', mandat.binet.get_history_url())
+
+	if mandat.is_active:
+		mandat.passed_date = datetime.datetime.now()
+
+	mandat.is_active = not mandat.is_active
+	mandat.save()
+
+	return redirect(previous)

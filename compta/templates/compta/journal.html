@@ -5,7 +5,7 @@
 {% block content %}
 	<section id="compta-title-and-return">
 		<div class="return-button">
-			<form action="../">
+			<form action={{ request.session.previous }}>
 				<input type="submit" value="Retour" />
 			</form>
 		</div>

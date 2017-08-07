@@ -10,26 +10,41 @@ class DescriptionForm(forms.ModelForm):
 		labels = {'description': 'Commentaires généraux sur votre mandat'}
 
 
-class SearchForm(forms.Form):
-	"""permet de rechercher les binets par nom"""
-	search = forms.CharField(max_length=100, label="Rechercher", required=False)
-
-
 class BinetEditForm(forms.ModelForm):
 	"""permet de modifier les binets"""
 
 	class Meta:
 		model = Binet
-		exclude = ('creator', 'current_promotion')
-		labels = {'description': 'Description du binet (non modifiable par les membres)',
-			 'remarques_admins': 'Remarques générales sur le binet (pour les kessiers seulement)'}
+		exclude = ('creator',)
+		labels = {'description': 'Description du binet (visible par tous, non modifiable par les membres)',
+			 'remarques_admins': 'Remarques générales sur le binet (visibles par les kessiers seulement)'}
 
 
 class MandatEditForm(forms.ModelForm):
 	"""permet de modifier le mandat"""
 
+	def __init__(self, binet, create, *args, **kwargs):
+		super(MandatEditForm, self).__init__(*args, **kwargs)
+		self.binet = binet
+		self.create = create
+
 	class Meta:
 		model = Mandat
-		exclude = ('binet', 'creator', 'passed_date')
-		labels = {'description': 'Description du mandat (modifiable par les membres)',
-			 'remarques_admins': 'Remarques générales sur le mandat (pour les kessiers seulement)'}
+		exclude = ('binet', 'creator',)
+		labels = {'description': 'Description du mandat (visible et modifiable par les membres)',
+			 'remarques_admins': 'Remarques générales sur le mandat (visibles par les kessiers seulement)'}
+
+
+	def clean(self):
+		cleaned_data = super(MandatEditForm, self).clean()
+		print(cleaned_data)
+		promotion = cleaned_data['promotion']
+		tresorier = cleaned_data['tresorier']
+		president = cleaned_data['president']
+		if promotion != president.eleve.promotion or promotion != tresorier.eleve.promotion or president.eleve.promotion != tresorier.eleve.promotion:
+			msg = 'Incohérence entre la promotion et les promotions des membres'
+			self.add_error('president', msg)
+
+		if self.create and len(Mandat.objects.filter(binet=self.binet, promotion=promotion)) == 1:
+			msg = 'Le mandat {} du binet {} existe déjà'.format(str(promotion), str(self.binet))
+			self.add_error('promotion', msg)

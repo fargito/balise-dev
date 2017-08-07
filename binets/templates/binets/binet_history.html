@@ -1,21 +1,86 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
-	<h2>Historique du binet {{ binet }}</h2>
-	<ul>
-	{% for mandat in liste_mandats %}
-		<div class="mandat">
-			<li>
-				<strong>X{{ mandat.promotion }}</strong> : 
-				<a href={{ mandat.president.eleve.get_infos_url }}>{{ mandat.president }}</a>, 
-				<a href={{ mandat.tresorier.eleve.get_infos_url }}>{{ mandat.tresorier }}</a>
-			</li>
+	<div class='binet-title-and-return-container'>
+		<div class="binets-return-button">
+			<form action="../">
+				<input type="submit" value="Retour" />
+			</form>
 		</div>
-	{% endfor %}
-	</ul>
-	<div class="return-button">
-		<form action="../">
-			<input type="submit" value="Retour" />
-		</form>
+		<h3>Binet {{ binet }}</h3>
+		<div class='binets-side-button'>
+			{% if request.user.is_staff %}
+				<a href={{ binet.edit_self_url }}><img src="{% static 'img/edit.png' %}" alt="Edit icon large" class='edit-icon-large' title="Modifier le binet"></a>
+				<a href={{ binet.new_mandat_for_self_url }}><img src="{% static 'img/add.png' %}" alt="Add icon large" class='add-icon-large' title="Nouveau mandat"></a>
+			{% endif %}
+		</div>
 	</div>
+	<div class="binet-description-full">
+		{{ binet.description }}
+	</div>
+	<table id="liste-binets">
+		<thead>
+			<tr class="">
+				<th class="txtcentre">Mandat</th>
+				<th class='txtcentre'>Président</th>
+				<th class='txtcentre'>Trésorier</th>
+				{% if request.user.is_staff %}
+					<th class='txtcentre'>Type</th>
+					<th class='txtcentre'>Dépenses</th>
+					<th class='txtcentre'>Recettes</th>
+					<th class='txtcentre'>Balance</th>
+				{% endif %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for available_mandat in liste_mandats %}
+				<tr class="mandat">
+					<td class="nom-binet">
+						<div class="txtcentre">
+							{% if request.user in available_mandat.get_authorized_users or request.user.is_staff %}
+								Binet 
+								<strong><a href="{{ available_mandat.get_mandat_journal }}?previous={{ request.get_full_path }}" title="Voir la compta">{{ available_mandat.binet }} ({{ available_mandat.promotion }})</a></strong>
+							{% else %}
+								Binet 
+								<strong>{{ available_mandat.binet }} ({{ available_mandat.promotion }})</strong>
+							{% endif %}
+						</div>
+					</td>
+					<td class='txtcentre'><a href={{ available_mandat.president.eleve.get_infos_url }}>{{ available_mandat.president }}</a></td>
+					<td class='txtcentre'><a href={{ available_mandat.tresorier.eleve.get_infos_url }}>{{ available_mandat.tresorier }}</a></td>
+					{% if request.user.is_staff %}
+						<td class='txtcentre'>{{ available_mandat.type_binet }}</td>
+						<td class='txtcentre'>{{ available_mandat.get_totals.0 }}</td>
+						<td class='txtcentre'>{{ available_mandat.get_totals.1 }}</td>
+						<td class='txtcentre'>{{ available_mandat.get_balance }}</td>
+						<td>
+							<a href={{ available_mandat.view_unview_self_url }}>
+								{% if available_mandat.is_displayed %}
+									<img src="{% static 'img/view.png' %}" alt="View icon large" class='view-icon-large' title="Le mandat est affiché dans la liste visible par tout le monde">
+								{% else %}
+									<img src="{% static 'img/stop_view.png' %}" alt="Stop view icon large" class='view-icon-large' title="Le mandat n'est visible que par la page du binet">
+								{% endif %}
+							</a>
+						</td>
+						<td>
+							<a href={{ available_mandat.activate_deactivate_self_url }}>
+								{% if available_mandat.is_active %}
+									<img src="{% static 'img/unlock.png' %}" alt="Unlock icon large" class='view-icon-large' title="Le mandat est modifiable par ses membres">
+								{% else %}
+									<img src="{% static 'img/lock.png' %}" alt="Lock view icon large" class='view-icon-large' title="Le mandat est passé, seuls les kessiers peuvent le modifier">
+								{% endif %}
+							</a>
+						</td>
+						<td>
+							<a href={{ available_mandat.edit_self_url }}>
+								<img src="{% static 'img/edit.png' %}" alt="Edit icon large" class='view-icon-large' title="Modifier le mandat">
+							</a>
+						</td>
+					{% endif %}
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 {% endblock %}

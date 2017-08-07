@@ -6,10 +6,13 @@
 	<form method='post' action=''>
 		<div class="binet-title-and-return-container">
 			<input type="submit" name="validation" value="Annuler" />
-			<h3 id="page-title">Modifier le binet {{ binet.nom }}</h3>
+			<h3 id="page-title">Nouveau mandat pour le binet {{ binet.nom }}</h3>
 			<input type="submit" name="validation" value="Valider" />
 		</div>
-		{{ binet_edit_form.as_p }}
+		<div class="binet-description-full">
+			{{ binet.description }}
+		</div>
+		{{ mandat_edit_form.as_p }}
 		{% csrf_token %}
 	</form>
 {% endblock %}
