@@ -9,7 +9,7 @@
 		<h3>Liste des binets</h3>
 		<div class='binets-side-button'>
 			{% if request.user.is_staff %}
-				<a href={{ binet.new_mandat_for_self_url }}><img src="{% static 'img/add.png' %}" alt="Add icon large" class='add-icon-large' title="Nouveau binet"></a>
+				<a href={% url 'new_binet' %}><img src="{% static 'img/add.png' %}" alt="Add icon large" class='add-icon-large' title="Nouveau binet"></a>
 			{% endif %}
 		</div>
 	</div>

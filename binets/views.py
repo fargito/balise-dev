@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import Binet, Mandat
-from .forms import BinetEditForm, MandatEditForm
+from .forms import BinetEditForm, MandatEditForm, BinetCreateForm
 from django.db.models import Q
 
 import datetime
@@ -128,27 +128,32 @@ def new_mandat(request, id_binet):
 
 	if mandat_edit_form.is_valid():
 		if request.POST['validation'] == 'Valider':
+			previous_mandat = binet.get_latest_mandat()
 			created_mandat = mandat_edit_form.save(commit=False)
 			created_mandat.binet = binet
 			created_mandat.creator = request.user
 			created_mandat.save()
+			if previous_mandat:
+				previous_mandat.is_displayed = False
+				previous_mandat.save()
 		return redirect(next)
 
 	return render(request, 'binets/new_mandat.html', locals())
 
 
-# @staff_member_required
-# def new_binet(request):
-# 	binet_edit_form = BinetEditForm(request.POST or None)
+@staff_member_required
+def new_binet(request):
+	binet_create_form = BinetCreateForm(request.POST or None)
 
-# 	if binet_edit_form.is_valid():
-# 		if request.POST['validation'] == 'Valider':
-# 			binet_edit_form.save()
-# 			return redirect(binet.get_history_url())
+	if binet_create_form.is_valid():
+		if request.POST['validation'] == 'Valider':
+			# binet = binet_create_form.save()
+			# return redirect(binet.get_history_url())
+			pass
 
-# 		return redirect('liste_binets')
+		return redirect('liste_binets')
 
-# 	return render(request, 'binets/edit_binet.html', locals())
+	return render(request, 'binets/new_binet.html', locals())
 
 
 

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	
+	<form method='post' action=''>
+		<div class="binet-title-and-return-container">
+			<input type="submit" name="validation" value="Annuler" />
+			<h3 id="page-title">Nouveau binet</h3>
+			<input type="submit" name="validation" value="Valider" />
+		</div>
+		{{ binet_create_form.as_p }}
+		{% csrf_token %}
+	</form>
+{% endblock %}

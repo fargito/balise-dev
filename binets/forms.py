@@ -20,6 +20,13 @@ class BinetEditForm(forms.ModelForm):
 			 'remarques_admins': 'Remarques générales sur le binet (visibles par les kessiers seulement)'}
 
 
+class BinetCreateForm(forms.ModelForm):
+	"""permet de créer un binet avec un permier mandat"""
+	class Meta:
+		model = Binet
+		exclude = ('creator',)
+
+
 class MandatEditForm(forms.ModelForm):
 	"""permet de modifier le mandat"""
 
