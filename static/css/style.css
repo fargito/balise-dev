@@ -51,3 +51,16 @@ footer {
 	border: none;
 }
 
+.welcome-container {
+	margin-top: 2em;
+}
+
+.login-container {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+}
+
+img.frankiz-logo {
+	height: 8em;
+}

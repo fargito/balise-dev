@@ -9,7 +9,7 @@
 			<h3 id="page-title">Modifier le binet {{ binet.nom }}</h3>
 			<input type="submit" name="validation" value="Valider" />
 		</div>
-		{{ binet_edit_form.as_p }}
+		<table>{{ binet_edit_form.as_table }}</table>
 		{% csrf_token %}
 	</form>
 {% endblock %}

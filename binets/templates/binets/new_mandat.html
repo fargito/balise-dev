@@ -12,7 +12,8 @@
 		<div class="binet-description-full">
 			{{ binet.description }}
 		</div>
-		{{ mandat_edit_form.as_p }}
+		<table>{{ mandat_edit_form.as_table }}</table>
+		
 		{% csrf_token %}
 	</form>
 {% endblock %}

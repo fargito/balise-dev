@@ -8,7 +8,10 @@
 			<h3 id="page-title">Nouveau binet</h3>
 			<input type="submit" name="validation" value="Valider" />
 		</div>
-		{{ binet_create_form.as_p }}
+		<table>
+			{{ binet_create_form.as_table }}
+			{{ mandat_create_form.as_table }}
+		</table>
 		{% csrf_token %}
 	</form>
 {% endblock %}

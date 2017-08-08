@@ -44,11 +44,13 @@
               {% if user.is_staff %}<li><a href="/backend" class='navbar-brand'><p class='kesdorado'>Administration</p></a></li>{% endif %}
               
               <li><a href="/compta" class='navbar-brand'><p class='kesdorado'>Compta</p></a></li>
-		          {% if user.is_staff %}<li><a href="/vos" class='navbar-brand'><p class='kesdorado'>Tableau de bord</p></a></li>{% endif %}
-              <li><a href="/accounts/logout" class='navbar-brand'><p class='kesdorado'>Déconnexion</p></a></li>
-
+		          {% if user.is_staff %}
+                <li><a href="/vos" class='navbar-brand'><p class='kesdorado'>Tableau de bord</p></a></li>
+                <li><a href="/accounts/logout" class='navbar-brand'><p class='kesdorado'>Déconnexion compte local</p></a></li>
+              {% endif %}
+                <li><a href="/logout" class='navbar-brand'><p class='kesdorado'>Déconnexion</p></a></li>
             {% else %}
-              <li><a href="/accounts/login" class='navbar-brand'><p class='kesdorado'>Connexion</p></a></li>
+              <li><a href="/accounts/login" class='navbar-brand'><p class='kesdorado'>Connexion (compte local)</p></a></li>
             {% endif %}
           </ul>
           {% if user.is_authenticated %}

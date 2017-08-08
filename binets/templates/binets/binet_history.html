@@ -39,7 +39,7 @@
 				<tr class="mandat">
 					<td class="nom-binet">
 						<div class="txtcentre">
-							{% if request.user in available_mandat.get_authorized_users or request.user.is_staff %}
+							{% if request.user in available_mandat.get_authorized_users.view or request.user.is_staff %}
 								Binet 
 								<strong><a href="{{ available_mandat.get_mandat_journal }}?previous={{ request.get_full_path }}" title="Voir la compta">{{ available_mandat.binet }} ({{ available_mandat.promotion }})</a></strong>
 							{% else %}
@@ -60,7 +60,7 @@
 								{% if available_mandat.is_displayed %}
 									<img src="{% static 'img/view.png' %}" alt="View icon large" class='view-icon-large' title="Le mandat est affiché dans la liste visible par tout le monde">
 								{% else %}
-									<img src="{% static 'img/stop_view.png' %}" alt="Stop view icon large" class='view-icon-large' title="Le mandat n'est visible que par la page du binet">
+									<img src="{% static 'img/stop_view.png' %}" alt="Stop view icon large" class='view-icon-large' title="Le mandat n'est visible que via la page du binet">
 								{% endif %}
 							</a>
 						</td>

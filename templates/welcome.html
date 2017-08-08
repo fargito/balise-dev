@@ -1,16 +1,24 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block content %}
 <div class='row'>
 <div class='col-sm-12 txtcentre'>
 	<h2>Site de comptabilité en ligne pour les binets</h2>
 </div></div>
-<div class='row'><br/></div>
-<div class='row'>
-	<div class='col-sm-12'>Bienvenue sur Balise, le site de comptabilité en ligne pour les binets, il est en cours de développement par François Farge et Jean-Baptiste de Cagny.</br>
-	Il sera utilisé par tous les binets.</br>
-	Vous y trouverez la liste des binets actifs, ainsi que les subventions accordées par la Kès et le Forum.</br>
-	Vous devez y tenir votre compta qui sera vérifiée lors de votre passation à la promo suivante.
-	</div>	
+<div class='welcome-container'>
+	{% if request.user.is_authenticated %}
+		<div class='txtcentre'>Bienvenue sur Balise, le site de comptabilité en ligne pour les binets, il est en cours de développement par François Farge et Jean-Baptiste de Cagny.</br>
+		Il sera utilisé par tous les binets.</br>
+		Vous y trouverez la liste des binets actifs, ainsi que les subventions accordées par la Kès et le Forum.</br>
+		Vous devez y tenir votre compta qui sera vérifiée lors de votre passation à la promo suivante.
+		</div>
+	{% else %}
+		<div class='login-container'>
+			<a href='/login'>Connexion via Frankiz</a>
+			<a href='/login'><img src="{% static 'img/frankiz.png' %}" alt="Frankiz icon large" class='frankiz-logo' title="Connexion via Frankiz"></a>
+		</div>
+	{% endif %}
 </div>
 {% endblock %}

@@ -26,6 +26,30 @@ class BinetCreateForm(forms.ModelForm):
 		model = Binet
 		exclude = ('creator',)
 
+	def clean(self):
+		cleaned_data = super(BinetCreateForm, self).clean()
+		if len(Binet.objects.filter(nom=cleaned_data['nom'])) == 1:
+			msg = 'Un binet avec ce nom existe déjà'
+			self.add_error('nom', msg)
+
+class MandatCreateForm(forms.ModelForm):
+	"""permet de créer le premier mandat lors de la création d'un binet"""
+	class Meta:
+		model = Mandat
+		fields = ('type_binet', 'president', 'tresorier', 'promotion')
+
+	def clean(self):
+		cleaned_data = super(MandatCreateForm, self).clean()
+		print(self.data)
+		print(cleaned_data)
+		promotion = cleaned_data['promotion']
+		tresorier = cleaned_data['tresorier']
+		president = cleaned_data['president']
+		if promotion != president.eleve.promotion or promotion != tresorier.eleve.promotion or president.eleve.promotion != tresorier.eleve.promotion:
+			msg = 'Incohérence entre la promotion et les promotions des membres'
+			self.add_error('president', msg)
+
+
 
 class MandatEditForm(forms.ModelForm):
 	"""permet de modifier le mandat"""
@@ -44,7 +68,6 @@ class MandatEditForm(forms.ModelForm):
 
 	def clean(self):
 		cleaned_data = super(MandatEditForm, self).clean()
-		print(cleaned_data)
 		promotion = cleaned_data['promotion']
 		tresorier = cleaned_data['tresorier']
 		president = cleaned_data['president']

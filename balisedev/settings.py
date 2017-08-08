@@ -179,9 +179,12 @@ ADMINS = [("Webmaster", DEFAULT_FROM_EMAIL)]
 
 
 
+if DEBUG:
+    LOGIN_URL = '/accounts/login'
+else:
+    LOGIN_URL = '/login'
 
-LOGIN_URL = '/accounts/login'
-
+    
 LOGIN_REDIRECT_URL = '/'
 
 STATICFILES_DIRS = (
