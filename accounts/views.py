@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
-from .forms import CreateAccountForm, CreateUserForm
+from .forms import CreateAccountForm, CreateUserForm, CreateUserWithoutPwdForm
 from django.contrib.auth.models import User
 from .models import Eleve
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 def home(request):
@@ -21,7 +22,6 @@ def create_account(request):
 	At first it is linked with no Binet"""
 
 	sent = False
-	print(request.POST)
 	user_form = CreateUserForm(request.POST or None)
 	account_form = CreateAccountForm(request.POST or None)
 	if (account_form.is_valid() and user_form.is_valid()):
@@ -40,6 +40,33 @@ def create_account(request):
 		print("User profile created")
 		sent = True
 	return render(request, 'accounts/create_account.html', locals())
+
+
+@staff_member_required
+def create_local_account(request):
+
+	previous = request.GET.get('previous', '/')
+	print(previous)
+
+	user_form = CreateUserWithoutPwdForm(request.POST or None)
+	account_form = CreateAccountForm(request.POST or None)
+	if (account_form.is_valid() and user_form.is_valid()):
+		if request.POST['validation'] == "Créer compte":
+			# on récupère les données du formulaire
+			username = user_form.cleaned_data['username']
+			email = username+'@polytechnique.edu'
+			# on crée un profil utilisateur
+			new_user = User.objects.create_user(username, 
+				email)
+			eleve = account_form.save(commit = False)
+			eleve.user = new_user
+			eleve.save()
+
+			return redirect(previous)
+
+	return render(request, 'accounts/create_local_account.html', locals())
+
+
 
 @login_required
 def my_account(request):

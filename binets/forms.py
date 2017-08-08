@@ -1,5 +1,7 @@
 from django import forms
 from .models import Mandat, Binet
+from django.contrib.auth.models import User
+
 
 class DescriptionForm(forms.ModelForm):
 	"""defines a form to get the description of a mandat. It is called in the 'Remarques binet' module of the compta module"""
@@ -32,8 +34,12 @@ class BinetCreateForm(forms.ModelForm):
 			msg = 'Un binet avec ce nom existe déjà'
 			self.add_error('nom', msg)
 
+
 class MandatCreateForm(forms.ModelForm):
 	"""permet de créer le premier mandat lors de la création d'un binet"""
+	president = forms.ModelChoiceField(queryset=User.objects.order_by('username'))
+	tresorier = forms.ModelChoiceField(queryset=User.objects.order_by('username'))
+
 	class Meta:
 		model = Mandat
 		fields = ('type_binet', 'president', 'tresorier', 'promotion')
@@ -45,14 +51,19 @@ class MandatCreateForm(forms.ModelForm):
 		promotion = cleaned_data['promotion']
 		tresorier = cleaned_data['tresorier']
 		president = cleaned_data['president']
-		if promotion != president.eleve.promotion or promotion != tresorier.eleve.promotion or president.eleve.promotion != tresorier.eleve.promotion:
-			msg = 'Incohérence entre la promotion et les promotions des membres'
-			self.add_error('president', msg)
+		# pour le cas du président inconnu, on vérifie pas la promo
+		if president != User.objects.get(username='Inconnu') and tresorier != User.objects.get(username='Inconnu'):
+			if promotion != president.eleve.promotion or promotion != tresorier.eleve.promotion or president.eleve.promotion != tresorier.eleve.promotion:
+				msg = 'Incohérence entre la promotion et les promotions des membres'
+				self.add_error('president', msg)
 
 
 
 class MandatEditForm(forms.ModelForm):
 	"""permet de modifier le mandat"""
+
+	president = forms.ModelChoiceField(queryset=User.objects.order_by('username'))
+	tresorier = forms.ModelChoiceField(queryset=User.objects.order_by('username'))
 
 	def __init__(self, binet, create, *args, **kwargs):
 		super(MandatEditForm, self).__init__(*args, **kwargs)
@@ -66,14 +77,17 @@ class MandatEditForm(forms.ModelForm):
 			 'remarques_admins': 'Remarques générales sur le mandat (visibles par les kessiers seulement)'}
 
 
+
 	def clean(self):
 		cleaned_data = super(MandatEditForm, self).clean()
 		promotion = cleaned_data['promotion']
 		tresorier = cleaned_data['tresorier']
 		president = cleaned_data['president']
-		if promotion != president.eleve.promotion or promotion != tresorier.eleve.promotion or president.eleve.promotion != tresorier.eleve.promotion:
-			msg = 'Incohérence entre la promotion et les promotions des membres'
-			self.add_error('president', msg)
+		# pour le cas du président inconnu, on vérifie pas la promo
+		if president != User.objects.get(username='Inconnu') and tresorier != User.objects.get(username='Inconnu'):
+			if promotion != president.eleve.promotion or promotion != tresorier.eleve.promotion or president.eleve.promotion != tresorier.eleve.promotion:
+				msg = 'Incohérence entre la promotion et les promotions des membres'
+				self.add_error('president', msg)
 
 		if self.create and len(Mandat.objects.filter(binet=self.binet, promotion=promotion)) == 1:
 			msg = 'Le mandat {} du binet {} existe déjà'.format(str(promotion), str(self.binet))

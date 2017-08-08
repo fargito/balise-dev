@@ -13,12 +13,14 @@
 			{% endif %}
 		</div>
 	</div>
-	<div class='binets-search-container'><div class='binets-search-subcontainer'>
-		<form id="searchform" action="" method="get" accept-charset="utf-8">
-		    <input class="searchfield" id="searchbox" name="q" type="text" placeholder="Rechercher" value='{{ search_arguments|default_if_none:'' }}'>
-		    <input type='submit' value='Valider'>
-	    </form>
-	</div></div>
+	<div class='binets-search-container'>
+		<div class='binets-search-subcontainer'>
+			<form id="searchform" action="" method="get" accept-charset="utf-8">
+			    <input class="searchfield" id="searchbox" name="q" type="text" placeholder="Rechercher" value='{{ search_arguments|default_if_none:'' }}'>
+			    <input type='submit' value='Valider'>
+		    </form>
+		</div>
+	</div>
 	
 	<section id="table-container">
 		<table id="liste-binets">

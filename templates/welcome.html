@@ -15,9 +15,16 @@
 		Vous devez y tenir votre compta qui sera vérifiée lors de votre passation à la promo suivante.
 		</div>
 	{% else %}
-		<div class='login-container'>
-			<a href='/login'>Connexion via Frankiz</a>
-			<a href='/login'><img src="{% static 'img/frankiz.png' %}" alt="Frankiz icon large" class='frankiz-logo' title="Connexion via Frankiz"></a>
+		<div class='txtcentre'>Bienvenue sur Balise, le site de comptabilité en ligne pour les binets.</div>
+		<div class='login-buttons-container'>
+			<div class='login-container'>
+				<a href='/login'>Connexion via Frankiz</a>
+				<a href='/login'><img src="{% static 'img/frankiz.png' %}" alt="Frankiz icon large" class='frankiz-logo' title="Connexion via Frankiz"></a>
+			</div>
+			<div class='login-container'>
+				<a href='/accounts/login'>Compte local</a>
+				<a href='/accounts/login'><img src="{% static 'img/login.png' %}" alt="Login icon large" class='frankiz-logo' title="Connexion compte local"></a>
+			</div>
 		</div>
 	{% endif %}
 </div>

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<h1>Validation des imports</h1>
+	<h1>Importer des subventions</h1>
 	{% if user.is_staff %}
 		{% if sent %}
 			{# on utilise la même page pour afficher le succès et l'échec. #}
@@ -19,7 +19,7 @@
 			<ul>
 			{% for binet, promotion, demande, accorde, postes in imported_subventions_list %}
 				<div class="subvention">
-					<li><strong>{{ binet}}</strong> ({{ promotion }}) : demandé {{ demande }} accordé <strong>{{ montant }}</strong> {{ postes|linebreaks }}</li>
+					<li><strong>{{ binet}}</strong> ({{ promotion }}) : demandé {{ demande }} accordé <strong>{{ accorde }}</strong> {{ postes|linebreaks }}</li>
 				</div>
 			{% endfor %}
 			</ul>

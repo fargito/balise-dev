@@ -32,7 +32,8 @@ def parse_liste_binets_officielle(imported_binets, sans_echecs=False):
 		try:
 			parsed_binet['prez_username'] = binet['Mail Président'].split('@polytechnique.edu')[0]
 		except:
-			if sans_echecs:
+			if binet['PRESIDENT'] == 'Non Dévoilé' or binet['PRESIDENT'] == 'Non dévoilé' or binet['PRESIDENT'] == 'Non Communiqué' or\
+					 binet['PRESIDENT'] == 'Non communiqué' or binet['PRESIDENT'] == 'non communiqué':
 				parsed_binet['prez_username'] = 'Inconnu'
 			else:
 				parsed_binet['prez_username'] = None
@@ -65,40 +66,8 @@ def parse_liste_binets_officielle(imported_binets, sans_echecs=False):
 			parsed_binet['success'] = False
 			parsed_binet['errors'].append("Type de binet non reconnu")
 
-		##########################################################################
-		# nom, prénom du prez
-		try:
-			nom_prez = binet['PRESIDENT'].split(' ')
-			if len(nom_prez) == 2:
-				prez_name = nom_prez[0].capitalize().split('-')
-				prez_surname = nom_prez[1].capitalize().split('-')
-				for k in range(len(prez_name)):
-					prez_name[k] = prez_name[k].capitalize()
-				for k in range(len(prez_surname)):
-					prez_surname[k].capitalize()
-
-
-				parsed_binet['prez_name'] = ' '.join(prez_name)
-				parsed_binet['prez_surname'] = ' '.join(prez_surname)
-			else:
-				# si les noms sont à plus de 2 items, on utilise le username
-				prez_name = parsed_binet['prez_username'].split('.')[1].split('-')
-				prez_surname = parsed_binet['prez_username'].split('.')[0].split('-')
-				for k in range(len(prez_name)):
-					prez_name[k] = prez_name[k].capitalize()
-				for k in range(len(prez_surname)):
-					prez_surname[k] = prez_surname[k].capitalize()
-				parsed_binet['prez_name'] = ' '.join(prez_name)
-				parsed_binet['prez_surname'] = ' '.join(prez_surname)
-		except:
-			parsed_binet['prez_name'] = None
-			parsed_binet['prez_surname'] = None
-			parsed_binet['success'] = False
-			parsed_binet['errors'].append("Nom du président invalide")
-
-
 		#########################################################################
-		# nom, prénom du prez
+		# nom, prénom du trez
 		try:
 			nom_trez = binet['TRESORIER'].split(' ')
 			if len(nom_trez) == 2:
@@ -129,6 +98,44 @@ def parse_liste_binets_officielle(imported_binets, sans_echecs=False):
 			parsed_binet['errors'].append("Nom du trésorier invalide")
 
 
+		##########################################################################
+		# nom, prénom du prez
+		try:
+			nom_prez = binet['PRESIDENT'].split(' ')
+			if len(nom_prez) == 2:
+				prez_name = nom_prez[0].capitalize().split('-')
+				prez_surname = nom_prez[1].capitalize().split('-')
+				for k in range(len(prez_name)):
+					prez_name[k] = prez_name[k].capitalize()
+				for k in range(len(prez_surname)):
+					prez_surname[k].capitalize()
+
+
+				parsed_binet['prez_name'] = ' '.join(prez_name)
+				parsed_binet['prez_surname'] = ' '.join(prez_surname)
+			else:
+				# si les noms sont à plus de 2 items, on utilise le username
+				prez_name = parsed_binet['prez_username'].split('.')[1].split('-')
+				prez_surname = parsed_binet['prez_username'].split('.')[0].split('-')
+				for k in range(len(prez_name)):
+					prez_name[k] = prez_name[k].capitalize()
+				for k in range(len(prez_surname)):
+					prez_surname[k] = prez_surname[k].capitalize()
+				parsed_binet['prez_name'] = ' '.join(prez_name)
+				parsed_binet['prez_surname'] = ' '.join(prez_surname)
+		except:
+			if binet['PRESIDENT'] == 'Non Dévoilé' or binet['PRESIDENT'] == 'Non dévoilé' or binet['PRESIDENT'] == 'Non Communiqué' or\
+					 binet['PRESIDENT'] == 'Non communiqué' or binet['PRESIDENT'] == 'non communiqué':
+				parsed_binet['prez_name'] = 'Inconnu'
+				parsed_binet['prez_surname'] = 'Inconnu'
+				parsed_binet['prez_username'] = 'Inconnu'
+			else:
+				parsed_binet['prez_name'] = None
+				parsed_binet['prez_surname'] = None
+				parsed_binet['success'] = False
+				parsed_binet['errors'].append("Nom du président invalide")
+
+
 		######################################################################
 		# on détermine le statut de l'import
 		# pour le binet
@@ -156,9 +163,8 @@ def parse_liste_binets_officielle(imported_binets, sans_echecs=False):
 
 
 
-		if "Pas d'identifiant du président" in parsed_binet['errors'] and not "Pas d'identifiant du trésorier" in parsed_binet['errors']:
-			parsed_binet['errors'].append('Cas président non dévoilé')
-
+		# if "Pas d'identifiant du président" in parsed_binet['errors'] and not "Pas d'identifiant du trésorier" in parsed_binet['errors']:
+		# 	parsed_binet['errors'].append('Cas président non dévoilé')
 
 		parsed_binets.append(parsed_binet)
 

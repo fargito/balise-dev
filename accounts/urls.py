@@ -16,5 +16,5 @@ urlpatterns = [
 	url(r'^$', views.my_account),
 	url(r'^create$', views.create_account),
 	url(r'^account/(?P<id_user>\d+)$', views.view_account, name='view_account'),
-
+	url(r'^create_local_account$', views.create_local_account),
 ]

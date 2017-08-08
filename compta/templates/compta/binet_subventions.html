@@ -31,24 +31,30 @@
 					</body>
 				</table>
 				<table class="subventions-deblocage-lignes">
-					<thead>
-						<tr>
-							<th></th>
-							<th>
-								Effectée le
-							</th>
-							<th class="compta-form-description">
-								Description
-							</th>
-							<th>Poste</th>
-							<th class="compta-form-montant">
-								Débit
-							</th>
-							{% for subvention_bis in subventions %}
-							<th class="compta-form-montant">{{ subvention_bis.vague.type_subvention }} {{ subvention_bis.vague.annee }}</th>
-							{% endfor %}
-						</tr>
-					</thead>
+					{% if subvention.get_deblocages_list %}
+						<thead>
+							<tr>
+								<th></th>
+								<th>
+									Effectée le
+								</th>
+								<th class="compta-form-description">
+									Description
+								</th>
+								<th>Poste</th>
+								<th class="compta-form-montant">
+									Débit
+								</th>
+								{% for subvention_bis in subventions %}
+								<th class="compta-form-montant">{{ subvention_bis.vague.type_subvention }} {{ subvention_bis.vague.annee }}</th>
+								{% endfor %}
+							</tr>
+						</thead>
+					{% else %}
+						<div class='txtcentre'>
+							Pas de déblocages sur {{ subvention.vague.type_subvention }} {{ subvention.vague.annee }}. Allez dans votre journal pour en effectuer
+						</div>
+					{% endif %}
 					<tbody class="subventions-deblocage-lignes">
 					{% for deblocage in subvention.get_deblocages_list %}
 						<tr class="ligne-compta">
