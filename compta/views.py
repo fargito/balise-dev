@@ -80,6 +80,7 @@ def mandat_set(request, id_mandat):
 	request.session['id_mandat'] = id_mandat
 	# setting the return button to go where we come from
 	request.session['previous'] = request.GET.get('previous', '../')
+	request.session['passation_redirect'] = request.GET.get('passation_redirect', None)
 	# on utilise .get and set default to '.'
 	return redirect(request.GET.get('next', '.'))
 

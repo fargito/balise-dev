@@ -1,5 +1,97 @@
 {% extends 'base.html' %}
 
-{% block content %}
+{% load static %}
 
+{% block content %}
+	<div class='binet-title-and-return-container'>
+		<div class="binets-return-button">
+			<form action='/passations/promotion/{{ mandat.promotion }}'>
+				<input type="submit" value="Retour" />
+			</form>
+		</div>
+		<h3>Bilan du mandat {{ mandat.promotion }} du binet {{ mandat.binet }}</h3>
+		<div class='binets-side-button'>
+			<a href='{{ mandat.get_mandat_journal }}?previous={{ request.get_full_path }}&passation_redirect={{ mandat.get_bilan_url }}'>
+				<img src="{% static 'img/bullet_list.png' %}" alt="List icon large" class='view-icon-large' title="Voir la compta du mandat" />
+			</a>
+		</div>
+	</div>
+	<div class="binet-description-full">
+		{{ mandat.binet.description }}
+	</div>
+	<div class="binet-description-full">
+		Remarques sur le binet : {{ mandat.binet.remarques_admins|default_if_none:"Aucune remarque" }}
+	</div>
+	<div class='passations-two-tables-container'>
+		<table class='bilan-table'>
+			<thead>
+				<tr>
+					<th colspan='2'>
+						<div class='txtcentre'>
+							Infos générales
+						</div>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class='bilan-column-right'>Président</td>
+					<td class='bilan-column-left'>{{ mandat.president }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-column-right'>Trésorier</td>
+					<td class='bilan-column-left'>{{ mandat.tresorier }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-column-right'>Créé le</td>
+					<td class='bilan-column-left'>{{ mandat.create_date }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-column-right'>Par</td>
+					<td class='bilan-column-left'>{{ mandat.creator }}</td>
+				</tr>
+				<tr class="mandat-{{ mandat.get_status }}">
+					<td class='bilan-column-right'>Etat actuel</td>
+					<td class='bilan-column-left'>{{ mandat.get_status_verbose }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-column-right'>Compta vérifiée le</td>
+					<td class='bilan-column-left'>{{ mandat.passed_date|default_if_none:"-" }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-column-right'>Par</td>
+					<td class='bilan-column-left'>{{ mandat.passator|default_if_none:"-" }}</td>
+				</tr>
+			</tbody>
+		</table>
+		<table class='bilan-table'>
+			<thead>
+				<tr>
+					<th colspan='2'>
+						<div class='txtcentre'>
+							Bilan financier
+						</div>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class='bilan-column-left'>Dépenses</td>
+					<td class='bilan-column-right'>{{ debit_total }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-column-left'>Recettes sans subventions</td>
+					<td class='bilan-column-right'>{{ credit_subtotal }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-column-left'>Recettes totales</td>
+					<td class='bilan-column-right'>{{ credit_total }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-column-left'><strong>Balance</strong></td>
+					<td class='bilan-column-right'><strong>{{ balance }}</strong></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 {% endblock %}

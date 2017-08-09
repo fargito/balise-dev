@@ -54,3 +54,30 @@ th.passation-montant {
 	padding-left: 0.5em;
 	padding-right: 0.5em;
 }
+
+.passations-two-tables-container {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-around;
+}
+
+.bilan-table {
+	width: 40em;
+	border: 1px solid black;
+}
+
+.bilan-column-right {
+	padding-left: 1em;
+	padding-right: 1em;
+	padding-top: 1em;
+	width: 15em;
+	text-align: right;
+}
+
+.bilan-column-left {
+	padding-left: 1em;
+	padding-right: 1em;
+	padding-top: 1em;
+	width: 15em;
+	text-align: left;
+}

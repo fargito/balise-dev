@@ -3,14 +3,24 @@
 {% load static %}
 
 {% block content %}
+	{% block compta_nav %}
 	<section id="compta-title-and-return">
-		<div class="return-button">
+		<div class="compta-return-button">
 			<form action={{ request.session.previous }}>
 				<input type="submit" value="Retour" />
 			</form>
 		</div>
 		<div id="compta-title-cropped">
 			<div id="page-title">Journal : Binet {{ mandat.binet }} {{ mandat.promotion }}</div>
+		</div>
+		<div class="compta-return-button">
+			<div class='txtdroite'>
+				{% if request.session.passation_redirect %}
+				<form action={{ request.session.passation_redirect }}>
+					<input type="submit" value="Finaliser la passation" />
+				</form>
+				{% endif %}
+			</div>
 		</div>
 	</section>
 	<section id="compta-container">
@@ -90,6 +100,7 @@
 			</div>
 
 		</div>
+		{% endblock %}
 		{% block compta_page %}
 		<div id="compta-table-container">
 			<table id="compta-table">

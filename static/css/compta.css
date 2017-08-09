@@ -3,9 +3,12 @@
 }
 
 #compta-title-cropped {
-	margin-right: 5em;
 	min-width: 30em;
 	width: 100%
+}
+
+.compta-return-button {
+	width: 12em;
 }
 
 #compta-nav {

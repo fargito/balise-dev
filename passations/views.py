@@ -3,6 +3,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 from accounts.models import Promotion
 from binets.models import Binet, Mandat
+from subventions.models import Subvention
 from django.db.models import Q
 
 from subventions.helpers import generate_ordering_arguments, generate_ordering_links
@@ -94,6 +95,7 @@ def recapitulatif_promo(request, promotion):
 	return render(request, 'passations/recapitulatif_promo.html', locals())
 
 
+@staff_member_required
 def mandat_bilan(request, id_mandat):
 	"""view with all the infos on the mandat"""
 	next = request.GET.get('next', '../')
@@ -103,5 +105,12 @@ def mandat_bilan(request, id_mandat):
 	except KeyError:
 		return redirect(next)
 
-	return render(request, 'passations/mandat_bilan.html', locals())
+	subventions_binet = Subvention.objects.filter(mandat=mandat)
 
+	# on récupère les totaux pour le mandat
+	debit_subtotal, credit_subtotal = mandat.get_subtotals()
+	debit_total, credit_total = mandat.get_totals()
+	balance = credit_total-debit_total
+	is_positive = (balance >= 0)
+
+	return render(request, 'passations/mandat_bilan.html', locals())

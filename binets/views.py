@@ -193,8 +193,11 @@ def mandat_activate_deactivate(request, id_mandat):
 
 	if mandat.is_active:
 		mandat.passed_date = datetime.datetime.now()
+		mandat.being_checked = True
+		mandat.passator = request.user
 	else:
 		mandat.passed_date = None
+		mandat.passator = None
 
 	mandat.is_active = not mandat.is_active
 	mandat.save()

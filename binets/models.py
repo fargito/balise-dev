@@ -38,7 +38,8 @@ class Mandat(models.Model):
 								verbose_name="Date de création")
 	passed_date = models.DateTimeField(default=None, null=True, blank=True, auto_now_add=False, auto_now=False,
 								verbose_name="Date de passation")
-	creator = models.ForeignKey(User)
+	creator = models.ForeignKey(User, related_name='creator')
+	passator = models.ForeignKey(User, default=None, null=True, blank=True, related_name='passator')
 
 
 	class Meta:
@@ -57,6 +58,11 @@ class Mandat(models.Model):
 	def edit_self_url(self):
 		"""link to the edit page"""
 		return ('edit_mandat', [self.binet.id, self.id])
+
+	@models.permalink
+	def get_bilan_url(self):
+		"""prints the bilan of this mandat in the passation app"""
+		return ('mandat_bilan', [self.id])
 
 	@models.permalink
 	def view_unview_self_url(self):
@@ -136,10 +142,10 @@ class Mandat(models.Model):
 				status = 'Compta non vérifiée'
 		else:
 			status = 'Compta vérifiée'
-		if is_displayed:
-			status += ', successeurs actifs'
-		else:
+		if self.is_displayed:
 			status += ', successeurs non actifs'
+		else:
+			status += ', successeurs actifs'
 		return status
 
 	def get_status(self):

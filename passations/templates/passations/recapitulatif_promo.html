@@ -43,12 +43,12 @@
 				{% for mandat in liste_mandats %}
 					<tr class="mandat-{{ mandat.get_status }}">
 						<td class='mandat-txtcentre-1em'>
-							<a href={{ mandat.get_mandat_journal }}?previous={{ request.get_full_path }}>
-								<img src="{% static 'img/bullet_list.png' %}" alt="List icon large" class='view-icon-large' title="Voir la compta">
+							<a href={{ mandat.get_mandat_journal }}?previous={{ request.get_full_path }}&passation_redirect={{ mandat.get_bilan_url }}>
+								<img src="{% static 'img/bullet_list.png' %}" alt="List icon large" class='view-icon-large' title="Voir la compta du mandat">
 							</a>
 						</td>
 						<td class="nom-binet">
-							<strong><a href={{ mandat.binet.get_history_url }}?next={{ request.get_full_path }} title='Voir la page du binet'>{{ mandat.binet.nom }}</a> </strong>
+							<strong><a href={{ mandat.get_bilan_url }} title='Voir le bilan du mandat'>{{ mandat.binet.nom }}</a> </strong>
 						</td>
 						<td class="binet-user">
 							<a href={{ mandat.president.eleve.get_infos_url }}>{{ mandat.president }}</a>
