@@ -67,6 +67,8 @@ def all_binets(request):
 @login_required
 def binet_history(request, id_binet):
 	"""generates the view for the binet history"""
+	next = request.GET.get('next', '/binets')
+
 	binet = Binet.objects.get(
 		id=id_binet)
 	liste_mandats = Mandat.objects.filter(
@@ -171,12 +173,12 @@ def mandat_view_unview(request, id_mandat):
 	except KeyError:
 		return redirect('../')
 
-	previous = request.GET.get('previous', mandat.binet.get_history_url())
+	next = request.GET.get('next', mandat.binet.get_history_url())
 
 	mandat.is_displayed = not mandat.is_displayed
 	mandat.save()
 
-	return redirect(previous)
+	return redirect(next)
 
 
 @staff_member_required
@@ -187,12 +189,30 @@ def mandat_activate_deactivate(request, id_mandat):
 	except KeyError:
 		return redirect('../')
 
-	previous = request.GET.get('previous', mandat.binet.get_history_url())
+	next = request.GET.get('next', mandat.binet.get_history_url())
 
 	if mandat.is_active:
 		mandat.passed_date = datetime.datetime.now()
+	else:
+		mandat.passed_date = None
 
 	mandat.is_active = not mandat.is_active
 	mandat.save()
 
-	return redirect(previous)
+	return redirect(next)
+
+
+@staff_member_required
+def mandat_touch_untouch(request, id_mandat):
+	try:
+		mandat = Mandat.objects.get(
+			id = id_mandat)
+	except KeyError:
+		return redirect('../')
+
+	next = request.GET.get('next', mandat.binet.get_history_url())
+
+	mandat.being_checked = not mandat.being_checked
+	mandat.save()
+
+	return redirect(next)

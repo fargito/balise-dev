@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^binets/', include('binets.urls')),
     url(r'^backend/', include('backend.urls')),
     url(r'^subventions/', include('subventions.urls')),
+    url(r'^passations/', include('passations.urls')),
     url(r'^vos/', include('vos.urls')),
     url(r'^$', views.home),
     url(r'error^$', views.error),

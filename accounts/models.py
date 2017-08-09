@@ -16,6 +16,11 @@ class Promotion(models.Model):
 	def __str__(self):
 		return self.nom
 
+	@models.permalink
+	def get_passations_url(self):
+		"""returns the link to the passation details of this promotion"""
+		return ('passation', [self.nom])
+
 
 class Eleve(models.Model):
 	"""table des eleves. On la fait hériter de la table des users"""

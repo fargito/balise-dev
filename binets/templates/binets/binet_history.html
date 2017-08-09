@@ -5,7 +5,7 @@
 {% block content %}
 	<div class='binet-title-and-return-container'>
 		<div class="binets-return-button">
-			<form action="../">
+			<form action={{ next }}>
 				<input type="submit" value="Retour" />
 			</form>
 		</div>
@@ -13,13 +13,18 @@
 		<div class='binets-side-button'>
 			{% if request.user.is_staff %}
 				<a href={{ binet.edit_self_url }}><img src="{% static 'img/edit.png' %}" alt="Edit icon large" class='edit-icon-large' title="Modifier le binet"></a>
-				<a href={{ binet.new_mandat_for_self_url }}><img src="{% static 'img/add.png' %}" alt="Add icon large" class='add-icon-large' title="Nouveau mandat"></a>
+				<a href={{ binet.new_mandat_for_self_url }}><img src="{% static 'img/add.png' %}" alt="Add icon large" class='add-icon-large' title="Nouveau mandat pour ce binet"></a>
 			{% endif %}
 		</div>
 	</div>
 	<div class="binet-description-full">
 		{{ binet.description }}
 	</div>
+	{% if request.user.is_staff %}
+		<div class="binet-description-full">
+			Remarques pour les kessiers : {{ binet.remarques_admins|default_if_none:"Aucune remarque" }}
+		</div>
+	{% endif %}
 	<table id="liste-binets">
 		<thead>
 			<tr class="">

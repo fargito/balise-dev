@@ -1,0 +1,56 @@
+#passations-container {
+	margin: auto;
+	margin-top: 3em;
+}
+
+#passations-table {
+	margin: auto;
+}
+
+tr.passation-ligne:nth-child(even) {background: #FFF;}
+tr.passation-ligne:nth-child(odd) {background: #DDD;}
+
+
+tr.mandat-en-cours-successeurs-non-actifs {
+	background: #FFFF00;
+}
+
+tr.mandat-en-cours-successeurs-actifs {
+	background: #FFFF00;
+}
+
+tr.mandat-compta-verifiee-successeurs-non-actifs {
+	background: #DDD;
+}
+
+tr.mandat-compta-verifiee-successeurs-actifs {
+	background: #3ae73a;
+}
+
+.passations-promotion {
+	text-align: center;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+td.passations-promotion {
+	padding-top: 1em;
+	padding-bottom: 1em;
+}
+
+td.passation-montant {
+	text-align: right;
+	padding: 1em;
+}
+
+th.passation-montant {
+	text-align: right;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+.mandat-txtcentre-1em {
+	text-align: center;
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+}

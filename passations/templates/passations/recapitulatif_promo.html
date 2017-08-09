@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+	<div class='binet-title-and-return-container'>
+		<div class="binets-return-button">
+			<form action="../">
+				<input type="submit" value="Retour" />
+			</form>
+		</div>
+		<h3>Liste des mandats de la promotion {{ promotion }}</h3>
+		<div class='binets-side-button'>
+		</div>
+	</div>
+	<div class='binets-search-container'>
+		<div class='binets-search-subcontainer'>
+			<form id="searchform" action="" method="get" accept-charset="utf-8">
+			    <input class="searchfield" id="searchbox" name="q" type="text" placeholder="Rechercher" value='{{ search_arguments|default_if_none:'' }}'>
+			    <input type='submit' value='Valider'>
+		    </form>
+		</div>
+	</div>
+	
+	<section id="table-container">
+		<table id="liste-binets">
+			<thead class="liste-binets">
+				<tr>
+					<th></th>
+					<th class="nom-binet"><div class='title-order-container'><div>Binet</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par binet"/></a></div></th>
+					<th class="binet-user">Président</th>
+					<th class="binet-user">Trésorier</th>
+					<th class="binet-user"><div class='title-order-container'><div>Type</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par type de binet"/></a></div></th>
+					<th class='mandat-txtcentre-1em'>Dépenses</th>
+					<th class='mandat-txtcentre-1em'>Recettes</th>
+					<th class='mandat-txtcentre-1em'>Balance</th>
+					<th class='mandat-txtcentre-1em'><div class='title-order-container'><div>Visible</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par visible"/></a></div></th>
+					<th class='mandat-txtcentre-1em'><div class='title-order-container'><div>Actif</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par actif"/></a></div></th>
+					<th class='mandat-txtcentre-1em'><div class='title-order-container'><div>Vérification</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par vérification commencée"/></a></div></th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for mandat in liste_mandats %}
+					<tr class="mandat-{{ mandat.get_status }}">
+						<td class='mandat-txtcentre-1em'>
+							<a href={{ mandat.get_mandat_journal }}?previous={{ request.get_full_path }}>
+								<img src="{% static 'img/bullet_list.png' %}" alt="List icon large" class='view-icon-large' title="Voir la compta">
+							</a>
+						</td>
+						<td class="nom-binet">
+							<strong><a href={{ mandat.binet.get_history_url }}?next={{ request.get_full_path }} title='Voir la page du binet'>{{ mandat.binet.nom }}</a> </strong>
+						</td>
+						<td class="binet-user">
+							<a href={{ mandat.president.eleve.get_infos_url }}>{{ mandat.president }}</a>
+						</td>
+						<td class="binet-user">
+							<a href={{ mandat.tresorier.eleve.get_infos_url }}>{{ mandat.tresorier }}</a>
+						</td>
+						<td class='binet-user'>{{ mandat.type_binet }}</td>
+						<td class='mandat-txtcentre-1em'>{{ mandat.get_totals.0 }}</td>
+						<td class='mandat-txtcentre-1em'>{{ mandat.get_totals.1 }}</td>
+						<td class='mandat-txtcentre-1em'>{{ mandat.get_balance }}</td>
+						<td class='mandat-txtcentre-1em'>
+							<a href={{ mandat.view_unview_self_url }}?next={{ request.get_full_path }}>
+								{% if mandat.is_displayed %}
+									<img src="{% static 'img/view.png' %}" alt="View icon large" class='view-icon-large' title="Le mandat est affiché dans la liste visible par tout le monde">
+								{% else %}
+									<img src="{% static 'img/stop_view.png' %}" alt="Stop view icon large" class='view-icon-large' title="Le mandat n'est visible que via la page du binet">
+								{% endif %}
+							</a>
+						</td>
+						<td class='mandat-txtcentre-1em'>
+							<a href={{ mandat.activate_deactivate_self_url }}?next={{ request.get_full_path }}>
+								{% if mandat.is_active %}
+									<img src="{% static 'img/unlock.png' %}" alt="Unlock icon large" class='view-icon-large' title="Le mandat est modifiable par ses membres">
+								{% else %}
+									<img src="{% static 'img/lock.png' %}" alt="Lock view icon large" class='view-icon-large' title="Le mandat est passé, seuls les kessiers peuvent le modifier">
+								{% endif %}
+							</a>
+						</td>
+						<td class='mandat-txtcentre-1em'>
+							{% if mandat.is_active %}
+							<a href={{ mandat.touch_untouch_self_url }}?next={{ request.get_full_path }}>
+								{% if mandat.being_checked %}
+									<img src="{% static 'img/processing.png' %}" alt="Processing icon large" class='view-icon-large' title="La vérification de compta a commencé">
+								{% else %}
+									<img src="{% static 'img/blank.ico' %}" alt="Blank icon large" class='view-icon-large' title="La vérification de compta n'a pas commencée">
+								{% endif %}
+							</a>
+							{% endif %}
+						</td>
+					</tr>
+
+				{% endfor %}
+			</tbody>
+		</table>
+	</section>
+{% endblock %}
