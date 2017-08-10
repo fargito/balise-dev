@@ -61,7 +61,6 @@ class MandatCreateForm(forms.ModelForm):
 
 class MandatEditForm(forms.ModelForm):
 	"""permet de modifier le mandat"""
-
 	president = forms.ModelChoiceField(queryset=User.objects.order_by('username'))
 	tresorier = forms.ModelChoiceField(queryset=User.objects.order_by('username'))
 

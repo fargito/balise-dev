@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
 	
 	<form method='post' action=''>
@@ -10,7 +12,58 @@
 		</div>
 		<table>
 			{{ binet_create_form.as_table }}
-			{{ mandat_create_form.as_table }}
+			{# on met en forme manuellement le formulaire de création du mandat pour pouvoir mettre les liens vers la création des utilisateurs #}
+			<tr>
+				<td colspan='3'>
+					{{ mandat_create_form.non_field_errors }}
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Type du binet :
+				</th>
+				<td>
+					{{ mandat_create_form.type_binet.errors }}
+					{{ mandat_create_form.type_binet }}
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Président :
+				</th>
+				<td>
+					{{ mandat_create_form.president.errors }}
+					{{ mandat_create_form.president }}
+				</td>
+				<td>
+					<a href='/accounts/create_local_account?previous={{ request.get_full_path }}'>
+						<img src="{% static 'img/add.ico' %}" alt="Add Icon" title="Nouvel utilisateur"/>
+					</a>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Trésorier :
+				</th>
+				<td>
+					{{ mandat_create_form.tresorier.errors }}
+					{{ mandat_create_form.tresorier }}
+				</td>
+				<td>
+					<a href='/accounts/create_local_account?previous={{ request.get_full_path }}'>
+						<img src="{% static 'img/add.ico' %}" alt="Add Icon" title="Nouvel utilisateur"/>
+					</a>
+				</td>
+			</tr>
+			<tr>
+				<th>
+					Promotion :
+				</th>
+				<td>
+					{{ mandat_create_form.promotion.errors }}
+					{{ mandat_create_form.promotion }}
+				</td>
+			</tr>
 		</table>
 		{% csrf_token %}
 	</form>

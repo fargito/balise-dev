@@ -105,7 +105,7 @@ def mandat_bilan(request, id_mandat):
 	except KeyError:
 		return redirect(next)
 
-	subventions_binet = Subvention.objects.filter(mandat=mandat)
+	subventions_mandat = Subvention.objects.filter(mandat=mandat)
 
 	# on récupère les totaux pour le mandat
 	debit_subtotal, credit_subtotal = mandat.get_subtotals()

@@ -26,6 +26,47 @@
 		<table class='bilan-table'>
 			<thead>
 				<tr>
+					<th colspan='4'>
+						<div class='txtcentre'>
+							Bilan financier
+						</div>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class='bilan-large-column-left'>Dépenses</td>
+					<td colspan='2'></td>
+					<td class='bilan-small-column-right'>{{ debit_total }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-large-column-left'>Recettes sans subventions</td>
+					<td colspan='2'></td>
+					<td class='bilan-small-column-right'>{{ credit_subtotal }}</td>
+				</tr>
+				{% for subvention in subventions_mandat %}
+					<tr>
+						<td class='bilan-large-column-left'><div class='italic'>{{ subvention.vague.type_subvention }} {{ subvention.vague.annee }}</div></td>
+						<td class='bilan-small-column-right'><div class='italic'>{{ subvention.get_deblocages_total }}</div></td>
+						<td class='bilan-small-column-right'><div class='italic'>sur</div></td>
+						<td class='bilan-small-column-right'><div class='italic'>{{ subvention.accorde }}</div></td>
+					</tr>
+				{% endfor %}
+				<tr>
+					<td class='bilan-large-column-left'>Recettes totales</td>
+					<td colspan='2'></td>
+					<td class='bilan-small-column-right'>{{ credit_total }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-large-column-left'><strong>Balance</strong></td>
+					<td colspan='2'></td>
+					<td class='bilan-small-column-right'><strong>{{ balance }}</strong></td>
+				</tr>
+			</tbody>
+		</table>
+		<table class='bilan-table'>
+			<thead>
+				<tr>
 					<th colspan='2'>
 						<div class='txtcentre'>
 							Infos générales
@@ -61,35 +102,6 @@
 				<tr>
 					<td class='bilan-column-right'>Par</td>
 					<td class='bilan-column-left'>{{ mandat.passator|default_if_none:"-" }}</td>
-				</tr>
-			</tbody>
-		</table>
-		<table class='bilan-table'>
-			<thead>
-				<tr>
-					<th colspan='2'>
-						<div class='txtcentre'>
-							Bilan financier
-						</div>
-					</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td class='bilan-column-left'>Dépenses</td>
-					<td class='bilan-column-right'>{{ debit_total }}</td>
-				</tr>
-				<tr>
-					<td class='bilan-column-left'>Recettes sans subventions</td>
-					<td class='bilan-column-right'>{{ credit_subtotal }}</td>
-				</tr>
-				<tr>
-					<td class='bilan-column-left'>Recettes totales</td>
-					<td class='bilan-column-right'>{{ credit_total }}</td>
-				</tr>
-				<tr>
-					<td class='bilan-column-left'><strong>Balance</strong></td>
-					<td class='bilan-column-right'><strong>{{ balance }}</strong></td>
 				</tr>
 			</tbody>
 		</table>

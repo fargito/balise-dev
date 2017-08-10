@@ -62,7 +62,7 @@ th.passation-montant {
 }
 
 .bilan-table {
-	width: 40em;
+	width: 35em;
 	border: 1px solid black;
 }
 
@@ -80,4 +80,24 @@ th.passation-montant {
 	padding-top: 1em;
 	width: 15em;
 	text-align: left;
+}
+
+.bilan-small-column-right {
+	padding-left: 1em;
+	padding-right: 1em;
+	padding-top: 1em;
+	width: 20%;
+	text-align: right;
+}
+
+.bilan-large-column-left {
+	padding-left: 1em;
+	padding-right: 1em;
+	padding-top: 1em;
+	width: 40%;
+	text-align: left;
+}
+
+.italic {
+	font-style: italic;
 }

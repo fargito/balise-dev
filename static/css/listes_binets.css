@@ -79,7 +79,7 @@ tr.mandat:nth-child(odd) {background: #DDD}
 }
 
 .binets-side-button {
-	width: 13em;
+	width: 7em;
 	display: flex;
 	justify-content: flex-end;
 }

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from .models import Binet, Mandat
+from .models import Binet, Mandat, TypeBinet
 from .forms import BinetEditForm, MandatEditForm, BinetCreateForm, MandatCreateForm
 from django.db.models import Q
 
@@ -146,7 +146,7 @@ def new_mandat(request, id_binet):
 @staff_member_required
 def new_binet(request):
 	binet_create_form = BinetCreateForm(request.POST or None)
-	mandat_create_form = MandatCreateForm(request.POST or None)
+	mandat_create_form = MandatCreateForm(request.POST or None, initial={'type_binet': TypeBinet.objects.get(nom='Sans chéquier')})
 
 	if binet_create_form.is_valid() and mandat_create_form.is_valid():
 		if request.POST['validation'] == 'Valider':
