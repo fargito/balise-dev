@@ -20,7 +20,7 @@ class EleveVos(models.Model):
 		
 	
 
-class VOS(Mandat):
+class VOS(models.Model):
 	"""ici un VOS. L'attribut promotion correspond à la promotion organisatrice"""
 	section = models.ForeignKey('vos.Section')
 	#def __init__(self):

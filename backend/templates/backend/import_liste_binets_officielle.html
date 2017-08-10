@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+	<h1>Importer la liste des binets officielle</h1>
+	<p>[NO] Attention, pour être accepté, votre fichier doit être au format .xls avec comme colonnes "Binet|Type|Promotion|Description|Président|Trésorier" (écrites en haut des colonnes)</p>
+	<img src="" />
+	<form enctype="multipart/form-data" method="post" action=".">
+	    {% csrf_token %}
+	    {{ import_form.as_p }}
+		<input type="submit" name="validation" value="Upload" />
+	</form>
+
+{% endblock %}

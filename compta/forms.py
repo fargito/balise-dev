@@ -2,6 +2,8 @@ from django import forms
 from django.db.models import Q
 from .models import LigneCompta, PosteDepense
 from subventions.models import DeblocageSubvention
+from accounts.models import Promotion
+from binets.models import Binet, Mandat
 from django.forms import BaseFormSet, BaseInlineFormSet
 
 
@@ -187,3 +189,16 @@ class PosteDepenseForm(forms.ModelForm):
 		if nom in list(PosteDepense.objects.filter(Q(mandat=None) | Q(mandat=self.mandat)).values_list('nom', flat=True)):
 			msg = 'Ce nom existe déjà ou est réservé'
 			self.add_error('nom', msg)
+
+
+
+
+class SearchLigneForm(forms.Form):
+	date_debut = forms.DateField(required=False, label='Après')
+	date_fin = forms.DateField(required=False, label='Avant')
+	binet = forms.CharField(required=False)
+	promotion = forms.ModelChoiceField(queryset=Promotion.objects.all(), required=False)
+	poste = forms.ModelChoiceField(queryset=PosteDepense.objects.filter(mandat=None), required=False)
+	montant_haut = forms.FloatField(required=False, label='Montant haut')
+	montant_bas = forms.FloatField(required=False, label='Montant bas')
+	include_locked = forms.BooleanField(initial=False, required=False, label='Inclure les opérations verrouillées')

@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+	<div class='binet-title-and-return-container'>
+		<div class="binets-return-button">
+			<form action='/passations/promotion/{{ mandat.promotion }}'>
+				<input type="submit" value="Retour" />
+			</form>
+		</div>
+		<h3>Bilan du mandat {{ mandat.promotion }} du binet <a href={{ mandat.binet.get_history_url }} title="Voir la page du binet">{{ mandat.binet }}</a></h3>
+		<div class='binets-side-button'>
+			<div class='passation-icon'>
+				{% if mandat.is_active %}
+					<a href={{ mandat.touch_untouch_self_url }}?next={{ request.get_full_path }}>
+						{% if mandat.being_checked %}
+							<img src="{% static 'img/processing.png' %}" alt="Processing icon large" class='view-icon-large' title="La vérification de compta est en cours">
+						{% else %}
+							<img src="{% static 'img/blank.ico' %}" alt="Blank icon large" class='view-icon-large' title="La vérification de compta n'est pas commencée">
+						{% endif %}
+					</a>
+				{% endif %}
+			</div>
+			<div class='passation-icon'>
+				<a href={{ mandat.activate_deactivate_self_url }}?next={{ request.get_full_path }}>
+					{% if mandat.is_active %}
+						<img src="{% static 'img/unlock.png' %}" alt="Unlock icon large" class='view-icon-large' title="Le mandat est modifiable par ses membres">
+					{% else %}
+						<img src="{% static 'img/lock.png' %}" alt="Lock view icon large" class='view-icon-large' title="Le mandat est passé, seuls les kessiers peuvent le modifier">
+					{% endif %}
+				</a>
+			</div>
+			<div class='passation-icon'>
+				<a href='{{ mandat.get_mandat_journal }}?previous={{ request.get_full_path }}&passation_redirect={{ mandat.get_bilan_url }}'>
+					<img src="{% static 'img/bullet_list.png' %}" alt="List icon large" class='view-icon-large' title="Voir la compta du mandat" />
+				</a>
+			</div>
+		</div>
+	</div>
+	<div class="binet-description-full">
+		{{ mandat.binet.description }}
+	</div>
+	<div class="binet-description-full">
+		Remarques sur le binet : {{ mandat.binet.remarques_admins|default_if_none:"Aucune remarque" }}
+	</div>
+	<div class='passations-two-tables-container'>
+		<table class='bilan-table'>
+			<thead>
+				<tr>
+					<th colspan='4'>
+						<div class='txtcentre'>
+							Bilan financier
+						</div>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class='bilan-large-column-left'>Dépenses</td>
+					<td colspan='2'></td>
+					<td class='bilan-small-column-right'>{{ debit_total }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-large-column-left'>Recettes sans subventions</td>
+					<td colspan='2'></td>
+					<td class='bilan-small-column-right'>{{ credit_subtotal }}</td>
+				</tr>
+				{% for subvention in subventions_mandat %}
+					<tr>
+						<td class='bilan-large-column-left'><div class='italic'>{{ subvention.vague.type_subvention }} {{ subvention.vague.annee }}</div></td>
+						<td class='bilan-small-column-right'><div class='italic'>{{ subvention.get_deblocages_total }}</div></td>
+						<td class='bilan-small-column-right'><div class='italic'>sur</div></td>
+						<td class='bilan-small-column-right'><div class='italic'>{{ subvention.accorde }}</div></td>
+					</tr>
+				{% endfor %}
+				<tr>
+					<td class='bilan-large-column-left'>Recettes totales</td>
+					<td colspan='2'></td>
+					<td class='bilan-small-column-right'>{{ credit_total }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-large-column-left'><strong>Balance</strong></td>
+					<td colspan='2'></td>
+					<td class='bilan-small-column-right'><strong>{{ balance }}</strong></td>
+				</tr>
+			</tbody>
+		</table>
+		<table class='bilan-table'>
+			<thead>
+				<tr>
+					<th colspan='2'>
+						<div class='txtcentre'>
+							Infos générales
+						</div>
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class='bilan-column-right'>Président</td>
+					<td class='bilan-column-left'>{{ mandat.president }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-column-right'>Trésorier</td>
+					<td class='bilan-column-left'>{{ mandat.tresorier }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-column-right'>Type de binet</td>
+					<td class='bilan-column-left'>{{ mandat.type_binet }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-column-right'>Créé le</td>
+					<td class='bilan-column-left'>{{ mandat.create_date }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-column-right'>Par</td>
+					<td class='bilan-column-left'>{{ mandat.creator }}</td>
+				</tr>
+				<tr class="mandat-{{ mandat.get_status }}">
+					<td class='bilan-column-right'>Etat actuel</td>
+					<td class='bilan-column-left'>{{ mandat.get_status_verbose }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-column-right'>Compta vérifiée le</td>
+					<td class='bilan-column-left'>{{ mandat.passed_date|default_if_none:"-" }}</td>
+				</tr>
+				<tr>
+					<td class='bilan-column-right'>Par</td>
+					<td class='bilan-column-left'>{{ mandat.passator|default_if_none:"-" }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<form method='post' action=''>
+		<div id="passation-remarques-container">
+			<div id='passation-remarques-fields-container'>
+				<table>{{ passation_mandat_form.as_table }}</table>
+			</div>
+			{% csrf_token %}
+			<input class='passation-height2em' type="submit" name="validation" value="Valider les remarques" />
+		</div>
+	</form>
+{% endblock %}

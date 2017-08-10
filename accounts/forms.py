@@ -1,5 +1,6 @@
 from django import forms
 from .models import Eleve
+from django.contrib.auth.models import User
 
 # les deux formulaires qui suivent sont appelés à la suite
 # et servent aux nouveaux utilisateurs à s'enregistrer
@@ -29,3 +30,14 @@ class CreateUserForm(forms.Form):
 		password2 = self.cleaned_data['password2']
 		if password1 != password2:
 			raise forms.ValidationError("Les mots de passe ne correspondent pas")
+
+
+class CreateUserWithoutPwdForm(forms.Form):
+	"""is used to create a local user without local password (only through Frankiz)"""
+	username = forms.CharField(label="Identifiant prenom.nom")
+
+	def clean(self):
+		cleaned_data = super(CreateUserWithoutPwdForm, self).clean()
+		if len(User.objects.filter(username=cleaned_data["username"])) == 1:
+			msg = "Cet identifiant est déjà utilisé"
+			self.add_error("username", msg)

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+	
+	<form method='post' action=''>
+		<div class="binet-title-and-return-container">
+			<input type="submit" name="validation" value="Annuler" />
+			<h3 id="page-title">Modifier le binet {{ binet.nom }}</h3>
+			<input type="submit" name="validation" value="Valider" />
+		</div>
+		<table>{{ binet_edit_form.as_table }}</table>
+		{% csrf_token %}
+	</form>
+{% endblock %}

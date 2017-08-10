@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_cas_ng',
     'compta',
     'accounts',
     'binets',
@@ -134,6 +135,14 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# authentification Frankiz
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'django_cas_ng.backends.CASBackend',
+)
+CAS_SERVER_URL = "https://cas.binets.fr/"
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -170,8 +179,11 @@ ADMINS = [("Webmaster", DEFAULT_FROM_EMAIL)]
 
 
 
+if DEBUG:
+    LOGIN_URL = '/accounts/login'
+else:
+    LOGIN_URL = '/login'
 
-LOGIN_URL = '/accounts/login'
 
 LOGIN_REDIRECT_URL = '/'
 

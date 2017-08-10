@@ -17,6 +17,7 @@ urlpatterns = [
     url(r'^view_remarques/$', views.view_remarques),
     url(r'^binet_subventions/$', views.binet_subventions, name='binet_subventions'),
     url(r'^binet_compta_history/$', views.binet_compta_history),
-    url(r'^import_lignes/$', views.import_lignes)
+    url(r'^import_lignes/$', views.import_lignes),
+    url(r'^seance_cheques$', views.seance_cheques, name='seance_cheques'),
 
 ]

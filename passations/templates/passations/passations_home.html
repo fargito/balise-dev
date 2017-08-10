@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h3 class="txtcentre">
+		Récapitulatif des passations
+	</h3>
+	<section id="compta-container">
+		<div id="passations-container">
+			<table id="passations-table">
+				<thead>
+					<tr>
+						<th class="passations-promotion">Promotion</th>
+						<th class='passation-montant'>Nombre de binets</th>
+						<th class='passation-montant'>Passés</th>
+						<th class='passation-montant'>Actifs</th>
+						<th class='passation-montant'>Dépenses</th>
+						<th class='passation-montant'>Recettes</th>
+						<th class='passation-montant'>Balance</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for promotion_data in promotions_data %}
+						<tr class='passation-ligne'>
+							<td class="passations-promotion"><a href="{{ promotion_data.promotion.get_passations_url }}">{{ promotion_data.promotion }}</a></td>
+							<td class='passation-montant'>{{ promotion_data.nb_mandats }}</td>
+							<td class='passation-montant'>{{ promotion_data.nb_passed }}</td>
+							<td class='passation-montant'>{{ promotion_data.nb_rest }}</td>
+							<td class='passation-montant'>{{ promotion_data.depenses_promo }}</td>
+							<td class='passation-montant'>{{ promotion_data.recettes_promo }}</td>
+							<td class='passation-montant'>{{ promotion_data.balance_promo }}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</section>
+{% endblock %}

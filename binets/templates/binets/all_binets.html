@@ -3,7 +3,25 @@
 {% load static %}
 
 {% block content %}
-	<div id="page-title">Liste des binets</div>
+	<div class='binet-title-and-return-container'>
+		<div class="binets-return-button">
+		</div>
+		<h3>Liste des binets</h3>
+		<div class='binets-side-button'>
+			{% if perms.binets.add_binet %}
+				<a href={% url 'new_binet' %}><img src="{% static 'img/add.png' %}" alt="Add icon large" class='add-icon-large' title="Nouveau binet"></a>
+			{% endif %}
+		</div>
+	</div>
+	<div class='binets-search-container'>
+		<div class='binets-search-subcontainer'>
+			<form id="searchform" action="" method="get" accept-charset="utf-8">
+			    <input class="searchfield" id="searchbox" name="q" type="text" placeholder="Rechercher" value='{{ search_arguments|default_if_none:'' }}'>
+			    <input type='submit' value='Valider'>
+		    </form>
+		</div>
+	</div>
+	
 	<section id="table-container">
 		<table id="liste-binets">
 			<thead class="liste-binets">
@@ -13,24 +31,26 @@
 					<th class="binet-description">Description</th>
 					<th class="binet-user">Président</th>
 					<th class="binet-user">Trésorier</th>
+					{% if request.user.is_staff %}<th class="binet-user"><div class='title-order-container'><div>Type</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par binet"/></a></div></th>{% endif %}
 				</tr>
 			</thead>
 			<tbody>
-				{% for binet in liste_binets %}
+				{% for mandat in liste_mandats %}
 					<tr class="mandat">
 						<td class="nom-binet">
-							<strong><a href={{ binet.get_history_url }}>{{ binet.nom }}</a> </strong>
+							<strong><a href={{ mandat.binet.get_history_url }}>{{ mandat.binet.nom }}</a> </strong>
 						</td>
-						<td class="binet-promotion">{{ binet.get_latest_mandat.promotion }}</td>
+						<td class="binet-promotion">{{ mandat.promotion }}</td>
 						<td class="binet-description">
-							{{ binet.description }}
+							{{ mandat.binet.description }}
 						</td>
 						<td class="binet-user">
-							<a href={{ binet.get_latest_mandat.president.eleve.get_infos_url }}>{{ binet.get_latest_mandat.president }}</a>
+							<a href={{ mandat.president.eleve.get_infos_url }}>{{ mandat.president }}</a>
 						</td>
 						<td class="binet-user">
-							<a href={{ binet.get_latest_mandat.tresorier.eleve.get_infos_url }}>{{ binet.get_latest_mandat.tresorier }}</a>
+							<a href={{ mandat.tresorier.eleve.get_infos_url }}>{{ mandat.tresorier }}</a>
 						</td>
+						{% if request.user.is_staff %}<td class='binet-user'>{{ mandat.type_binet }}</td>{% endif %}
 					</tr>
 
 				{% endfor %}

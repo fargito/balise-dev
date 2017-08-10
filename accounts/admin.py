@@ -11,7 +11,7 @@ class EleveAdmin(admin.ModelAdmin):
 	list_display = ('nom', 'prenom', 'promotion',)
 	list_filter = ('promotion', 'nom', 'prenom',)
 	ordering = ('promotion', 'nom', 'prenom',)
-	search_fields = ('promotion', 'nom', 'prenom',)
+	search_fields = ('nom', 'prenom',)
 
 
 admin.site.register(Promotion, PromotionAdmin)

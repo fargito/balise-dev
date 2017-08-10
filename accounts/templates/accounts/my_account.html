@@ -13,7 +13,8 @@
 	<p>Nom : {{user.eleve.nom}}</p>
 	<p>Prénom : {{user.eleve.prenom}}</p>
 	<p>Promo : {{user.eleve.promotion}}</p>
-	<p><a href="password_change">Changer mon mot de passe</a></p>
+	{% if request.user.is_staff %}<p><a href="password_change">Changer mon mot de passe de compte local</a></p>{% endif %}
+	<p><a href='/logout'>Déconnexion</a></p>
 </div>
 <div class='col-sm-12'>
 	{% if user.is_staff %}

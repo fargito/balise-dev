@@ -26,11 +26,20 @@ class Mandat(models.Model):
 	binet = models.ForeignKey('Binet')
 	type_binet = models.ForeignKey('TypeBinet', verbose_name = "Type du binet")
 	is_active = models.BooleanField(verbose_name = "Actif", default=True)
+	is_last = models.BooleanField(verbose_name = "Visible", default=True) # est affiché dans la liste des binets, accessible à tous
+	being_checked = models.BooleanField(verbose_name = "Vérification compta commencée", default=False)
 	president = models.ForeignKey(User, related_name = "president")
 	tresorier = models.ForeignKey(User, related_name = "tresorier")
 	promotion = models.ForeignKey('accounts.Promotion', verbose_name = "Promo")
 	description = models.TextField(blank=True, null = True) # facultatif
 	remarques_admins = models.TextField(blank=True, null = True) # facultatif
+	
+	create_date = models.DateTimeField(auto_now_add=True, auto_now=False,
+								verbose_name="Date de création")
+	passed_date = models.DateTimeField(default=None, null=True, blank=True, auto_now_add=False, auto_now=False,
+								verbose_name="Date de passation")
+	creator = models.ForeignKey(User, related_name='creator')
+	passator = models.ForeignKey(User, default=None, null=True, blank=True, related_name='passator')
 
 
 	class Meta:
@@ -44,6 +53,30 @@ class Mandat(models.Model):
 	def get_mandat_journal(self):
 		"""returns the link to the mandat journal"""
 		return ('mandat_journal', [self.id])
+
+	@models.permalink
+	def edit_self_url(self):
+		"""link to the edit page"""
+		return ('edit_mandat', [self.binet.id, self.id])
+
+	@models.permalink
+	def get_bilan_url(self):
+		"""prints the bilan of this mandat in the passation app"""
+		return ('mandat_bilan', [self.id])
+
+	@models.permalink
+	def set_last_not_last_self_url(self):
+		"""return the link to the view where it goes from is_last to not is_last"""
+		return ('mandat_last_not_last', [self.id])
+
+	@models.permalink
+	def activate_deactivate_self_url(self):
+		"""returns the link to the view that activates or deactivates this mandat"""
+		return ('mandat_activate_deactivate', [self.id])
+
+	@models.permalink
+	def touch_untouch_self_url(self):
+		return ('mandat_touch_untouch', [self.id])
 
 	def get_subtotals(self):
 		"""returns the total credits and debits attached
@@ -96,12 +129,50 @@ class Mandat(models.Model):
 		"""returns true if all the lines of this mandat have been checked"""
 		return len(LigneCompta.objects.filter(mandat=self, is_locked=False)) == 0
 
+	def has_next(self):
+		"""returns true if a more recent mandat has been created"""
+		return Mandat.objects.filter(binet=self.binet)[0] != self
+
+	def get_status_verbose(self):
+		"""used for the passation module : keyword used to describe the mandat's status"""
+		if self.is_active:
+			if self.being_checked:
+				status = 'Vérification en cours'
+			else:
+				status = 'Compta non vérifiée'
+		else:
+			status = 'Compta vérifiée'
+		if self.is_last:
+			status += ', successeurs non actifs'
+		else:
+			status += ', successeurs actifs'
+		return status
+
+	def get_status(self):
+		"""used for the passation module : keyword used to know the display color of the mandat"""
+		if self.is_active:
+			if self.being_checked:
+				status = 'en-cours'
+			else:
+				status = 'non-touche'
+		else:
+			status = 'compta-verifiee'
+		if self.is_last:
+			status += '-successeurs-non-actifs'
+		else:
+			status += '-successeurs-actifs'
+		return status
 
 class Binet(models.Model):
 	"""table dans la BDD représentant l'ensemble des binets"""
 	nom = models.CharField(max_length=100)
 	description = models.TextField(blank=True, null = True) # facultatif
 	remarques_admins = models.TextField(blank=True, null = True) # facultatif
+
+	create_date = models.DateTimeField(auto_now_add=True, auto_now=False,
+								verbose_name="Date de création")
+	creator = models.ForeignKey(User)
+
 
 	
 	class Meta:
@@ -114,6 +185,14 @@ class Binet(models.Model):
 	@models.permalink
 	def get_history_url(self):
 		return ('binet_history', [self.id])
+
+	@models.permalink
+	def edit_self_url(self):
+		return ('edit_binet', [self.id])
+
+	@models.permalink
+	def new_mandat_for_self_url(self):
+		return ('new_mandat', [self.id])
 
 	def get_available_mandats(self, user):
 		"""retourne la liste des mandats auquel l'utilisateur a accès"""
