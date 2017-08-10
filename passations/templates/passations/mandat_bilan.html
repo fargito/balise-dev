@@ -9,11 +9,33 @@
 				<input type="submit" value="Retour" />
 			</form>
 		</div>
-		<h3>Bilan du mandat {{ mandat.promotion }} du binet {{ mandat.binet }}</h3>
+		<h3>Bilan du mandat {{ mandat.promotion }} du binet <a href={{ mandat.binet.get_history_url }} title="Voir la page du binet">{{ mandat.binet }}</a></h3>
 		<div class='binets-side-button'>
-			<a href='{{ mandat.get_mandat_journal }}?previous={{ request.get_full_path }}&passation_redirect={{ mandat.get_bilan_url }}'>
-				<img src="{% static 'img/bullet_list.png' %}" alt="List icon large" class='view-icon-large' title="Voir la compta du mandat" />
-			</a>
+			<div class='passation-icon'>
+				{% if mandat.is_active %}
+					<a href={{ mandat.touch_untouch_self_url }}?next={{ request.get_full_path }}>
+						{% if mandat.being_checked %}
+							<img src="{% static 'img/processing.png' %}" alt="Processing icon large" class='view-icon-large' title="La vérification de compta est en cours">
+						{% else %}
+							<img src="{% static 'img/blank.ico' %}" alt="Blank icon large" class='view-icon-large' title="La vérification de compta n'est pas commencée">
+						{% endif %}
+					</a>
+				{% endif %}
+			</div>
+			<div class='passation-icon'>
+				<a href={{ mandat.activate_deactivate_self_url }}?next={{ request.get_full_path }}>
+					{% if mandat.is_active %}
+						<img src="{% static 'img/unlock.png' %}" alt="Unlock icon large" class='view-icon-large' title="Le mandat est modifiable par ses membres">
+					{% else %}
+						<img src="{% static 'img/lock.png' %}" alt="Lock view icon large" class='view-icon-large' title="Le mandat est passé, seuls les kessiers peuvent le modifier">
+					{% endif %}
+				</a>
+			</div>
+			<div class='passation-icon'>
+				<a href='{{ mandat.get_mandat_journal }}?previous={{ request.get_full_path }}&passation_redirect={{ mandat.get_bilan_url }}'>
+					<img src="{% static 'img/bullet_list.png' %}" alt="List icon large" class='view-icon-large' title="Voir la compta du mandat" />
+				</a>
+			</div>
 		</div>
 	</div>
 	<div class="binet-description-full">
@@ -84,6 +106,10 @@
 					<td class='bilan-column-left'>{{ mandat.tresorier }}</td>
 				</tr>
 				<tr>
+					<td class='bilan-column-right'>Type de binet</td>
+					<td class='bilan-column-left'>{{ mandat.type_binet }}</td>
+				</tr>
+				<tr>
 					<td class='bilan-column-right'>Créé le</td>
 					<td class='bilan-column-left'>{{ mandat.create_date }}</td>
 				</tr>
@@ -106,4 +132,13 @@
 			</tbody>
 		</table>
 	</div>
+	<form method='post' action=''>
+		<div id="passation-remarques-container">
+			<div id='passation-remarques-fields-container'>
+				<table>{{ passation_mandat_form.as_table }}</table>
+			</div>
+			{% csrf_token %}
+			<input class='passation-height2em' type="submit" name="validation" value="Valider les remarques" />
+		</div>
+	</form>
 {% endblock %}

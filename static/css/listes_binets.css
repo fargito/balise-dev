@@ -60,6 +60,7 @@ tr.mandat:nth-child(odd) {background: #DDD}
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	margin-bottom: 10px;	
 }
 
 .edit-icon-large {

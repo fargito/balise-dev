@@ -46,8 +46,6 @@ class MandatCreateForm(forms.ModelForm):
 
 	def clean(self):
 		cleaned_data = super(MandatCreateForm, self).clean()
-		print(self.data)
-		print(cleaned_data)
 		promotion = cleaned_data['promotion']
 		tresorier = cleaned_data['tresorier']
 		president = cleaned_data['president']
@@ -71,7 +69,7 @@ class MandatEditForm(forms.ModelForm):
 
 	class Meta:
 		model = Mandat
-		exclude = ('binet', 'creator',)
+		exclude = ('binet', 'creator', 'is_last', 'create_date', 'is_active', 'being_checked')
 		labels = {'description': 'Description du mandat (visible et modifiable par les membres)',
 			 'remarques_admins': 'Remarques générales sur le mandat (visibles par les kessiers seulement)'}
 
@@ -91,3 +89,13 @@ class MandatEditForm(forms.ModelForm):
 		if self.create and len(Mandat.objects.filter(binet=self.binet, promotion=promotion)) == 1:
 			msg = 'Le mandat {} du binet {} existe déjà'.format(str(promotion), str(self.binet))
 			self.add_error('promotion', msg)
+
+
+class PassationMandatForm(forms.ModelForm):
+	"""permet de créer un formulaire de description et remarques_admins lors de la passation"""
+
+	class Meta:
+		model = Mandat
+		fields = ('description', 'remarques_admins')
+		labels = {'description': 'Remarques sur le mandat visibles par les membres du binet :',
+					'remarques_admins': 'Remarques pour les kessiers :'}

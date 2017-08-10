@@ -6,6 +6,8 @@ from binets.models import Binet, Mandat
 from subventions.models import Subvention
 from django.db.models import Q
 
+from binets.forms import PassationMandatForm
+
 from subventions.helpers import generate_ordering_arguments, generate_ordering_links
 
 
@@ -50,7 +52,7 @@ def recapitulatif_promo(request, promotion):
 
 	# on récupère le paramètre d'ordonnance depuis l'url
 	ordering = request.GET.get('o', None)
-	attributes = ['binet__nom', 'type_binet', 'is_displayed', 'is_active', 'being_checked']
+	attributes = ['binet__nom', 'type_binet', 'is_last', 'is_active', 'being_checked']
 
 	# on génère les arguments d'ordonnance de la liste
 	arguments = generate_ordering_arguments(ordering, attributes, only_one=True)
@@ -106,6 +108,11 @@ def mandat_bilan(request, id_mandat):
 		return redirect(next)
 
 	subventions_mandat = Subvention.objects.filter(mandat=mandat)
+
+	passation_mandat_form = PassationMandatForm(request.POST or None, instance=mandat)
+
+	if passation_mandat_form.is_valid():
+		mandat = passation_mandat_form.save()
 
 	# on récupère les totaux pour le mandat
 	debit_subtotal, credit_subtotal = mandat.get_subtotals()

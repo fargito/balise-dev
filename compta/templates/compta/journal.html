@@ -4,22 +4,38 @@
 
 {% block content %}
 	{% block compta_nav %}
-	<section id="compta-title-and-return">
-		<div class="compta-return-button">
+	<section class="binet-title-and-return-container">
+		<div class="binets-return-button">
 			<form action={{ request.session.previous }}>
 				<input type="submit" value="Retour" />
 			</form>
 		</div>
-		<div id="compta-title-cropped">
-			<div id="page-title">Journal : Binet {{ mandat.binet }} {{ mandat.promotion }}</div>
-		</div>
-		<div class="compta-return-button">
-			<div class='txtdroite'>
-				{% if request.session.passation_redirect %}
-				<form action={{ request.session.passation_redirect }}>
-					<input type="submit" value="Finaliser la passation" />
-				</form>
+		<h3>Journal : Binet {{ mandat.binet }} {{ mandat.promotion }}</h3>
+		<div class='binets-side-button'>
+			<div class='passation-icon'>
+				{% if mandat.is_active %}
+					<a href={{ mandat.touch_untouch_self_url }}?next={{ request.get_full_path }}>
+						{% if mandat.being_checked %}
+							<img src="{% static 'img/processing.png' %}" alt="Processing icon large" class='view-icon-large' title="La vérification de compta est en cours">
+						{% else %}
+							<img src="{% static 'img/blank.ico' %}" alt="Blank icon large" class='view-icon-large' title="La vérification de compta n'est pas commencée">
+						{% endif %}
+					</a>
 				{% endif %}
+			</div>
+			<div class='passation-icon'>
+				<a href={{ mandat.activate_deactivate_self_url }}?next={{ request.get_full_path }}>
+					{% if mandat.is_active %}
+						<img src="{% static 'img/unlock.png' %}" alt="Unlock icon large" class='view-icon-large' title="Le mandat est modifiable par ses membres">
+					{% else %}
+						<img src="{% static 'img/lock.png' %}" alt="Lock view icon large" class='view-icon-large' title="Le mandat est passé, seuls les kessiers peuvent le modifier">
+					{% endif %}
+				</a>
+			</div>
+			<div class='passation-icon'>
+				<a href={{ mandat.get_bilan_url }}>
+					<img src="{% static 'img/bullet_list.png' %}" alt="List icon large" class='view-icon-large' title="Voir le bilan du mandat" />
+				</a>
 			</div>
 		</div>
 	</section>
@@ -104,6 +120,7 @@
 		{% block compta_page %}
 		<div id="compta-table-container">
 			<table id="compta-table">
+				{% block compta_titles %}
 				<thead>
 					<tr>
 						<th>
@@ -139,7 +156,9 @@
 						{% endfor %}
 					</tr>
 				</thead>
+				{% endblock %}
 				<tbody>
+				{% block compta_form %}
 				{% if request.session.edit %}
 					<div class="new-ligne-compta">
 						<form method='post' action='.'>
@@ -199,6 +218,7 @@
 						</form>
 					</div>
 				{% endif %}
+				{% endblock %}
 				{% for ligne in lignes %}
 					<tr class="ligne-compta">
 						<td class="compta-button-container">

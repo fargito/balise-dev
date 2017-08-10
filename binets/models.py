@@ -26,7 +26,7 @@ class Mandat(models.Model):
 	binet = models.ForeignKey('Binet')
 	type_binet = models.ForeignKey('TypeBinet', verbose_name = "Type du binet")
 	is_active = models.BooleanField(verbose_name = "Actif", default=True)
-	is_displayed = models.BooleanField(verbose_name = "Visible", default=True) # est affiché dans la liste des binets, accessible à tous
+	is_last = models.BooleanField(verbose_name = "Visible", default=True) # est affiché dans la liste des binets, accessible à tous
 	being_checked = models.BooleanField(verbose_name = "Vérification compta commencée", default=False)
 	president = models.ForeignKey(User, related_name = "president")
 	tresorier = models.ForeignKey(User, related_name = "tresorier")
@@ -65,9 +65,9 @@ class Mandat(models.Model):
 		return ('mandat_bilan', [self.id])
 
 	@models.permalink
-	def view_unview_self_url(self):
-		"""return the link to the view where it goes from is_displayed to not is_displayed"""
-		return ('mandat_view_unview', [self.id])
+	def set_last_not_last_self_url(self):
+		"""return the link to the view where it goes from is_last to not is_last"""
+		return ('mandat_last_not_last', [self.id])
 
 	@models.permalink
 	def activate_deactivate_self_url(self):
@@ -142,7 +142,7 @@ class Mandat(models.Model):
 				status = 'Compta non vérifiée'
 		else:
 			status = 'Compta vérifiée'
-		if self.is_displayed:
+		if self.is_last:
 			status += ', successeurs non actifs'
 		else:
 			status += ', successeurs actifs'
@@ -157,7 +157,7 @@ class Mandat(models.Model):
 				status = 'non-touche'
 		else:
 			status = 'compta-verifiee'
-		if self.is_displayed:
+		if self.is_last:
 			status += '-successeurs-non-actifs'
 		else:
 			status += '-successeurs-actifs'

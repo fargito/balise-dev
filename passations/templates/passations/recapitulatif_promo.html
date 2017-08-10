@@ -34,7 +34,7 @@
 					<th class='mandat-txtcentre-1em'>Dépenses</th>
 					<th class='mandat-txtcentre-1em'>Recettes</th>
 					<th class='mandat-txtcentre-1em'>Balance</th>
-					<th class='mandat-txtcentre-1em'><div class='title-order-container'><div>Visible</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par visible"/></a></div></th>
+					<th class='mandat-txtcentre-1em'><div class='title-order-container'><div>Repris</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par visible"/></a></div></th>
 					<th class='mandat-txtcentre-1em'><div class='title-order-container'><div>Actif</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par actif"/></a></div></th>
 					<th class='mandat-txtcentre-1em'><div class='title-order-container'><div>Vérification</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par vérification commencée"/></a></div></th>
 				</tr>
@@ -61,11 +61,11 @@
 						<td class='mandat-txtcentre-1em'>{{ mandat.get_totals.1 }}</td>
 						<td class='mandat-txtcentre-1em'>{{ mandat.get_balance }}</td>
 						<td class='mandat-txtcentre-1em'>
-							<a href={{ mandat.view_unview_self_url }}?next={{ request.get_full_path }}>
-								{% if mandat.is_displayed %}
-									<img src="{% static 'img/view.png' %}" alt="View icon large" class='view-icon-large' title="Le mandat est affiché dans la liste visible par tout le monde">
+							<a href={{ mandat.set_last_not_last_self_url }}?next={{ request.get_full_path }}>
+								{% if mandat.is_last %}
+									<img src="{% static 'img/up_to_date.png' %}" alt="View icon large" class='view-icon-large' title="Le mandat est le plus récent">
 								{% else %}
-									<img src="{% static 'img/stop_view.png' %}" alt="Stop view icon large" class='view-icon-large' title="Le mandat n'est visible que via la page du binet">
+									<img src="{% static 'img/cemetery.png' %}" alt="Stop view icon large" class='view-icon-large' title="Le binet a été repris">
 								{% endif %}
 							</a>
 						</td>

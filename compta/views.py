@@ -5,14 +5,14 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
 
-from binets.models import Mandat
+from binets.models import Mandat, TypeBinet
 from .models import LigneCompta, PosteDepense
 from subventions.models import VagueSubventions, Subvention, DeblocageSubvention, TypeSubvention
 from django.db.models import Q
 
 from django import forms
 from .forms import LigneComptaForm, DeblocageSubventionForm, BaseDeblocageSubventionFormSet, CustomDeblocageSubventionFormSet
-from .forms import PosteDepenseForm
+from .forms import PosteDepenseForm, SearchLigneForm
 from binets.forms import DescriptionForm
 from django.forms import formset_factory, inlineformset_factory
 from imports.forms import ImportFileForm
@@ -58,7 +58,7 @@ def my_binets(request):
 		if arguments:
 			liste_mandats = Mandat.objects.all().order_by(*arguments)
 		else:
-			liste_mandats = Mandat.objects.all()
+			liste_mandats = Mandat.objects.filter(is_active=True)
 	else:
 		if arguments:
 			liste_mandats = Mandat.objects.filter(
@@ -532,3 +532,55 @@ def create_poste_depense(request):
 			return redirect(request.GET.get('next', '../'))
 
 	return render(request, 'compta/create_poste_depense.html', locals())
+
+
+@staff_member_required
+def seance_cheques(request):
+	"""permet d'effectuer une séance de chèques pour les binets sans chéquiers"""
+	max_requests = request.GET.get('max_requests', 50)
+
+	type_binet_default = TypeBinet.objects.get(nom='Sans chéquier')
+	type_binet_optional = TypeBinet.objects.get(nom='Avec chéquier')
+	
+
+	search_ligne_form = SearchLigneForm(request.POST or None)
+	if search_ligne_form.is_valid() and request.POST['validation'] == 'Rechercher':
+		# on construit au fur et à mesure le filtre qu'on va appliquer à la base de données en restreignant toujours
+		# le nombre de requêtes à max_requests
+		print(search_ligne_form.cleaned_data)
+		cleaned_data = search_ligne_form.cleaned_data
+		if False: # pour plus tard, si on veut mettre un filtre pour ajouter les binets avec chéquier
+			filter_arg = Q(mandat__type_binet=type_binet_default) | Q(mandat__type_binet=type_binet_optional)
+		else:
+			filter_arg = Q(mandat__type_binet=type_binet_default)
+
+		if not cleaned_data['include_locked']:
+			filter_arg &= Q(is_locked=False)
+
+		if cleaned_data['promotion']:
+			filter_arg &= Q(mandat__promotion=cleaned_data['promotion'])
+
+		if cleaned_data['binet']:
+			filter_arg &= Q(mandat__binet__nom__icontains=cleaned_data['binet'])
+
+		if cleaned_data['poste']:
+			filter_arg &= Q(poste_depense__nom__icontains=cleaned_data['poste'])
+
+		if cleaned_data['date_debut']:
+			filter_arg &= Q(date__gte=cleaned_data['date_debut'])
+
+		if cleaned_data['date_fin']:
+			filter_arg &= Q(date__lte=cleaned_data['date_fin'])
+
+		if cleaned_data['montant_bas']:
+			filter_arg &= (Q(debit__gte=cleaned_data['montant_bas']) | Q(credit__gte=cleaned_data['montant_bas']))
+
+		if cleaned_data['montant_haut']:
+			filter_arg &= (Q(debit__lte=cleaned_data['montant_haut']) | Q(credit__lte=cleaned_data['montant_haut']))
+
+		lignes = LigneCompta.objects.filter(filter_arg)[0:max_requests]
+
+	else:
+		lignes = LigneCompta.objects.filter(mandat__type_binet=type_binet_default, is_locked=False)[0:max_requests]
+
+	return render(request, 'compta/seance_cheques.html', locals())

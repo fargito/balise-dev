@@ -56,8 +56,24 @@ td.compta-form-montant {
 	padding-right: 1em;
 }
 
+td.compta-form-montant-double {
+	width: 14em;
+	min-width: 14em;
+	text-align: right;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	padding-right: 1em;
+}
+
 th.compta-form-montant {
 	min-width: 5.5em;
+	text-align: right;
+	padding-top: 0.6em;
+	padding-right: 1em;
+}
+
+th.compta-form-montant-double {
+	min-width: 11em;
 	text-align: right;
 	padding-top: 0.6em;
 	padding-right: 1em;
@@ -217,4 +233,32 @@ div.ligne-comment {
 .compta-import-error {
 	min-width: 7em;
 	margin-right: 1em;
+}
+
+.compta-binet {
+	min-width: 12em;
+	text-align: center;
+	padding-left: 1em;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+}
+
+.compta-promo {
+	min-width: 3em;
+	text-align: center;
+	padding-left: 1em;
+}
+
+.compta-width100 {
+	width: 100%;
+}
+
+.compta-search-form {
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+	text-align: center;
+}
+
+.compta-search-form input {
+	width: 7em;
 }

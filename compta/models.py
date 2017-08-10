@@ -65,9 +65,9 @@ class LigneCompta(models.Model):
 					subvention=subvention,
 					montant=None)
 				new_deblocage.save()
-				ligne_deblocages.append((str(subvention), None))
+				ligne_deblocages.append((subvention, None))
 			else:
-				ligne_deblocages.append((str(subvention), deblocage[0].montant))
+				ligne_deblocages.append((subvention, deblocage[0].montant))
 		return ligne_deblocages
 
 

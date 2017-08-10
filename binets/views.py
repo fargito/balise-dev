@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import Binet, Mandat, TypeBinet
 from .forms import BinetEditForm, MandatEditForm, BinetCreateForm, MandatCreateForm
@@ -38,14 +38,14 @@ def all_binets(request):
 
 
 		if arguments:
-			liste_mandats = Mandat.objects.filter(search, is_displayed=True).order_by(*arguments)
+			liste_mandats = Mandat.objects.filter(search, is_last=True).order_by(*arguments)
 		else:
-			liste_mandats = Mandat.objects.filter(search, is_displayed=True)
+			liste_mandats = Mandat.objects.filter(search, is_last=True)
 	else:
 		if arguments:
-			liste_mandats = Mandat.objects.filter(is_displayed=True).order_by(*arguments)
+			liste_mandats = Mandat.objects.filter(is_last=True).order_by(*arguments)
 		else:
-			liste_mandats = Mandat.objects.filter(is_displayed=True)
+			liste_mandats = Mandat.objects.filter(is_last=True)
 	# on ordonne les résultats
 	if arguments:
 		liste_mandats = liste_mandats.order_by(*arguments)
@@ -76,7 +76,7 @@ def binet_history(request, id_binet):
 	return render(request, 'binets/binet_history.html', locals())
 
 
-@staff_member_required
+@permission_required('binets.change_binet')
 def edit_binet(request, id_binet):
 	try:
 		binet = Binet.objects.get(id=id_binet)
@@ -95,7 +95,7 @@ def edit_binet(request, id_binet):
 	return render(request, 'binets/edit_binet.html', locals())
 
 
-@staff_member_required
+@permission_required('binets.change_mandat')
 def edit_mandat(request, id_binet, id_mandat):
 	try:
 		mandat = Mandat.objects.get(
@@ -117,7 +117,7 @@ def edit_mandat(request, id_binet, id_mandat):
 	return render(request, 'binets/edit_mandat.html', locals())
 
 
-@staff_member_required
+@permission_required('binets.add_mandat')
 def new_mandat(request, id_binet):
 	try:
 		binet = Binet.objects.get(id=id_binet)
@@ -136,14 +136,14 @@ def new_mandat(request, id_binet):
 			created_mandat.creator = request.user
 			created_mandat.save()
 			if previous_mandat:
-				previous_mandat.is_displayed = False
+				previous_mandat.is_last = False
 				previous_mandat.save()
 		return redirect(next)
 
 	return render(request, 'binets/new_mandat.html', locals())
 
 
-@staff_member_required
+@permission_required('binets.add_binet')
 def new_binet(request):
 	binet_create_form = BinetCreateForm(request.POST or None)
 	mandat_create_form = MandatCreateForm(request.POST or None, initial={'type_binet': TypeBinet.objects.get(nom='Sans chéquier')})
@@ -166,7 +166,7 @@ def new_binet(request):
 
 
 @staff_member_required
-def mandat_view_unview(request, id_mandat):
+def mandat_last_not_last(request, id_mandat):
 	try:
 		mandat = Mandat.objects.get(
 			id = id_mandat)
@@ -175,7 +175,7 @@ def mandat_view_unview(request, id_mandat):
 
 	next = request.GET.get('next', mandat.binet.get_history_url())
 
-	mandat.is_displayed = not mandat.is_displayed
+	mandat.is_last = not mandat.is_last
 	mandat.save()
 
 	return redirect(next)
@@ -217,5 +217,6 @@ def mandat_touch_untouch(request, id_mandat):
 
 	mandat.being_checked = not mandat.being_checked
 	mandat.save()
+	print(mandat.being_checked)
 
 	return redirect(next)

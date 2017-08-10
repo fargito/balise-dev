@@ -11,8 +11,10 @@
 		</div>
 		<h3>Binet {{ binet }}</h3>
 		<div class='binets-side-button'>
-			{% if request.user.is_staff %}
+			{% if perms.binets.change_binet %}
 				<a href={{ binet.edit_self_url }}><img src="{% static 'img/edit.png' %}" alt="Edit icon large" class='edit-icon-large' title="Modifier le binet"></a>
+			{% endif %}
+			{% if perms.binets.add_mandat %}
 				<a href={{ binet.new_mandat_for_self_url }}><img src="{% static 'img/add.png' %}" alt="Add icon large" class='add-icon-large' title="Nouveau mandat pour ce binet"></a>
 			{% endif %}
 		</div>
@@ -61,11 +63,11 @@
 						<td class='txtcentre'>{{ available_mandat.get_totals.1 }}</td>
 						<td class='txtcentre'>{{ available_mandat.get_balance }}</td>
 						<td>
-							<a href={{ available_mandat.view_unview_self_url }}>
-								{% if available_mandat.is_displayed %}
-									<img src="{% static 'img/view.png' %}" alt="View icon large" class='view-icon-large' title="Le mandat est affiché dans la liste visible par tout le monde">
+							<a href={{ available_mandat.set_last_not_last_self_url }}?next={{ request.get_full_path }}>
+								{% if available_mandat.is_last %}
+									<img src="{% static 'img/up_to_date.png' %}" alt="View icon large" class='view-icon-large' title="Le mandat est le plus récent">
 								{% else %}
-									<img src="{% static 'img/stop_view.png' %}" alt="Stop view icon large" class='view-icon-large' title="Le mandat n'est visible que via la page du binet">
+									<img src="{% static 'img/cemetery.png' %}" alt="Stop view icon large" class='view-icon-large' title="Le binet a été repris">
 								{% endif %}
 							</a>
 						</td>
