@@ -21,6 +21,7 @@ body {
 h3 {
 	font-size: 0.7cm;
 	font-weight: normal;
+	text-align: center;
 }
 
 header {
@@ -146,4 +147,38 @@ footer {
 	text-align: center;
 	z-index: 1;
 	background-color: white;
-}	
+}
+
+.passations-two-tables-container {
+	position: absolute;
+	margin-top: 8cm;
+	width: 100%;
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-around;
+}
+
+#passation-remarques-container {
+	position: absolute;
+	margin-top: 13cm;
+	display: flex;
+	align-items: center;
+}
+
+.bilan-small-column-right {
+	text-align: right;
+}
+
+.binet-description-full {
+	display: none;
+}
+
+textarea#id_description {
+	height: 6.5cm;
+}
+
+textarea#id_remarques_admins {
+	height: 6.5cm;
+}
+
+.passation-height2em {display: none;}
