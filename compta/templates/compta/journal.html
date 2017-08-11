@@ -32,7 +32,7 @@
 					{% endif %}
 				</a>
 			</div>
-			<div class='passation-icon'>
+			<div class='passation-icon print-hidden'>
 				<a href={{ mandat.get_bilan_url }}>
 					<img src="{% static 'img/bullet_list.png' %}" alt="List icon large" class='view-icon-large' title="Voir le bilan du mandat" />
 				</a>
@@ -289,12 +289,11 @@
 						{% for subvention in subventions_binet %}
 							<tr>
 								<td colspan="2"></td>
-								<td class="compta-form-description">
+								<td class="compta-form-description" colspan='3'>
 									<div class="compta-deblocage">
 										<a href="../binet_subventions">Déblocage {{ subvention.vague }}</a>
 									</div>
 								</td>
-								<td colspan="2"></td>
 								<td class="compta-form-montant">
 									<div class="compta-deblocage">
 										{{ subvention.get_deblocages_total }}
