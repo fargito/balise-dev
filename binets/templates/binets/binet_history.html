@@ -11,6 +11,15 @@
 		</div>
 		<h3>Binet {{ binet }}</h3>
 		<div class='binets-side-button'>
+			{% if request.user.is_staff %}
+				<a href={{ binet.hide_unhide_self_url }}?next={{ request.get_full_path }}>
+					{% if binet.is_hidden %}
+						<img src="{% static 'img/stop_view.png' %}" alt="Unview icon large" class='edit-icon-large' title="Le binet est caché de la liste publique">
+					{% else %}
+						<img src="{% static 'img/view.png' %}" alt="View icon large" class='edit-icon-large' title="Le binet est affiché dans la liste publique">
+					{% endif %}
+				</a>
+			{% endif %}
 			{% if perms.binets.change_binet %}
 				<a href={{ binet.edit_self_url }}><img src="{% static 'img/edit.png' %}" alt="Edit icon large" class='edit-icon-large' title="Modifier le binet"></a>
 			{% endif %}

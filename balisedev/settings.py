@@ -34,8 +34,6 @@ with open(keyfile, "r") as f:
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*',]
-
 
 # Application definition
 
@@ -89,14 +87,7 @@ WSGI_APPLICATION = 'balisedev.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
+# different when on production and test
 
 if DEBUG:
   DATABASES = {
@@ -190,3 +181,26 @@ LOGIN_REDIRECT_URL = '/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
+
+
+# session expiry
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_AGE = 300 # after 5 minutes, the session is expired and you have to login again
+SESSION_SAVE_EVERY_REQUEST = True
+
+
+# on the BR servers, the routage is done before arriving to this point
+if DEBUG:
+    ALLOWED_HOSTS = ['*',]
+
+
+else:
+    ##
+    # BR
+    # DO NOT edit below unless you are a BRman
+    ##
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_HTTPONLY = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+    ALLOWED_HOSTS = ["projetbalise.binets.fr", "balise.binets.fr"]

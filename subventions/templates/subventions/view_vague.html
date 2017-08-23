@@ -2,14 +2,14 @@
 {% load static %}
 
 {% block content %}
-	<section id="compta-title-and-return">
-		<div class="return-button">
-			<form action="../">
+	<section class="binet-title-and-return-container">
+		<div class="binets-return-button">
+			<form action='../'>
 				<input type="submit" value="Retour" />
 			</form>
 		</div>
-		<div id="compta-title-cropped">
-			<div id="page-title">Subventions {{ vague.type_subvention }} {{ vague.annee }}</div>
+		<h3>Subventions {{ vague.type_subvention }} {{ vague.annee }}</h3>
+		<div class="binets-return-button">
 		</div>
 	</section>
 	<section id="compta-container">
@@ -17,6 +17,7 @@
 			<table id="subventions-table">
 				<thead>
 					<tr>
+						<th></th>
 						<th class="subventions-nom-binet"><div class='title-order-container'><div>Binet</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par binet"/></a></div></th>
 						<th class="subventions-promotion"><div class='title-order-container'><div>Promotion</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par promo"/></a></div></th>
 						<th class="subventions-montant">Somme demandée</th>
@@ -32,12 +33,25 @@
 				<tbody>
 					{% for subvention in subventions %}
 					<tr class="subvention-ligne">
+						<td class="compta-button-container">
+							{# l'admin possède les liens pour verser la subvention, pas le modificateur normal #}
+							{% if request.user.is_staff %}
+								<a href={{ subvention.verser_self_url }}?next={{ request.get_full_path }}>
+									{% if subvention.is_versee %}
+										<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="La subvention a été versée">
+									{% else %}
+										<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="Verser la subvention">
+									{% endif %}
+								</a>
+							{% endif %}
+						</td>
 						<td class="subventions-nom-binet">
 							{% if request.user.is_staff %}
-								<a href={{ subvention.mandat.get_mandat_journal }}?next=binet_subventions>{{ subvention.mandat.binet }}</a></td>
+								<a href={{ subvention.mandat.get_mandat_journal }}?next=binet_subventions>{{ subvention.mandat.binet }}</a>
 							{% else %}
-								<a href={{ subvention.mandat.binet.get_history_url }}>{{ subvention.mandat.binet }}</a></td>
+								<a href={{ subvention.mandat.binet.get_history_url }}>{{ subvention.mandat.binet }}</a>
 							{% endif %}
+						</td>
 						<td class="subventions-promotion">{{ subvention.mandat.promotion }}</th>				
 						<td class="subventions-montant">{{ subvention.demande }}</td>
 						<td class="subventions-montant">{{ subvention.accorde }}</td>
@@ -53,6 +67,7 @@
 				</tbody>
 				<tfoot>
 					<tr>
+						<th></th>
 						<th class="subventions-nom-binet">Total</th>
 						<th></th>
 						<th class="subventions-montant">{{ total_demande }}</th>

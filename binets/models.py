@@ -173,6 +173,9 @@ class Binet(models.Model):
 								verbose_name="Date de création")
 	creator = models.ForeignKey(User)
 
+	# on donne la possibilité que le binet soit caché de la liste officielle
+	is_hidden = models.BooleanField(default=False, verbose_name='Caché de la liste officielle')
+
 
 	
 	class Meta:
@@ -193,6 +196,10 @@ class Binet(models.Model):
 	@models.permalink
 	def new_mandat_for_self_url(self):
 		return ('new_mandat', [self.id])
+
+	@models.permalink
+	def hide_unhide_self_url(self):
+		return ('binet_hide_unhide', [self.id])
 
 	def get_available_mandats(self, user):
 		"""retourne la liste des mandats auquel l'utilisateur a accès"""

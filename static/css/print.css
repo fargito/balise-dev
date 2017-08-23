@@ -1,0 +1,221 @@
+html {
+  font-family: sans-serif;
+  -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+}
+
+#compta-table {
+	width: 100%;
+	border-collapse: collapse;
+	border: 0cm;
+}
+
+.print-hidden {
+	display: none;
+}
+
+body {
+	font-size: 0.3cm;
+}
+
+h3 {
+	font-size: 0.7cm;
+	font-weight: normal;
+	text-align: center;
+}
+
+header {
+	width: 100%;
+	position: absolute;
+	display: flex;
+	justify-content: center;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+#compta-container {
+	position: absolute;
+	margin-top: 8cm;
+}
+
+img.centre {
+	display: block;
+	margin: auto;
+	height: 150px;
+}
+
+.navbar {
+	display: none;
+}
+
+#compta-nav {
+	display: none;
+}
+
+.order-icon {display: none;}
+
+.add-icon{display: none;}
+
+.delete_icon{display: none;}
+
+.edit_icon{display: none;}
+
+#new-ligne-compta-form {display: none;}
+
+
+.ligne-compta{
+	page-break-inside: avoid;
+}
+
+tr.ligne-compta:nth-child(even) {background: #FFF}
+tr.ligne-compta:nth-child(odd) {background: #DDD}
+
+.compta-deblocage {
+	font-style: italic;
+}
+
+.txtcentre {
+	text-align: center;
+}
+
+td.compta-form-montant {
+	width: 1.8cm;
+	min-width: 1.8cm;
+	text-align: right;
+	padding-top: 0.2cm;
+	padding-bottom: 0.2cm;
+	padding-right: 0.2cm;
+}
+
+th.compta-form-montant {
+	width: 1.8cm;
+	min-width: 1.8cm;
+	text-align: right;
+	padding-top: 0.6cm;
+	padding-right: 0.2cm;
+}
+
+.compta-form-description {
+	width:100%;
+}
+
+.compta-positive {
+	color: blue;
+}
+
+.compta-negative {
+	color: red;
+}
+
+.compta-form-date {
+	padding-right: 0.2cm;
+	padding-left: 0.2cm;
+}
+
+.compta-form-description {
+	text-align: left;
+	padding-bottom: 0.2cm;
+}
+
+.compta-form-poste {
+	text-align: center;
+}
+
+.binet-title-and-return-container {
+	position: absolute;
+	margin-top: 5cm;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 2cm;
+	width: 100%;
+}
+
+.view-icon-large {
+	width: 1.5em;
+	height: 1.5em;
+}
+
+.binets-side-button {
+	width: 7em;
+	display: flex;
+	justify-content: flex-end;
+}
+
+.binets-return-button {
+	width: 2.7cm;
+}
+
+.passation-icon {
+	width: 2.7cm;
+}
+
+footer {
+	bottom: 0px;
+	position: fixed;
+	width: 100%;
+	text-align: center;
+	z-index: 1;
+	background-color: white;
+}
+
+.passations-two-tables-container {
+	position: absolute;
+	margin-top: 8cm;
+	width: 100%;
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-around;
+}
+
+#passation-remarques-container {
+	position: absolute;
+	margin-top: 13cm;
+	display: flex;
+	align-items: center;
+}
+
+.bilan-small-column-right {
+	text-align: right;
+}
+
+.binet-description-full {
+	display: none;
+}
+
+textarea#id_description {
+	height: 6.5cm;
+}
+
+textarea#id_remarques_admins {
+	height: 6.5cm;
+}
+
+.passation-height2em {display: none;}
+
+.subventions-montant {
+	text-align: right;
+	min-width: 2cm;
+}
+
+.subventions-nom-binet {
+	min-width: 12em;
+	padding-left: 1em;
+}
+
+.subventions-postes {
+	text-align: left;
+	padding-left: 2em;
+	min-width: 20em;
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+}
+
+.subventions-postes p {
+	margin: auto;
+}
+
+tr.subvention-ligne:nth-child(even) {background: #FFF;}
+tr.subvention-ligne:nth-child(odd) {background: #DDD;}

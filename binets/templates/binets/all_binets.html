@@ -31,7 +31,10 @@
 					<th class="binet-description">Description</th>
 					<th class="binet-user">Président</th>
 					<th class="binet-user">Trésorier</th>
-					{% if request.user.is_staff %}<th class="binet-user"><div class='title-order-container'><div>Type</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par binet"/></a></div></th>{% endif %}
+					{% if request.user.is_staff %}
+						<th class="binet-user"><div class='title-order-container'><div>Type</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par binet"/></a></div></th>
+						<th class="binet-user"><div class='title-order-container'><div>Visible</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par visible"/></a></div></th>
+					{% endif %}
 				</tr>
 			</thead>
 			<tbody>
@@ -50,7 +53,18 @@
 						<td class="binet-user">
 							<a href={{ mandat.tresorier.eleve.get_infos_url }}>{{ mandat.tresorier }}</a>
 						</td>
-						{% if request.user.is_staff %}<td class='binet-user'>{{ mandat.type_binet }}</td>{% endif %}
+						{% if request.user.is_staff %}
+							<td class='binet-user'>{{ mandat.type_binet }}</td>
+							<td class='binet-user'>
+								<a href={{ mandat.binet.hide_unhide_self_url }}?next={{ request.get_full_path }}>
+								{% if mandat.binet.is_hidden %}
+									<img src="{% static 'img/stop_view.png' %}" alt="Unview icon large" class='edit-icon-large' title="Le binet est caché de la liste publique">
+								{% else %}
+									<img src="{% static 'img/view.png' %}" alt="View icon large" class='edit-icon-large' title="Le binet est affiché dans la liste publique">
+								{% endif %}
+								</a>
+							</td>
+						{% endif %}
 					</tr>
 
 				{% endfor %}

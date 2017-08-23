@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 
 from .models import VagueSubventions, Subvention
 
@@ -54,3 +55,21 @@ def view_vague(request, id_vague):
 
 
 	return render(request, 'subventions/view_vague.html', locals())
+
+
+@staff_member_required
+def verser_subvention(request, id_subvention):
+	"""permet de marquer une subvention comme versée et la verrouiller dans le journal du binet concerné"""
+
+	try:
+		subvention = Subvention.objects.get(
+			id = id_subvention)
+	except KeyError:
+		return redirect('../')
+
+	next = request.GET.get('next', subvention.vague.view_self_url())
+
+	subvention.is_versee = not subvention.is_versee
+	subvention.save()
+
+	return redirect(next)
