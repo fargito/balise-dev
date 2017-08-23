@@ -58,6 +58,8 @@ class Subvention(models.Model):
 	demande = models.DecimalField(null=True, blank=True,max_digits=9, decimal_places=2)
 	accorde = models.DecimalField(null=True, blank=True,max_digits=9, decimal_places=2)
 	postes = models.TextField()
+	# ce champ représente si la subvention a bien été versée
+	is_versee = models.BooleanField(default=False)
 
 	def __str__(self):
 		return '{} du binet {}'.format(self.vague, self.mandat)
@@ -65,6 +67,10 @@ class Subvention(models.Model):
 	class Meta:
 		unique_together = ('vague', 'mandat',)
 		ordering = ('-vague', 'mandat',)
+
+	@models.permalink
+	def verser_self_url(self):
+		return ('verser_subvention', [self.id])
 
 	def get_deblocages_list(self):
 		"""retourne la liste des déblocages effectués sur cette subvention"""

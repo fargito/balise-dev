@@ -110,6 +110,17 @@ class BaseDeblocageSubventionFormSet(BaseFormSet):
 			subvention = self.subventions_list[k]
 			deblocage = self.cleaned_data[k]
 			try:
+				if deblocage['montant'] > 0:
+					if subvention.is_versee:
+						# si la subvention est versée, on ne peut plus en débloquer
+						msg = "Les subventions {} {} ont déjà été versées, il est impossible d'en débloquer".format(
+							str(subvention.vague.type_subvention),
+							str(subvention.vague.annee))
+						raise forms.ValidationError(msg)
+			except KeyError:
+				pass
+
+			try:
 				if deblocage['montant'] and deblocage['montant'] > subvention.get_rest():
 					msg = 'Vous pouvez encore débloquer {} sur {} {}'.format(
 						subvention.get_rest(), 
@@ -135,7 +146,16 @@ class CustomDeblocageSubventionFormSet(BaseInlineFormSet):
 				if deblocage['montant'] < 0:
 					raise forms.ValidationError('Impossible de débloquer des subventions négatives')
 
+				# pour chaque déblocage, il faut prendre en compte le cas ou le montant est None
+				# il faut vérifier que le montant n'est pas trop élevé mais aussi que la subvention est encore déblocable
 				if deblocage['id'].montant:
+					if deblocage['id'].subvention.is_versee and deblocage['id'].montant != deblocage['montant']:
+						# si on a tenté de modifier une subvention non déblocable
+						msg = "Les subventions {} {} ont déjà été versées, il est impossible de modifier le déblocage".format(
+						str(deblocage['id'].subvention.vague.type_subvention),
+						str(deblocage['id'].subvention.vague.annee))
+						raise forms.ValidationError(msg)
+
 					if deblocage['montant'] > deblocage['id'].subvention.get_rest()+deblocage['id'].montant:
 						msg = "Déblocage trop important sur {} {}: vous pouvez débloquer {}".format(
 							str(deblocage['id'].subvention.vague.type_subvention), 
@@ -143,6 +163,13 @@ class CustomDeblocageSubventionFormSet(BaseInlineFormSet):
 							deblocage['id'].subvention.get_rest()+deblocage['id'].montant)
 						raise forms.ValidationError(msg)
 				else:
+					if deblocage['id'].subvention.is_versee and deblocage['montant'] > 0:
+						# si on a tenté de modifier une subvention non déblocable
+						msg = "Les subventions {} {} ont déjà été versées, il est impossible d'en débloquer".format(
+						str(deblocage['id'].subvention.vague.type_subvention),
+						str(deblocage['id'].subvention.vague.annee))
+						raise forms.ValidationError(msg)
+
 					if deblocage['montant'] > deblocage['id'].subvention.get_rest():
 						msg = "Déblocage trop important sur {} {}: vous pouvez débloquer {}".format(
 							str(deblocage['id'].subvention.vague.type_subvention), 

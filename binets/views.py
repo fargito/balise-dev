@@ -20,7 +20,7 @@ def all_binets(request):
 
 	# on récupère le paramètre d'ordonnance depuis l'url
 	ordering = request.GET.get('o', None)
-	attributes = ['binet__nom', 'promotion', 'type_binet']
+	attributes = ['binet__nom', 'promotion', 'type_binet', 'binet__is_hidden']
 
 	# on génère les arguments d'ordonnance de la liste
 	arguments = generate_ordering_arguments(ordering, attributes, only_one=True)
@@ -49,6 +49,9 @@ def all_binets(request):
 	# on ordonne les résultats
 	if arguments:
 		liste_mandats = liste_mandats.order_by(*arguments)
+
+	if not request.user.is_staff:
+		liste_mandats = liste_mandats.filter(binet__is_hidden=False)
 
 
 	# on génère les liens qui serviront à l'ordonnance dans la page
@@ -217,6 +220,23 @@ def mandat_touch_untouch(request, id_mandat):
 
 	mandat.being_checked = not mandat.being_checked
 	mandat.save()
-	print(mandat.being_checked)
+
+	return redirect(next)
+
+
+@staff_member_required
+def binet_hide_unhide(request, id_binet):
+	"""allows the admin to hide the mandat from the list that is displayed to all the users"""
+
+	try:
+		binet = Binet.objects.get(
+			id = id_binet)
+	except KeyError:
+		return redirect('../')
+
+	next = request.GET.get('next', binet.get_history_url())
+
+	binet.is_hidden = not binet.is_hidden
+	binet.save()
 
 	return redirect(next)

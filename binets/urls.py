@@ -7,6 +7,7 @@ from .models import Binet
 urlpatterns = [
 	url(r'^$', views.all_binets, name='liste_binets'),
 	url(r'^new_binet$', views.new_binet, name='new_binet'),
+	url(r'^binet_hide_unhide/(?P<id_binet>\d+)$', views.binet_hide_unhide, name='binet_hide_unhide'),
 	url(r"^history/(?P<id_binet>\d+)$", views.binet_history, name='binet_history'),
 	url(r"^edit/(?P<id_binet>\d+)$", views.edit_binet, name='edit_binet'),
 	url(r"^edit/(?P<id_binet>\d+)/new_mandat$", views.new_mandat, name='new_mandat'),

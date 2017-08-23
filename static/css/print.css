@@ -31,6 +31,10 @@ header {
 	justify-content: center;
 }
 
+table {
+	border-collapse: collapse;
+}
+
 #compta-container {
 	position: absolute;
 	margin-top: 8cm;
@@ -72,6 +76,10 @@ tr.ligne-compta:nth-child(odd) {background: #DDD}
 	font-style: italic;
 }
 
+.txtcentre {
+	text-align: center;
+}
+
 td.compta-form-montant {
 	width: 1.8cm;
 	min-width: 1.8cm;
@@ -87,6 +95,10 @@ th.compta-form-montant {
 	text-align: right;
 	padding-top: 0.6cm;
 	padding-right: 0.2cm;
+}
+
+.compta-form-description {
+	width:100%;
 }
 
 .compta-positive {
@@ -182,3 +194,28 @@ textarea#id_remarques_admins {
 }
 
 .passation-height2em {display: none;}
+
+.subventions-montant {
+	text-align: right;
+	min-width: 2cm;
+}
+
+.subventions-nom-binet {
+	min-width: 12em;
+	padding-left: 1em;
+}
+
+.subventions-postes {
+	text-align: left;
+	padding-left: 2em;
+	min-width: 20em;
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+}
+
+.subventions-postes p {
+	margin: auto;
+}
+
+tr.subvention-ligne:nth-child(even) {background: #FFF;}
+tr.subvention-ligne:nth-child(odd) {background: #DDD;}

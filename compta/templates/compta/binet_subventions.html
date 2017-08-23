@@ -11,7 +11,22 @@
 			{% for subvention in subventions %}
 			<div class="subventions-deblocages-and-lignes-container">
 				<table class="subventions-deblocages-table">
-					<caption>{{ subvention.vague.type_subvention }} {{ subvention.vague.annee }}</caption>
+					<caption>
+						{{ subvention.vague.type_subvention }} {{ subvention.vague.annee }} 
+							{% if request.user.is_staff %}
+								<a href={{ subvention.verser_self_url }}?next={{ request.get_full_path }}>
+									{% if subvention.is_versee %}
+										<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="La subvention a été versée">
+									{% else %}
+										<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="Verser la subvention">
+									{% endif %}
+								</a>
+							{% else %}
+								{% if subvention.is_versee %}
+									<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="La subvention a été versée, il n'est plus possible de la débloquer">
+								{% endif %}
+							{% endif %}
+					</caption>
 					<head>
 						<tr>
 							<th class='subventions-deblocages-postes'>Postes de dépenses</th>
@@ -55,7 +70,7 @@
 					<tbody class="subventions-deblocage-lignes">
 						{% if not subvention.get_deblocages_list %}
 						<tr class='txtcentre'>
-							<td>Pas de déblocages sur {{ subvention.vague.type_subvention }} {{ subvention.vague.annee }}. Vous pouvez en effectuer depuis votre journal</td>
+							<td>Pas encore de déblocages sur {{ subvention.vague.type_subvention }} {{ subvention.vague.annee }}. Vous pouvez en effectuer depuis votre journal</td>
 						</tr>
 						{% endif %}
 
