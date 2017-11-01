@@ -24,6 +24,7 @@
 				{% endif %}
 			</div>
 			<div class='passation-icon'>
+				{% if request.user.is_staff %}
 				<a href={{ mandat.activate_deactivate_self_url }}?next={{ request.get_full_path }}>
 					{% if mandat.is_active %}
 						<img src="{% static 'img/unlock.png' %}" alt="Unlock icon large" class='view-icon-large' title="Le mandat est modifiable par ses membres">
@@ -31,12 +32,21 @@
 						<img src="{% static 'img/lock.png' %}" alt="Lock view icon large" class='view-icon-large' title="Le mandat est passé, seuls les kessiers peuvent le modifier">
 					{% endif %}
 				</a>
+				{% else %}
+					{% if mandat.is_active %}
+						<img src="{% static 'img/unlock.png' %}" alt="Unlock icon large" class='view-icon-large' title="Le mandat est modifiable par ses membres">
+					{% else %}
+						<img src="{% static 'img/lock.png' %}" alt="Lock view icon large" class='view-icon-large' title="Le mandat est passé, seuls les kessiers peuvent le modifier">
+					{% endif %}
+				{% endif %}
 			</div>
+			{% if request.user.is_staff %}
 			<div class='passation-icon print-hidden'>
 				<a href={{ mandat.get_bilan_url }}>
 					<img src="{% static 'img/bullet_list.png' %}" alt="List icon large" class='view-icon-large' title="Voir le bilan du mandat" />
 				</a>
 			</div>
+			{% endif %}
 		</div>
 	</section>
 	<section id="compta-container">
@@ -67,6 +77,20 @@
 				{% else %}
 				<form action="/compta/binet_subventions">
 					<input class="compta-nav-option" type="submit" value="Subventions" />
+				</form>
+				{% endif %}
+			</div>
+
+			<div class="compta-large-button-container">
+				{% if request.session.active_tab == 'Bilan' %}
+				<div class="compta-option-activated">
+					<form action="/compta/bilan">
+						<input class="compta-nav-option" type="submit" value="Bilan" />
+					</form>
+				</div>
+				{% else %}
+				<form action="/compta/bilan">
+					<input class="compta-nav-option" type="submit" value="Bilan" />
 				</form>
 				{% endif %}
 			</div>

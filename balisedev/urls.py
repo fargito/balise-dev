@@ -17,5 +17,6 @@ urlpatterns = [
     url(r'^vos/', include('vos.urls')),
     url(r'^$', views.home),
     url(r'error^$', views.error),
+    url(r'circuitdepart/', include('circuitdepart.urls')),
 
 ]

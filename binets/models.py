@@ -47,7 +47,7 @@ class Mandat(models.Model):
 		ordering = ('binet', 'promotion',)
 
 	def __str__(self):
-		return str(self.binet)+" ("+str(self.promotion)+")"
+		return str(self.binet)+" "+str(self.promotion)
 
 	@models.permalink
 	def get_mandat_journal(self):
@@ -148,11 +148,26 @@ class Mandat(models.Model):
 			status += ', successeurs actifs'
 		return status
 
+	def get_status_verbose_circuitdepart(self):
+		"""used for the circuitdepart module : keyword used to describe the mandat's status"""
+		if self.is_active:
+			if self.being_checked:
+				status = 'Il reste des problèmes pour le binet ' + str(self.binet)
+			else:
+				status = "Rien n'a été fait pour le binet " + str(self.binet)
+		else:
+			status = 'Tout est ok pour le binet ' + str(self.binet)
+		return status
+
 	def get_status(self):
 		"""used for the passation module : keyword used to know the display color of the mandat"""
 		if self.is_active:
 			if self.being_checked:
 				status = 'en-cours'
+				if self.get_balance() < 0:
+					status += '-negatif'
+				else:
+					status += '-positif'
 			else:
 				status = 'non-touche'
 		else:
@@ -168,6 +183,7 @@ class Binet(models.Model):
 	nom = models.CharField(max_length=100)
 	description = models.TextField(blank=True, null = True) # facultatif
 	remarques_admins = models.TextField(blank=True, null = True) # facultatif
+	tag_binet = models.ManyToManyField('TagBinet', verbose_name = "Catégories du binet")
 
 	create_date = models.DateTimeField(auto_now_add=True, auto_now=False,
 								verbose_name="Date de création")
@@ -213,3 +229,15 @@ class Binet(models.Model):
 	def get_latest_mandat(self):
 		"""returns the last mandat"""
 		return Mandat.objects.filter(binet=self)[0]
+
+
+
+class TagBinet(models.Model):
+	"""permet de donner des tags à des binets pour trier par catégories de binets"""
+	nom = models.CharField(max_length=100)
+
+	class Meta:
+		unique_together = ('nom',)
+
+	def __str__(self):
+		return self.nom

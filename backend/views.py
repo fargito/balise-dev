@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from imports.forms import ImportFileForm
+from binets.models import Mandat, TypeBinet
+from accounts.models import Promotion
 from django.contrib.auth.decorators import permission_required
 from django.contrib.admin.views.decorators import staff_member_required
 from imports.file_handlers import file_handler
@@ -254,3 +256,96 @@ def import_liste_binets_officielle(request):
 	else:
 		import_form = ImportFileForm()
 	return render(request, 'backend/import_liste_binets_officielle.html', locals())
+
+
+@staff_member_required
+def export_mailing_lists(request):
+	"""permet de faire facilement des listes de diffusion pour les binets actifs"""
+	promotions = Promotion.objects.all()
+	return render(request, 'backend/export_mailing_lists_welcome.html', locals())
+
+
+@staff_member_required
+def export_mailing_lists_actifs(request):
+	"""permet de faire facilement des listes de diffusion pour les binets actifs"""
+	filtered_mandats = {}
+	presidents = {}
+	tresoriers = {}
+	#on sélectionne d'abord tous les mandats actifs en les séparant par type
+
+	types_binets = TypeBinet.objects.all()
+
+	for type_binet in types_binets:
+		filtered_mandats[type_binet] = Mandat.objects.filter(is_active=True, type_binet=type_binet)
+		presidents[type_binet] = []
+		tresoriers[type_binet] = []
+		for mandat in filtered_mandats[type_binet]:
+			presidents[type_binet].append(mandat.president)
+			tresoriers[type_binet].append(mandat.tresorier)
+
+
+	#on reformate pour accéder aux données plus facilement
+	ordered_data = []
+	for type_binet in types_binets:
+		ordered_data.append((type_binet, presidents[type_binet], tresoriers[type_binet]))
+
+
+
+	return render(request, 'backend/export_mailing_lists.html', locals())
+
+
+@staff_member_required
+def export_mailing_lists_promotion(request, promo):
+	"""permet de faire facilement des listes de diffusion pour les binets actifs"""
+	filtered_mandats = {}
+	presidents = {}
+	tresoriers = {}
+	#on sélectionne d'abord tous les mandats actifs en les séparant par type
+
+	types_binets = TypeBinet.objects.all()
+
+	for type_binet in types_binets:
+		filtered_mandats[type_binet] = Mandat.objects.filter(type_binet=type_binet, promotion__nom=promo)
+		presidents[type_binet] = []
+		tresoriers[type_binet] = []
+		for mandat in filtered_mandats[type_binet]:
+			presidents[type_binet].append(mandat.president)
+			tresoriers[type_binet].append(mandat.tresorier)
+
+
+	#on reformate pour accéder aux données plus facilement
+	ordered_data = []
+	for type_binet in types_binets:
+		ordered_data.append((type_binet, presidents[type_binet], tresoriers[type_binet]))
+
+
+	return render(request, 'backend/export_mailing_lists.html', locals())
+
+
+@staff_member_required
+def export_mailing_lists_promotion_actifs(request, promo):
+	"""permet de faire facilement des listes de diffusion pour les binets actifs"""
+	filtered_mandats = {}
+	presidents = {}
+	tresoriers = {}
+	#on sélectionne d'abord tous les mandats actifs en les séparant par type
+
+	types_binets = TypeBinet.objects.all()
+
+	for type_binet in types_binets:
+		filtered_mandats[type_binet] = Mandat.objects.filter(is_active=True, type_binet=type_binet, promotion__nom=promo)
+		presidents[type_binet] = []
+		tresoriers[type_binet] = []
+		for mandat in filtered_mandats[type_binet]:
+			presidents[type_binet].append(mandat.president)
+			tresoriers[type_binet].append(mandat.tresorier)
+
+
+	#on reformate pour accéder aux données plus facilement
+	ordered_data = []
+	for type_binet in types_binets:
+		ordered_data.append((type_binet, presidents[type_binet], tresoriers[type_binet]))
+
+
+
+	return render(request, 'backend/export_mailing_lists.html', locals())

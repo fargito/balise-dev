@@ -11,12 +11,20 @@ tr.passation-ligne:nth-child(even) {background: #FFF;}
 tr.passation-ligne:nth-child(odd) {background: #DDD;}
 
 
-.mandat-en-cours-successeurs-non-actifs {
+.mandat-en-cours-positif-successeurs-non-actifs {
 	background: #FFFF00;
 }
 
-.mandat-en-cours-successeurs-actifs {
+.mandat-en-cours-positif-successeurs-actifs {
 	background: #FFFF00;
+}
+
+.mandat-en-cours-negatif-successeurs-non-actifs {
+	background: #FE818D;
+}
+
+.mandat-en-cours-negatif-successeurs-actifs {
+	background: #FE818D;
 }
 
 .mandat-compta-verifiee-successeurs-non-actifs {

@@ -97,7 +97,7 @@
 								</td>
 								{{ deblocage_edit_formset.management_form }}
 								{% for deblocage_form in deblocage_edit_formset %}
-									<td class="compta-form-montant">{{ deblocage_form.id }}{{ deblocage_form.montant }}</td>
+									<td class="compta-form-montant">{{ deblocage_form.subvention }}{{ deblocage_form.id }}{{ deblocage_form.montant }}</td>
 								{% endfor %}
 								<td class="compta-form-validate" colspan="2">
 									{% csrf_token %}

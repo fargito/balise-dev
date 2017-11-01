@@ -29,6 +29,9 @@ class LigneCompta(models.Model):
 
 	class Meta:
 		ordering = ('-date','-id')
+		permissions = (
+			("validate_polymedia", "Effectuer des validations Polymédia"),
+			)
 
 	@models.permalink
 	def delete_self_link(self):
@@ -49,6 +52,11 @@ class LigneCompta(models.Model):
 	def lock_unlock_self_link(self):
 		"""permet de passer is_locked à sa valeur contraire"""
 		return ('lock_unlock_ligne', [self.id])
+
+	@models.permalink
+	def lock_unlock_self_polymedia_link(self):
+		"""permet de passer is_locked à sa valeur contraire"""
+		return ('lock_unlock_ligne_polymedia', [self.id])
 
 
 	def get_deblocages(self):
@@ -113,3 +121,8 @@ class PosteDepense(models.Model):
 		"""pour ligne_edit, retourne le rang du choix par défault de"""
 		return PosteDepense.objects.filter(
 				Q(mandat=self.mandat) | Q(mandat=None)).filter(nom__lt=self.nom).count()
+
+	@models.permalink
+	def delete_self_url(self):
+		"""retourne l'url de destruction du poste de dépense"""
+		return ('delete_poste_depense', [self.id])

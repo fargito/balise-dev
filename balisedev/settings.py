@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'vos',
     'subventions',
     'passations',
+    'circuitdepart',
 ]
 
 MIDDLEWARE = [
@@ -185,7 +186,7 @@ STATICFILES_DIRS = (
 
 # session expiry
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-SESSION_COOKIE_AGE = 300 # after 5 minutes, the session is expired and you have to login again
+SESSION_COOKIE_AGE = 600 # after 10 minutes, the session is expired and you have to login again
 SESSION_SAVE_EVERY_REQUEST = True
 
 

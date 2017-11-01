@@ -37,8 +37,8 @@ class BinetCreateForm(forms.ModelForm):
 
 class MandatCreateForm(forms.ModelForm):
 	"""permet de créer le premier mandat lors de la création d'un binet"""
-	president = forms.ModelChoiceField(queryset=User.objects.order_by('username'))
-	tresorier = forms.ModelChoiceField(queryset=User.objects.order_by('username'))
+	president = forms.ModelChoiceField(queryset=User.objects.filter(eleve__signed_fiche=False).order_by('username'))
+	tresorier = forms.ModelChoiceField(queryset=User.objects.filter(eleve__signed_fiche=False).order_by('username'))
 
 	class Meta:
 		model = Mandat
@@ -59,8 +59,8 @@ class MandatCreateForm(forms.ModelForm):
 
 class MandatEditForm(forms.ModelForm):
 	"""permet de modifier le mandat"""
-	president = forms.ModelChoiceField(queryset=User.objects.order_by('username'))
-	tresorier = forms.ModelChoiceField(queryset=User.objects.order_by('username'))
+	president = forms.ModelChoiceField(queryset=User.objects.filter(eleve__signed_fiche=False).order_by('username'))
+	tresorier = forms.ModelChoiceField(queryset=User.objects.filter(eleve__signed_fiche=False).order_by('username'))
 
 	def __init__(self, binet, create, *args, **kwargs):
 		super(MandatEditForm, self).__init__(*args, **kwargs)

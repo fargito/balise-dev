@@ -1,4 +1,5 @@
 from django import forms
+from decimal import Decimal
 from django.db.models import Q
 from .models import LigneCompta, PosteDepense
 from subventions.models import DeblocageSubvention
@@ -103,7 +104,7 @@ class BaseDeblocageSubventionFormSet(BaseFormSet):
 			except KeyError:
 				pass
 
-		if(self.data['debit'] and float(self.data['debit']) < (somme_deblocages)):
+		if(self.data['debit'] and Decimal(self.data['debit']) < (somme_deblocages)):
 			raise forms.ValidationError('Impossible de débloquer des subventions supérieures au montant de la dépense')
 
 		for k in range(len(self.subventions_list)):
@@ -140,6 +141,7 @@ class CustomDeblocageSubventionFormSet(BaseInlineFormSet):
 		super(CustomDeblocageSubventionFormSet, self).clean()
 		if any(self.errors):
 			return
+
 
 		for deblocage in self.cleaned_data:
 			if deblocage['montant']:
@@ -179,11 +181,12 @@ class CustomDeblocageSubventionFormSet(BaseInlineFormSet):
 
 
 
-		if(self.data['credit'] != '' and float(self.data['credit']) > 0):
-			if deblocage['montant']:
-				if deblocage['montant'] > 0:
-					"""on ne peut pas subventionner une recette"""
-					raise forms.ValidationError("Impossible de débloquer des subventions sur une recette")
+		if(self.data['credit'] != '' and Decimal(self.data['credit']) > 0):
+			for deblocage in self.cleaned_data:
+				if deblocage['montant']:
+					if deblocage['montant'] > 0:
+						"""on ne peut pas subventionner une recette"""
+						raise forms.ValidationError("Impossible de débloquer des subventions sur une recette")
 
 		somme_deblocages = 0
 		for deblocage in self.cleaned_data:
@@ -193,9 +196,10 @@ class CustomDeblocageSubventionFormSet(BaseInlineFormSet):
 				except KeyError:
 					pass
 
-		if(self.data['debit'] and self.data['debit'] < str(somme_deblocages)):
-			print(somme_deblocages)
+		if(self.data['debit'] and Decimal(self.data['debit']) < somme_deblocages):
 			raise forms.ValidationError('Impossible de débloquer des subventions supérieures au montant de la dépense')
+
+
 
 class PosteDepenseForm(forms.ModelForm):
 	"""définit le formulaire pour créer un nouveau poste de dépense"""
@@ -226,6 +230,17 @@ class SearchLigneForm(forms.Form):
 	binet = forms.CharField(required=False)
 	promotion = forms.ModelChoiceField(queryset=Promotion.objects.all(), required=False)
 	poste = forms.ModelChoiceField(queryset=PosteDepense.objects.filter(mandat=None), required=False)
+	montant_haut = forms.FloatField(required=False, label='Montant haut')
+	montant_bas = forms.FloatField(required=False, label='Montant bas')
+	include_locked = forms.BooleanField(initial=False, required=False, label='Inclure les opérations verrouillées')
+
+
+class SearchLigneFormPolymedia(forms.Form):
+	"""contrairement au précédent, ce formulaire ne demande pas le poste de dépenses"""
+	date_debut = forms.DateField(required=False, label='Après')
+	date_fin = forms.DateField(required=False, label='Avant')
+	binet = forms.CharField(required=False)
+	promotion = forms.ModelChoiceField(queryset=Promotion.objects.all(), required=False)
 	montant_haut = forms.FloatField(required=False, label='Montant haut')
 	montant_bas = forms.FloatField(required=False, label='Montant bas')
 	include_locked = forms.BooleanField(initial=False, required=False, label='Inclure les opérations verrouillées')

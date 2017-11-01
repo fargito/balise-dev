@@ -12,6 +12,8 @@
   <link rel="stylesheet" type="text/css" media='screen' href="{% static 'css/compta.css' %}" />
   <link rel="stylesheet" type="text/css" media='screen' href="{% static 'css/subventions.css' %}" />
   <link rel="stylesheet" type="text/css" media='screen' href="{% static 'css/passations.css' %}" />
+  <link rel="stylesheet" type="text/css" media='screen' href="{% static 'css/circuitdepart.css' %}" />
+
   <link rel="stylesheet" type="text/css" media="print" href="{% static 'css/print.css' %}" />
   <script src="{% static 'css/jquery.js' %}"></script>
   <script src="{% static 'css/dist/js/bootstrap.min.js' %}"></script>
@@ -42,16 +44,20 @@
             {% if user.is_authenticated %}
               <li><a href="/binets" class='navbar-brand'><p class='kesdorado'>Liste des binets</p></a></li>
               <li><a href="/subventions" class='navbar-brand'><p class='kesdorado'>Subventions</p></a></li>
+              <li><a href="/compta" class='navbar-brand'><p class='kesdorado'>Compta</p></a></li>
 
               {% if user.is_staff %}
                 <li><a href="/backend" class='navbar-brand'><p class='kesdorado'>Administration</p></a></li>
-                <li><a href="/passations" class='navbar-brand'><p class='kesdorado'>Passations</p></a></li>
                 <li><a href="/compta/seance_cheques" class='navbar-brand'><p class='kesdorado'>Séance de chèques</p></a></li>
+                <li><a href="/passations" class='navbar-brand'><p class='kesdorado'>Passations</p></a></li>
+                <!--<li><a href="/vos" class='navbar-brand'><p class='kesdorado'>Tableau de bord</p></a></li>-->
               {% endif %}
-              
-              <li><a href="/compta" class='navbar-brand'><p class='kesdorado'>Compta</p></a></li>
-		          {% if user.is_staff %}
-                <li><a href="/vos" class='navbar-brand'><p class='kesdorado'>Tableau de bord</p></a></li>
+
+              {% if perms.accounts.see_circuitdepart %}
+                <li><a href="/circuitdepart" class='navbar-brand'><p class='kesdorado'>Circuit de départ</p></a></li>
+              {% endif %}
+              {% if perms.compta.validate_polymedia %}
+                <li><a href="/compta/polymedia" class='navbar-brand'><p class='kesdorado'>Polymédia</p></a></li>
               {% endif %}
                 <li><a href="/logout" class='navbar-brand'><p class='kesdorado'>Déconnexion</p></a></li>
             {% endif %}

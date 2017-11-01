@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Binet, Mandat, TypeBinet
+from .models import Binet, Mandat, TypeBinet, TagBinet
 
 # définit les critères d'affichage dans l'interface admin
 
@@ -20,10 +20,12 @@ class MandatAdmin(admin.ModelAdmin):
 class TypeBinetAdmin(admin.ModelAdmin):
 	list_display = ('nom',)
 
-
+class TagBinetAdmin(admin.ModelAdmin):
+	list_display = ('nom',)
 
 
 
 admin.site.register(Binet, BinetAdmin)
 admin.site.register(Mandat, MandatAdmin)
 admin.site.register(TypeBinet, TypeBinetAdmin)
+admin.site.register(TagBinet, TagBinetAdmin)

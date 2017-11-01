@@ -13,7 +13,7 @@ class CreateAccountForm(forms.ModelForm):
 
 	class Meta:
 		model = Eleve
-		exclude = ('user',)
+		exclude = ('user', 'all_binets_passed', 'other_problem_circuitdepart', 'signed_fiche',)
 		labels = {'prenom': 'Prénom'}
 
 
