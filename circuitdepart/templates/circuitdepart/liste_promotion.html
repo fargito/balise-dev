@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+	<div class='binet-title-and-return-container'>
+		<div class="binets-return-button">
+			<form action="../">
+				<input type="submit" value="Retour" />
+			</form>
+		</div>
+		<h3>Liste des élèves de la promotion {{ promotion }}</h3>
+		<div class='binets-side-button'>
+			<div class='margin-right-2'>
+				{% if perms.circuitdepart.add_problem_depart %}
+					<a href='./add_problem'><img src="{% static 'img/add.png' %}" alt="Add icon small" class='view-icon-large' title="Ajouter un problème"></a>
+				{% endif %}
+			</div>
+			<a href='../refresh_all/?next={{ request.get_full_path }}'><img src="{% static 'img/refresh.png' %}" alt="Refresh icon small" class='view-icon-large' title="Actualiser"></a>
+		</div>
+	</div>
+	<div class='binets-search-container'>
+		<div class='binets-search-subcontainer'>
+			<form id="searchform" action="" method="get" accept-charset="utf-8">
+			    <input class="searchfield" id="searchbox" name="q" type="text" placeholder="Rechercher" value='{{ search_arguments|default_if_none:'' }}'>
+			    <input type='submit' value='Valider'>
+		    </form>
+		</div>
+	</div>
+	
+	<section id="table-container">
+		<table id="liste-binets">
+			<thead class="liste-binets">
+				<tr>
+					<th></th>
+					<th class="nom-eleve">Nom</th>
+					<th class="nom-eleve">Prénom</th>
+					<th class="binet-user">Identifiant</th>
+					<th class="circuitdepart-listebinets">Binets</th>
+					<th class="circuitdepart-listebinets">Etat du binet</th>
+					<th class="circuitdepart-listebinets">Autres problèmes</th>
+					<th class="circuitdepart-listebinets">Etat du problème</th>
+
+				</tr>
+			</thead>
+			<tbody>
+				{% for user in users %}
+					<tr class="eleve-{{ user.eleve.get_status }}">
+						<td class='mandat-txtcentre-1em'>
+							{% if user.eleve.all_binets_passed %}{% if not user.eleve.other_problem_circuitdepart %}
+									{% if user.eleve.signed_fiche %}
+										<a href="{{ user.eleve.sign_unsign_url }}?next={{ request.get_full_path }}">
+											<img src="{% static 'img/check.png' %}" alt="Check icon large" class='view-icon-large' title="La feuille de départ a été signée">
+										</a>
+									{% else %}
+										<a href="{{ user.eleve.sign_unsign_url }}?next={{ request.get_full_path }}">
+											<img src="{% static 'img/signing.png' %}" alt="Signing icon large" class='view-icon-large' title="Signer la feuille de départ">
+										</a>
+									{% endif %}
+							{% endif %}{% endif %}
+						</td>
+						<td class="nom-eleve">
+							<strong>{{ user.eleve.nom }}</strong>
+						</td>
+						<td class="nom-eleve">
+							{{ user.eleve.prenom }}
+						</td>
+						<td class="binet-user">
+							<a href={{ user.eleve.get_infos_url }}>{{ user.username }}</a>
+						</td>
+						<td class='circuitdepart-listebinets'>
+							{% if user.is_staff %}
+								Kessier Money
+							{% else %}
+								{% for mandat in user.eleve.get_mandats %}
+									{{ mandat.binet }}<br>
+								{% endfor %}
+							{% endif %}
+						</td>
+						<td class='circuitdepart-listebinets'>
+							{% if user.is_staff %}
+								<3
+							{% else %}
+								{% for mandat in user.eleve.get_mandats %}
+									{% if not mandat.is_active %}
+										<img src="{% static 'img/check.ico' %}" alt="Check icon small" title="{{ mandat.get_status_verbose_circuitdepart }}">
+									{% else %}
+										{% if mandat.being_checked %}
+											<img src="{% static 'img/processing.ico' %}" alt="Processing icon small" title="{{ mandat.get_status_verbose_circuitdepart }}">
+										{% else %}
+											<img src="{% static 'img/delete.ico' %}" alt="Delete icon small" title="{{ mandat.get_status_verbose_circuitdepart }}">
+										{% endif %}
+									{% endif %}
+									<br>
+								{% endfor %}
+							{% endif %}
+						</td>
+						<td class='circuitdepart-listebinets'>
+							{% for problem in user.eleve.get_other_problems %}
+								{{ problem.description }}<br>
+							{% endfor %}
+						</td>
+						<td class='circuitdepart-listebinets'>
+							{% for problem in user.eleve.get_other_problems %}
+								{% if perms.circuitdepart.add_problem_depart %}
+									<a href={{ problem.mark_as_resolved_url }}?next={{ request.get_full_path }}>
+										{% if problem.resolved %}
+											<img src="{% static 'img/check.ico' %}" alt="Processing icon small" title="Le problème est résolu">
+										{% else %}
+											<img src="{% static 'img/delete.ico' %}" alt="Processing icon small" title="Le problème n'est pas résolu">
+										{% endif %}
+									</a>
+								{% else %}
+									{% if problem.resolved %}
+										<img src="{% static 'img/check.ico' %}" alt="Processing icon small" title="Le problème est résolu">
+									{% else %}
+										<img src="{% static 'img/delete.ico' %}" alt="Processing icon small" title="Le problème n'est pas résolu">
+									{% endif %}
+								{% endif %}
+							{% endfor %}
+						</td>
+					</tr>
+
+				{% endfor %}
+			</tbody>
+		</table>
+	</section>
+{% endblock %}

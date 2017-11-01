@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+	<section class="binet-title-and-return-container">
+		<div class="binets-return-button">
+			
+		</div>
+		<h3>Validation des devis polymédias</h3>
+		<div class='binets-side-button'>
+			
+		</div>
+	</section>
+	<div class='txtcentre'>
+		Lorsqu'un binet vient avec une demande de validation de demande de devis Poymédia, vous devez lui demander s'il a inscrit la dépense sur Balise.<br>
+		Recherchez ensuite la dépense ici et quand vous signez le devis, cliquez sur "valider le devis". Normalement la dépense devrait disparaître.<br>
+		En cas de soucis, demandez aux kessiers binets ;)
+	</div>
+	{% if request.user.is_staff %}
+	<section id='compta-seance-cheques-form-container'>
+		<form method='post' action=''>
+			<table class='compta-width100'>
+				<caption>Rechercher des opérations</caption>
+				<tr>
+					<td colspan='6'>
+						{{ search_ligne_form.non_field_errors }}
+					</td>
+				</tr>
+				<tr>
+					<th class='compta-search-form'>{{ search_ligne_form.date_debut.label }}</th>
+					<th class='compta-search-form'>{{ search_ligne_form.date_fin.label }}</th>
+					<th class='compta-search-form'>{{ search_ligne_form.binet.label }}</th>
+					<th class='compta-search-form'>{{ search_ligne_form.promotion.label }}</th>
+					<th class='compta-search-form'>{{ search_ligne_form.poste.label }}</th>
+					<th class='compta-search-form'>{{ search_ligne_form.montant_bas.label }}</th>
+					<th class='compta-search-form'>{{ search_ligne_form.montant_haut.label }}</th>
+					<th class='compta-search-form'>{{ search_ligne_form.include_locked.label }}</th>
+				</tr>
+				<tr>
+					<td class='compta-search-form'>{{ search_ligne_form.date_debut.errors }}</td>
+					<td class='compta-search-form'>{{ search_ligne_form.date_fin.errors }}</td>
+					<td class='compta-search-form'>{{ search_ligne_form.binet.errors }}</td>
+					<td class='compta-search-form'>{{ search_ligne_form.promotion.errors }}</td>
+					<td class='compta-search-form'>{{ search_ligne_form.poste.errors }}</td>
+					<td class='compta-search-form'>{{ search_ligne_form.montant_bas.errors }}</td>
+					<td class='compta-search-form'>{{ search_ligne_form.montant_haut.errors }}</td>
+					<td class='compta-search-form'>{{ search_ligne_form.include_locked.errors }}</td>
+				</tr>
+				<tr>
+					<td class='compta-search-form'>{{ search_ligne_form.date_debut }}</td>
+					<td class='compta-search-form'>{{ search_ligne_form.date_fin }}</td>
+					<td class='compta-search-form'>{{ search_ligne_form.binet }}</td>
+					<td class='compta-search-form'>{{ search_ligne_form.promotion }}</td>
+					<td class='compta-search-form'>{{ search_ligne_form.poste }}</td>
+					<td class='compta-search-form'>{{ search_ligne_form.montant_bas }}</td>
+					<td class='compta-search-form'>{{ search_ligne_form.montant_haut }}</td>
+					<td class='compta-search-form'>{{ search_ligne_form.include_locked }}</td>
+					<td class='compta-search-form'><input type="submit" name="validation" value="Rechercher" /></td>
+					<td class='compta-search-form'><input type="submit" name="validation" value="Annuler" /></td>
+				</tr>
+			</table>
+			{% csrf_token %}
+		</form>
+	</section>
+	{% endif %}
+	<section id="compta-container">
+		{% block compta_page %}
+		<div id="compta-table-container">
+			<table id="compta-table">
+				<caption>Polymédias non validés</caption>
+				{% block compta_titles %}
+				<thead>
+					<tr>
+						<th>
+						</th>
+						<th class="compta-form-date">
+							Date
+						</th>
+						<th class='compta-binet'>
+							Binet
+						</th>
+						<th class='compta-promo'>
+							Promo
+						</th>
+						<th class="compta-form-description">
+							Description - facture
+						</th>
+						<th class="compta-form-poste">
+							Poste
+						</th>
+						<th class="compta-form-montant">
+							Débit
+						</th>
+						<th class="compta-form-montant">
+							Crédit
+						</th>
+						<th class="compta-form-montant-double">Déblocages</th>
+					</tr>
+				</thead>
+				{% endblock %}
+				<tbody>
+				{% for ligne in lignes %}
+					<tr class="ligne-compta">
+						<td class=compta-form-montant>
+							<div class=txtcentre>
+								<a href={{ ligne.lock_unlock_self_polymedia_link }}?next={{ request.get_full_path }}>
+									{% if ligne.is_locked %}
+										<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="Déverrouiller la ligne">
+									{% else %}
+										Valider le devis
+									{% endif %}
+								</a>
+							</div>
+						</td>
+						<td class="compta-form-date">{{ ligne.date|date:'d/m/Y' }}</td>
+						<td class='compta-binet'>{{ ligne.mandat.binet }}</td>
+						<td class='compta-promo'>{{ ligne.mandat.promotion }}</td>
+						<td class="compta-form-description">{{ ligne.description }}</td>
+						<td class="compta-form-poste">{{ ligne.poste_depense|default_if_none:"" }}</td>
+						<td class="compta-form-montant">{% if ligne.debit %}{{ ligne.debit|default_if_none:"" }}{% endif %}</td>
+						<td class="compta-form-montant">{% if ligne.credit %}{{ ligne.credit|default_if_none:"" }}{% endif %}</td>
+						<td class="compta-form-montant-double">
+							<div class="compta-deblocage">
+								{% for subvention, deblocage in ligne.get_deblocages %}
+									{% if deblocage %}{{ subvention.vague.type_subvention }} {{ subvention.vague.annee }}: {{ deblocage }}</br>{% endif %}
+								{% endfor %}
+							</div>
+						</td>
+					</tr>
+				{% endfor %}
+				{% if not lignes %}
+					<tr><td colspan="1000">Il n'y a pas de Polymédias en attente de validation</td></tr>
+				{% endif %}
+				</tbody>
+			</table>
+		</div>
+		{% endblock %}
+	</section>
+{% endblock %}

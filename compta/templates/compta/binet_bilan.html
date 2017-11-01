@@ -1,0 +1,89 @@
+{% extends 'compta/journal.html' %}
+{# cette page récupère le menu de la page journal #}
+{% load static %}
+
+
+{% block compta_page %}
+<div id="compta-table-container">
+	<div class='txtcentre'>
+		<div id="view-deblocages-title">
+			Bilan par poste de dépense
+		</div>
+	</div>
+	<div class="subvention-tables_container">
+		{% for poste_depense, debit_poste, credit_poste, deblocages_poste, subtotal, is_positive, is_not_empty in postes_with_total %}
+		<div class="subventions-deblocages-and-lignes-container">
+			<table class="subventions-deblocage-lignes">
+				<!-- <caption>{{ poste_depense }}</caption> -->
+				<thead>
+					<tr>
+						<th class="compta-form-description">
+							{{ poste_depense }}
+							{% if not is_not_empty and poste_depense.mandat %}
+								<a href={{ poste_depense.delete_self_url }}?next={{ request.get_full_path }}>
+									<img src="{% static 'img/delete.ico' %}" alt="Delete icone" class='delete_icon' title="Le poste de dépense est vide, le supprimer ?"/>
+								</a>
+							{% endif %}
+						</th>
+						<th class="compta-form-montant">
+							Débit
+						</th>
+						<th class="compta-form-montant">
+							Crédit
+						</th>
+					</tr>
+				</thead>
+				<tbody class="subventions-deblocage-lignes">
+					<tr class="ligne-compta">
+						<td class="compta-form-description">Dépenses</td>
+						<td class="compta-form-montant">{{ debit_poste }}</td>
+						<td class="compta-form-montant"></td>
+					</tr>
+					<tr class="ligne-compta">
+						<td class="compta-form-description">Recettes propres</td>
+						<td class="compta-form-montant"></td>
+						<td class="compta-form-montant">{{ credit_poste }}</td>
+					</tr>
+					{% for subvention, subtotal in deblocages_poste %}
+						{% if subtotal %}
+							<tr class="ligne-compta">
+								<td class="compta-form-description">
+									<div class="compta-deblocage">
+										Déblocages {{ subvention.vague.type_subvention }} {{ subvention.vague.annee }}
+									</div>
+								</td>
+								<td class="compta-form-montant"></td>
+								<td class="compta-form-montant">
+									<div class="compta-deblocage">
+										{{ subtotal }}
+									</div>
+								</td>
+							</tr>
+						{% endif %}
+					{% endfor %}
+				</tbody>
+				<tfoot>
+					<tr>
+						<th class="compta-form-description">Sous-total {{ poste_depense }}</th>
+						<th class="compta-form-montant"></th>
+						<th class="compta-form-montant">
+							{% if is_positive %}
+								<div class="compta-positive">
+									{{ subtotal }}
+								</div>
+								{% else %}
+								<div class="compta-negative">
+									{{ subtotal }}
+								</div>
+							{% endif %}
+						</th>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+		{% endfor %}
+	</div>
+</div>
+
+
+{% endblock %}

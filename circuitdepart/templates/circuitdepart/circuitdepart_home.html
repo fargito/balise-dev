@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+	<section class="binet-title-and-return-container">
+		<img src="{% static 'img/blank.ico' %}" alt="Blank icon large" class='view-icon-large'>
+		<h3 class="txtcentre">
+			Circuits de départ
+		</h3>
+		<a href='refresh_all/'><img src="{% static 'img/refresh.png' %}" alt="Refresh icon small" class='view-icon-large' title="Actualiser"></a>
+	</section>
+	<section id="compta-container">
+		<div id="passations-container">
+			<table id="passations-table">
+				<thead>
+					<tr>
+						<th class="passations-promotion">Promotion</th>
+						<th class='passation-montant'>Nombre d'élèves impliqués</th>
+						<th class='passation-montant'>RAS</th>
+						<th class='passation-montant'>Pas RAS</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for promotion_data in promotions_data %}
+						<tr class='passation-ligne'>
+							<td class="passations-promotion"><a href="{{ promotion_data.promotion.get_circuitdepart_url }}">{{ promotion_data.promotion }}</a></td>
+							<td class='passation-montant'>{{ promotion_data.nb_eleves }}</td>
+							<td class='passation-montant'>{{ promotion_data.nb_ok }}</td>
+							<td class='passation-montant'>{{ promotion_data.nb_rest }}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</section>
+{% endblock %}

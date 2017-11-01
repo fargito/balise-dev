@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h2>Listes de diffusion</h2>
+	<ul>
+		{% for type_binet, presidents, tresoriers in ordered_data %}
+			<li>
+				{{ type_binet }}<br>
+				<ul>
+					<li>
+						Présidents<br>
+						{% for president in presidents %}
+							{{ president.email }}; 
+						{% endfor %}
+					</li>
+					<li>
+						Trésoriers<br>
+						{% for tresorier in tresoriers %}
+							{{ tresorier.email }}; 
+						{% endfor %} 
+					</li>
+				</ul>
+			</li>
+		{% endfor %}
+	</ul>
+
+{% endblock %}

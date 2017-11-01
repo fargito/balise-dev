@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+	<h2>Exportation de listes de diffusion</h2>
+	<p></p>
+	<ul>
+		<li><a href="actifs/">Tous les mandats actifs</a></li>
+		{% for promotion in promotions %}
+			<li><a href="actifs/{{ promotion }}">Mandats actifs promotion {{ promotion }}</a></li>
+			<li><a href="promotion/{{ promotion }}">Tous les mandats promotion {{ promotion }}</a></li>
+
+		{% endfor %}
+	</ul>
+
+{% endblock %}

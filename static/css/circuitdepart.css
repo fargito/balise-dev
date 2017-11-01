@@ -1,0 +1,45 @@
+.eleve-signed-fiche {
+	background: #3ae73a;
+}
+
+.eleve-no-problem {
+	background: #DDD;
+}
+
+.eleve-not-ready {
+	background: #FFF;
+}
+
+td.nom-eleve {
+	padding: 1em;
+	min-width: 10em;
+}
+
+th.nom-eleve {
+	padding-left: 1em;
+}
+
+.circuitdepart-listebinets {
+	padding: 1em;
+}
+
+.circuitdepart-checkbinets {
+	padding: 1em;
+	width: 10em;
+}
+
+.circuitdepart-problemform {
+	margin: auto;
+}
+
+.circuitdepart-centered {
+	margin: auto;
+}
+
+.circuitdepart-txtcenter {
+	text-align: center;
+}
+
+.margin-right-2 {
+	margin-right: 2em;
+}
