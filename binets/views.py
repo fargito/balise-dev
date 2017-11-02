@@ -263,10 +263,16 @@ def export_binets_list(request):
 			filter_arg &= Q(binet__nom__icontains=cleaned_data['binet'])
 
 		if cleaned_data['promotion']:
-			filter_arg &= Q(promotion=cleaned_data['promotion'])
+			promotion_filter = Q()
+			for promotion in cleaned_data['promotion']:
+				promotion_filter |= Q(promotion=promotion)
+			filter_arg &= promotion_filter
 
 		if cleaned_data['type_binet']:
-			filter_arg &= Q(type_binet=cleaned_data['type_binet'])
+			type_binet_filter = Q()
+			for type_binet in cleaned_data['type_binet']:
+				type_binet_filter |= Q(type_binet=type_binet)
+			filter_arg &= type_binet_filter
 
 		if cleaned_data['categorie']:
 			categorie_filter = Q()

@@ -104,8 +104,8 @@ class PassationMandatForm(forms.ModelForm):
 
 class SearchBinetForm(forms.Form):
 	binet = forms.CharField(required=False)
-	promotion = forms.ModelChoiceField(queryset=Promotion.objects.all(), required=False)
-	type_binet = forms.ModelChoiceField(queryset=TypeBinet.objects.all(), required=False)
+	promotion = forms.ModelMultipleChoiceField(queryset=Promotion.objects.all(), required=False)
+	type_binet = forms.ModelMultipleChoiceField(queryset=TypeBinet.objects.all(), required=False)
 	categorie = forms.ModelMultipleChoiceField(queryset=TagBinet.objects.all(), required=False, label='Catégories')
 	active_only = forms.BooleanField(initial=False, required=False, label='Mandats actifs uniquement')
 	is_last_only = forms.BooleanField(initial=True, required=False, label='Plus récents uniquement')
