@@ -1,5 +1,6 @@
 from django import forms
-from .models import Mandat, Binet
+from accounts.models import Promotion
+from .models import Mandat, Binet, TagBinet, TypeBinet
 from django.contrib.auth.models import User
 
 
@@ -99,3 +100,13 @@ class PassationMandatForm(forms.ModelForm):
 		fields = ('description', 'remarques_admins')
 		labels = {'description': 'Remarques sur le mandat visibles par les membres du binet :',
 					'remarques_admins': 'Remarques pour les kessiers :'}
+
+
+class SearchBinetForm(forms.Form):
+	binet = forms.CharField(required=False)
+	promotion = forms.ModelChoiceField(queryset=Promotion.objects.all(), required=False)
+	type_binet = forms.ModelChoiceField(queryset=TypeBinet.objects.all(), required=False)
+	categorie = forms.ModelMultipleChoiceField(queryset=TagBinet.objects.all(), required=False, label='Catégories')
+	active_only = forms.BooleanField(initial=False, required=False, label='Mandats actifs uniquement')
+	is_last_only = forms.BooleanField(initial=True, required=False, label='Plus récents uniquement')
+	public_only = forms.BooleanField(initial=True, required=False, label='Publics uniquement')

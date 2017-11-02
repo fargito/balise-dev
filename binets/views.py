@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.admin.views.decorators import staff_member_required
-from .models import Binet, Mandat, TypeBinet
-from .forms import BinetEditForm, MandatEditForm, BinetCreateForm, MandatCreateForm
+from .models import Binet, Mandat, TypeBinet, TagBinet
+from .forms import BinetEditForm, MandatEditForm, BinetCreateForm, MandatCreateForm, SearchBinetForm
 from django.db.models import Q
 
 import datetime
@@ -76,6 +76,8 @@ def binet_history(request, id_binet):
 		id=id_binet)
 	liste_mandats = Mandat.objects.filter(
 		binet=binet)
+
+	categories = TagBinet.objects.filter(binet=binet)
 	return render(request, 'binets/binet_history.html', locals())
 
 
@@ -240,3 +242,52 @@ def binet_hide_unhide(request, id_binet):
 	binet.save()
 
 	return redirect(next)
+
+
+@staff_member_required
+def export_binets_list(request):
+	""" permet d'exporter les listes de binets suivant les tags ainsi que les adresses mails correspondantes"""
+
+	search_binet_form = SearchBinetForm(request.POST or None)
+	if search_binet_form.is_valid() and request.POST['validation'] == 'Rechercher':
+		# on construit au fur et à mesure le filtre qu'on va appliquer à la base de données en restreignant toujours
+		# le nombre de requêtes à max_requests
+		cleaned_data = search_binet_form.cleaned_data
+
+		filter_arg = Q()
+
+		if cleaned_data['is_last_only']:
+			filter_arg &= Q(is_last=True)
+
+		if cleaned_data['binet']:
+			filter_arg &= Q(binet__nom__icontains=cleaned_data['binet'])
+
+		if cleaned_data['promotion']:
+			filter_arg &= Q(promotion=cleaned_data['promotion'])
+
+		if cleaned_data['type_binet']:
+			filter_arg &= Q(type_binet=cleaned_data['type_binet'])
+
+		if cleaned_data['categorie']:
+			categorie_filter = Q()
+			for categorie in cleaned_data['categorie']:
+				categorie_filter |= Q(binet__tag_binet=categorie)
+			filter_arg &= categorie_filter
+
+		if cleaned_data['active_only']:
+			filter_arg &= Q(is_active=True)
+
+		if cleaned_data['is_last_only']:
+			filter_arg &= Q(is_last=True)
+
+		if cleaned_data['public_only']:
+			filter_arg &= Q(binet__is_hidden=False)
+
+		mandats = Mandat.objects.filter(filter_arg)
+
+	else:
+		mandats = Mandat.objects.filter(is_last=True, binet__is_hidden=False)
+
+
+
+	return render(request, 'binets/export_binets_list.html', locals())

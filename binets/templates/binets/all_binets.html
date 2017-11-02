@@ -4,16 +4,19 @@
 
 {% block content %}
 	<div class='binet-title-and-return-container'>
-		<div class="binets-return-button">
+		<div class="binets-return-button print-hidden">
+			{% if request.user.is_staff %}
+				<a href={% url 'export_binets_list' %}><img src="{% static 'img/export.png' %}" alt="Export icon large" class='add-icon-large' title="Exporter les listes de binets"></a>
+			{% endif %}
 		</div>
 		<h3>Liste des binets</h3>
-		<div class='binets-side-button'>
+		<div class='binets-return-button print-hidden'>
 			{% if perms.binets.add_binet %}
 				<a href={% url 'new_binet' %}><img src="{% static 'img/add.png' %}" alt="Add icon large" class='add-icon-large' title="Nouveau binet"></a>
 			{% endif %}
 		</div>
 	</div>
-	<div class='binets-search-container'>
+	<div class='binets-search-container print-hidden'>
 		<div class='binets-search-subcontainer'>
 			<form id="searchform" action="" method="get" accept-charset="utf-8">
 			    <input class="searchfield" id="searchbox" name="q" type="text" placeholder="Rechercher" value='{{ search_arguments|default_if_none:'' }}'>
@@ -55,7 +58,7 @@
 						</td>
 						{% if request.user.is_staff %}
 							<td class='binet-user'>{{ mandat.type_binet }}</td>
-							<td class='binet-user'>
+							<td class='binet-user print-hidden'>
 								<a href={{ mandat.binet.hide_unhide_self_url }}?next={{ request.get_full_path }}>
 								{% if mandat.binet.is_hidden %}
 									<img src="{% static 'img/stop_view.png' %}" alt="Unview icon large" class='edit-icon-large' title="Le binet est caché de la liste publique">

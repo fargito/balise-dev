@@ -4,6 +4,11 @@ html {
       -ms-text-size-adjust: 100%;
 }
 
+a:link {
+    text-decoration: none;
+    color: #0000CC;
+}
+
 #compta-table {
 	width: 100%;
 	border-collapse: collapse;
@@ -219,3 +224,35 @@ textarea#id_remarques_admins {
 
 tr.subvention-ligne:nth-child(even) {background: #FFF;}
 tr.subvention-ligne:nth-child(odd) {background: #DDD;}
+
+#liste-binets{
+	position: absolute;
+	margin-top: 8cm;
+}
+
+tr.mandat:nth-child(even) {background: #FFF}
+tr.mandat:nth-child(odd) {background: #DDD}
+
+.binet-user{
+	text-align: center;
+}
+
+td.nom-binet {
+	padding: 1em;
+	min-width: 8em;
+}
+
+th.nom-binet {
+	padding-left: 1em;
+	text-align: left;
+}
+
+.binet-promotion {
+	text-align: center;
+	width: 3em;
+}
+
+.binet-user {
+	text-align: center;
+	min-width: 10em;
+}

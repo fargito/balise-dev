@@ -33,7 +33,8 @@
 	</div>
 	{% if request.user.is_staff %}
 		<div class="binet-description-full">
-			Remarques pour les kessiers : {{ binet.remarques_admins|default_if_none:"Aucune remarque" }}
+			Remarques pour les kessiers : {{ binet.remarques_admins|default_if_none:"Aucune remarque" }}<br>
+			Catégories du binet : {% for categorie in categories %}{{ categorie }}, {% endfor %}
 		</div>
 	{% endif %}
 	<table id="liste-binets">

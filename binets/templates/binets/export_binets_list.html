@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+	<section class="binet-title-and-return-container">
+		<div class="binets-return-button">
+			
+		</div>
+		<h3>Exporter des listes de binets</h3>
+		<div class='binets-side-button'>
+			
+		</div>
+	</section>
+	<section id='compta-seance-cheques-form-container'>
+		<form method='post' action=''>
+			<table class='compta-width100 print-hidden'>
+				<caption class='print-hidden'>Rechercher des mandats</caption>
+				<tr>
+					<td colspan='6'>
+						{{ search_binet_form.non_field_errors }}
+					</td>
+				</tr>
+				<tr>
+					<th class='compta-search-form'>{{ search_binet_form.binet.label }}</th>
+					<th class='compta-search-form'>{{ search_binet_form.promotion.label }}</th>
+					<th class='compta-search-form'>{{ search_binet_form.type_binet.label }}</th>
+					<th class='compta-search-form'>{{ search_binet_form.categorie.label }}</th>
+					<th class='compta-search-form'>{{ search_binet_form.active_only.label }}</th>
+					<th class='compta-search-form'>{{ search_binet_form.is_last_only.label }}</th>
+					<th class='compta-search-form'>{{ search_binet_form.public_only.label }}</th>
+				</tr>
+				<tr>
+					<td class='compta-search-form'>{{ search_binet_form.binet.errors }}</td>
+					<td class='compta-search-form'>{{ search_binet_form.promotion.errors }}</td>
+					<td class='compta-search-form'>{{ search_binet_form.type_binet.errors }}</td>
+					<td class='compta-search-form'>{{ search_binet_form.categorie.errors }}</td>
+					<td class='compta-search-form'>{{ search_binet_form.active_only.errors }}</td>
+					<td class='compta-search-form'>{{ search_binet_form.is_last_only.errors }}</td>
+					<td class='compta-search-form'>{{ search_binet_form.public_only.errors }}</td>
+				</tr>
+				<tr>
+					<td class='compta-search-form'>{{ search_binet_form.binet }}</td>
+					<td class='compta-search-form'>{{ search_binet_form.promotion }}</td>
+					<td class='compta-search-form'>{{ search_binet_form.type_binet }}</td>
+					<td class='compta-search-form'>{{ search_binet_form.categorie }}</td>
+					<td class='compta-search-form'>{{ search_binet_form.active_only }}</td>
+					<td class='compta-search-form'>{{ search_binet_form.is_last_only }}</td>
+					<td class='compta-search-form'>{{ search_binet_form.public_only }}</td>
+					<td class='compta-search-form'><input type="submit" name="validation" value="Rechercher" /></td>
+					<td class='compta-search-form'><input type="submit" name="validation" value="Annuler" /></td>
+				</tr>
+			</table>
+			{% csrf_token %}
+		</form>
+	</section>
+	<section id="table-container">
+		<table id="liste-binets">
+			<thead class="liste-binets">
+				<caption>Résultats de la recherche</caption>
+				<tr>
+					<th class="nom-binet">Binet</th>
+					<th class="binet-promotion">Promotion</th>
+					<th class="binet-description">Description</th>
+					<th class="binet-user">Président</th>
+					<th class="binet-user">Trésorier</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for mandat in mandats %}
+					<tr class="mandat">
+						<td class="nom-binet">
+							<strong><a href={{ mandat.binet.get_history_url }}>{{ mandat.binet.nom }}</a> </strong>
+						</td>
+						<td class="binet-promotion">{{ mandat.promotion }}</td>
+						<td class="binet-description">
+							{{ mandat.binet.description }}
+						</td>
+						<td class="binet-user">
+							<a href={{ mandat.president.eleve.get_infos_url }}>{{ mandat.president }}</a>
+						</td>
+						<td class="binet-user">
+							<a href={{ mandat.tresorier.eleve.get_infos_url }}>{{ mandat.tresorier }}</a>
+						</td>
+					</tr>
+
+				{% endfor %}
+			</tbody>
+		</table>
+	</section>
+{% endblock %}

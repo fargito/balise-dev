@@ -15,4 +15,5 @@ urlpatterns = [
 	url(r"^last_not_last/(?P<id_mandat>\d+)$", views.mandat_last_not_last, name='mandat_last_not_last'),	
 	url(r"^activate_deactivate/(?P<id_mandat>\d+)$", views.mandat_activate_deactivate, name='mandat_activate_deactivate'),	
 	url(r"^touch_untouch/(?P<id_mandat>\d+)$", views.mandat_touch_untouch, name='mandat_touch_untouch'),
+	url(r'^export_binets_list$', views.export_binets_list, name='export_binets_list'),
 ]
