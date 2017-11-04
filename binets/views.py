@@ -256,9 +256,6 @@ def export_binets_list(request):
 
 		filter_arg = Q()
 
-		if cleaned_data['is_last_only']:
-			filter_arg &= Q(is_last=True)
-
 		if cleaned_data['binet']:
 			filter_arg &= Q(binet__nom__icontains=cleaned_data['binet'])
 
@@ -282,16 +279,21 @@ def export_binets_list(request):
 
 		if cleaned_data['active_only']:
 			filter_arg &= Q(is_active=True)
+			active_only = True
 
 		if cleaned_data['is_last_only']:
 			filter_arg &= Q(is_last=True)
+			is_last_only = True
 
 		if cleaned_data['public_only']:
 			filter_arg &= Q(binet__is_hidden=False)
+			public_only = True
 
 		mandats = Mandat.objects.filter(filter_arg)
 
 	else:
+		is_last_only = True
+		public_only = True
 		mandats = Mandat.objects.filter(is_last=True, binet__is_hidden=False)
 
 

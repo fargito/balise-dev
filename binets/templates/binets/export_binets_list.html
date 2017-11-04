@@ -7,7 +7,7 @@
 		<div class="binets-return-button">
 			
 		</div>
-		<h3>Exporter des listes de binets</h3>
+		<h3 class='print-hidden'>Exporter des listes de binets</h3>
 		<div class='binets-side-button'>
 			
 		</div>
@@ -54,10 +54,63 @@
 			{% csrf_token %}
 		</form>
 	</section>
+	<!-- Here we put in print-only a description of the search -->
+	<section class="binets-result-print-description print-only">
+		<h3 class='txtcentre'>Liste des binets</h3>
+		<div class='txtcentre'>Imprimée le {% now "SHORT_DATETIME_FORMAT" %}</div>
+		Cette liste regroupe les mandats :
+		<ul>
+			{% if cleaned_data.promotion %}
+				<li>
+					Uniquement promo
+					{% for promotion in cleaned_data.promotion %}
+						{{ promotion }}, 
+					{% endfor %}
+				</li>
+			{% else %}
+				<li>De toutes les promos</li>
+			{% endif %}
+			{% if cleaned_data.type_binet %}
+				<li>
+					De type
+					{% for type_binet in cleaned_data.type_binet %}
+						{{ type_binet }}, 
+					{% endfor %}
+				</li>
+			{% else %}
+				<li>De toutes les types</li>
+			{% endif %}
+			{% if cleaned_data.categorie %}
+				<li>
+					De catégorie
+					{% for categorie in cleaned_data.categorie %}
+						{{ categorie }}, 
+					{% endfor %}
+				</li>
+			{% else %}
+				<li>De toutes les catégories</li>
+			{% endif %}
+
+
+
+
+
+
+			{% if active_only %}
+				<li>Actifs (dont le mandat n'est pas clôturé)</li>
+			{% endif %}
+			{% if is_last_only %}
+				<li>Les plus récents (dont les successeurs ne sont pas connus)</li>
+			{% endif %}
+		</ul>
+		{% if not public_only %}
+			ATTENTION CETTE LISTE CONTIENT DES BINETS MARQUES COMME NON PUBLICS ! NE PAS DIFFUSER EN DEHORS DE LA KES
+		{% endif %}
+	</section>
 	<section id="table-container">
 		<table id="liste-binets">
 			<thead class="liste-binets">
-				<caption>Résultats de la recherche</caption>
+				<caption class='print-hidden'>Résultats de la recherche</caption>
 				<tr>
 					<th class="nom-binet">Binet</th>
 					<th class="binet-promotion">Promotion</th>
@@ -88,4 +141,7 @@
 			</tbody>
 		</table>
 	</section>
+	{% if not public_only %}
+		<footer class="print-watermark print-only">DIFFUSION RESTREINTE KES</footer>
+	{% endif %}
 {% endblock %}

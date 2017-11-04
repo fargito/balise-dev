@@ -227,7 +227,13 @@ tr.subvention-ligne:nth-child(odd) {background: #DDD;}
 
 #liste-binets{
 	position: absolute;
-	margin-top: 8cm;
+	margin-top: 10cm;
+}
+
+.binets-result-print-description {
+	position: absolute;
+	margin-top: 3.8cm;
+	width: 100%;
 }
 
 tr.mandat:nth-child(even) {background: #FFF}
@@ -257,4 +263,18 @@ th.nom-binet {
 	min-width: 8em;
 	padding-left: 1em;
 	padding-right: 1em;
+}
+
+.txtcentre {
+	text-align: center;
+}
+
+.print-watermark {
+	font-size: 4em;
+	color: red;
+	-webkit-transform: rotate(-45deg); 
+   -moz-transform: rotate(-45deg);  
+	opacity: 0.7;
+	background-color: rgba(0,0,0,0);
+	margin-bottom: 13cm;
 }
