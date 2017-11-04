@@ -130,6 +130,31 @@ def validate_import_lignes(request, imported_lignes, mandat):
 		if (parsed_import['poste'] == 'Polymedia' or parsed_import['poste'] == 'polymedia' or parsed_import['poste'] == 'polymédia' or parsed_import['poste'] == 'CPM' or parsed_import['poste'] == 'cpm'):
 			parsed_import['poste'] = 'Polymédia'
 
+		##########################################################
+		# Référence
+
+		try:
+			parsed_import['reference'] = imported_ligne['Référence']
+		except:
+			try:
+				parsed_import['reference'] = imported_ligne['Reference']
+			except:
+				try:
+					parsed_import['reference'] = imported_ligne['référence']
+				except:
+					try:
+						parsed_import['reference'] = imported_ligne['reference']
+					except:
+						parsed_import['reference'] = None
+
+		# on remplace les valeurs vides par None
+		try:
+			if not float(parsed_import['reference']) > 0:
+				parsed_import['reference'] = None
+		except:
+			pass
+
+		##############################################################
 		# tests de la cohérence de la ligne
 
 		if parsed_import['debit'] and parsed_import['credit']:
@@ -161,6 +186,7 @@ def create_lignes_compta(request, imported_lignes, mandat):
 		created_ligne = LigneCompta.objects.create(
 			mandat=mandat,
 			date=ligne['date'],
+			reference=ligne['reference'],
 			auteur=request.user,
 			modificateur=request.user,
 			description=ligne['description'],

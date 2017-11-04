@@ -19,7 +19,7 @@ class LigneCompta(models.Model):
 	modificateur = models.ForeignKey(User, verbose_name = 'modifiée par', related_name="modificateur")
 	description = models.CharField(max_length=100)
 	commentaire = models.TextField(blank=True, null=True)
-	reference = models.CharField(max_length=10, null=True)
+	reference = models.CharField(max_length=15, null=True)
 	debit = models.DecimalField(null=True, blank=True,max_digits=9, decimal_places=2)
 	credit = models.DecimalField(null=True, blank=True,max_digits=9, decimal_places=2)
 	is_locked = models.BooleanField(default=False)
