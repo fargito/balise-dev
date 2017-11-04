@@ -5,11 +5,11 @@ from .models import LigneCompta, PosteDepense
 
 class LigneComptaAdmin(admin.ModelAdmin):
 	"""affiche de façon élégante les données dans l'interface admin"""
-	list_display   = ('mandat', 'date', 'auteur', 'description', 'debit', 'credit', 'is_locked', 'poste_depense')
-	list_filter    = ('mandat', 'date', 'debit', 'credit', 'is_locked', 'poste_depense')
+	list_display   = ('mandat', 'date', 'auteur', 'reference', 'description', 'debit', 'credit', 'is_locked', 'poste_depense')
+	list_filter    = ('mandat', 'date', 'is_locked', 'poste_depense')
 	date_hierarchy = 'date'
 	ordering       = ('-date', )
-	search_fields  = ('mandat', 'debit', 'credit', 'poste_depense')
+	search_fields  = ('mandat', 'reference', 'debit', 'credit', 'poste_depense')
 
 class PosteDepenseAdmin(admin.ModelAdmin):
 	list_display =  ('nom', 'mandat',)

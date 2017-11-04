@@ -1,14 +1,21 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
-	<section id="compta-title-and-return">
-		<div class="return-button">
+<section class="binet-title-and-return-container">
+		<div class="binets-return-button">
 			<form action="../">
 				<input type="submit" value="Retour" />
 			</form>
 		</div>
-		<div id="compta-title-cropped">
-			<div id="page-title">Liste des subventions</div>
+		<h3 class='print-hidden'>Liste des subventions</h3>
+		<div class='binets-side-button'>
+			{% if request.user.is_staff %}
+				<a href="/backend/import_subventions/">
+					<img src="{% static 'img/upload.png' %}" alt="Upload icon large" class='add-icon-large' title="Ajouter une vague de subventions">
+				</a>
+			{% endif %}
 		</div>
 	</section>
 	<section>

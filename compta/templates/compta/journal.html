@@ -163,6 +163,9 @@
 						<th class="compta-form-date">
 							<div class='title-order-container'><div>Date</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par date"/></a></div>
 						</th>
+						<th class="compta-form-date">
+							<div class='title-order-container'><div>Référence</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par référence"/></a></div>
+						</th>
 						<th class="compta-form-description">
 							<div class='title-order-container'><div>Description - facture</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par description"/></a></div>
 						</th>
@@ -194,6 +197,9 @@
 									{{ ligne_form.date.errors }}
 								</td>
 								<td class="compta-form-errors-container">
+									{{ ligne_form.reference.errors }}
+								</td>
+								<td class="compta-form-errors-container">
 									{{ ligne_form.description.errors }}
 								</td>
 								<td class="compta-form-errors-container">
@@ -216,6 +222,9 @@
 								<td></td>
 								<td class="compta-form-date">
 									{{ ligne_form.date }}
+								</td>
+								<td class="compta-form-date">
+									{{ ligne_form.reference }}
 								</td>
 								<td class="compta-form-description">
 									{{ ligne_form.description }}
@@ -264,6 +273,7 @@
 							{% endif %}
 						</td>
 						<td class="compta-form-date">{{ ligne.date|date:'d/m/Y' }}</td>
+						<td class="compta-form-reference">{{ ligne.reference|default_if_none:"" }}</td>
 						{# si l'utilisateur peut éditer le journal, le lien de la description l'amène directement à edit. Sinon à view #}
 						{% if request.session.edit and not ligne.is_locked or request.user.is_staff %}
 							<td class="compta-form-description"><a href={{ ligne.edit_self_link }}>{{ ligne.description }}</a></td>
@@ -301,7 +311,7 @@
 				{# pour la dernière ligne on affiche les totaux #}
 					<div class="last-line">
 						<tr>
-							<th colspan="4"></th>
+							<th colspan="5"></th>
 							<th class="compta-form-montant">{{ debit_subtotal }}</th>
 							<th class="compta-form-montant">{{ credit_subtotal }}</th>
 							{% for subvention in subventions_binet %}
@@ -312,7 +322,7 @@
 						</tr>
 						{% for subvention in subventions_binet %}
 							<tr>
-								<td colspan="2"></td>
+								<td colspan="3"></td>
 								<td class="compta-form-description" colspan='3'>
 									<div class="compta-deblocage">
 										<a href="../binet_subventions">Déblocage {{ subvention.vague }}</a>
@@ -326,12 +336,12 @@
 							</tr>
 						{% endfor %}
 						<tr>
-							<th colspan="4"></th>
+							<th colspan="5"></th>
 							<th class="compta-form-montant">{{ debit_total }}</th>
 							<th class="compta-form-montant">{{ credit_total }}</th>
 						</tr>
 						<tr>
-							<th colspan="4"></th>
+							<th colspan="5"></th>
 							<th class="compta-form-montant">Balance :</th>
 							<th class="compta-form-montant">
 								{% if is_positive %}

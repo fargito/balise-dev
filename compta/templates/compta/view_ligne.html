@@ -14,6 +14,9 @@
 					<th>
 						Effectée le
 					</th>
+					<th class='compta-form-reference'>
+						Référence
+					</th>
 					<th class="compta-form-description">
 						Description
 					</th>
@@ -50,6 +53,7 @@
 						{% endif %}
 					</td>
 					<td class="compta-form-date">{{ ligne.date|date:'d/m/Y' }}</td>
+					<td class='compta-form-reference'>{{ ligne.reference|default_if_none:"" }}</td>
 					<td class="compta-form-description">{{ ligne.description }}</td>
 					<td class="compta-form-montant">{{ ligne.poste_depense|default_if_none:"" }}</td>
 					<td class="compta-form-montant">{{ ligne.debit|default_if_none:"" }}</td>

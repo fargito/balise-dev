@@ -15,6 +15,9 @@
 						<th>
 							Effectée le
 						</th>
+						<th class='compta-form-reference'>
+							Référence
+						</th>
 						<th class="compta-form-description">
 							Description
 						</th>
@@ -41,6 +44,9 @@
 								<td></td>
 								<td class="compta-form-errors-container">
 									{{ ligne_form.date.errors }}
+								</td>
+								<td class="compta-form-errors-container">
+									{{ ligne_form.reference.errors }}
 								</td>
 								<td class="compta-form-errors-container">
 									{{ ligne_form.description.errors }}
@@ -82,6 +88,9 @@
 								</td>
 								<td class="compta-form-date">
 									{{ ligne_form.date }}
+								</td>
+								<td class="compta-form-reference">
+									{{ ligne_form.reference }}
 								</td>
 								<td class="compta-form-description">
 									{{ ligne_form.description }}

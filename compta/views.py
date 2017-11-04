@@ -152,7 +152,7 @@ def mandat_journal(request):
 
 	# paramètre d'ordonnance
 	ordering = request.GET.get('o', None)
-	attributes = ['date', 'description', 'poste_depense', 'debit', 'credit']
+	attributes = ['date', 'reference', 'description', 'poste_depense', 'debit', 'credit']
 	# on génère les arguments d'ordonnance de la liste
 	arguments = generate_ordering_arguments(ordering, attributes)
 	# on récupère toutes les lignes du mandat
@@ -681,6 +681,9 @@ def seance_cheques(request):
 
 		if cleaned_data['poste']:
 			filter_arg &= Q(poste_depense__nom__icontains=cleaned_data['poste'])
+
+		if cleaned_data['reference']:
+			filter_arg &= Q(reference=cleaned_data['reference'])
 
 		if cleaned_data['date_debut']:
 			filter_arg &= Q(date__gte=cleaned_data['date_debut'])

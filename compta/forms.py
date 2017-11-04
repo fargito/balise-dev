@@ -229,6 +229,7 @@ class SearchLigneForm(forms.Form):
 	date_fin = forms.DateField(required=False, label='Avant')
 	binet = forms.CharField(required=False)
 	promotion = forms.ModelChoiceField(queryset=Promotion.objects.all(), required=False)
+	reference = forms.CharField(required=False, label="Référence")
 	poste = forms.ModelChoiceField(queryset=PosteDepense.objects.filter(mandat=None), required=False)
 	montant_haut = forms.FloatField(required=False, label='Montant haut')
 	montant_bas = forms.FloatField(required=False, label='Montant bas')

@@ -49,9 +49,11 @@ def all_binets(request):
 	# on ordonne les résultats
 	if arguments:
 		liste_mandats = liste_mandats.order_by(*arguments)
+		public_only = False
 
 	if not request.user.is_staff:
 		liste_mandats = liste_mandats.filter(binet__is_hidden=False)
+		public_only = True
 
 
 	# on génère les liens qui serviront à l'ordonnance dans la page
@@ -297,5 +299,5 @@ def export_binets_list(request):
 		mandats = Mandat.objects.filter(is_last=True, binet__is_hidden=False)
 
 
-
+	n_mandats = len(mandats)
 	return render(request, 'binets/export_binets_list.html', locals())

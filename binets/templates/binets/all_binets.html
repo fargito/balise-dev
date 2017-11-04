@@ -36,7 +36,7 @@
 					<th class="binet-user">Trésorier</th>
 					{% if request.user.is_staff %}
 						<th class="binet-user"><div class='title-order-container'><div>Type</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par binet"/></a></div></th>
-						<th class="binet-user"><div class='title-order-container'><div>Visible</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par visible"/></a></div></th>
+						<th class="binet-user print-hidden"><div class='title-order-container'><div>Visible</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par visible"/></a></div></th>
 					{% endif %}
 				</tr>
 			</thead>
@@ -74,4 +74,7 @@
 			</tbody>
 		</table>
 	</section>
+	{% if not public_only %}
+		<footer class="print-watermark print-only">DIFFUSION RESTREINTE KES</footer>
+	{% endif %}
 {% endblock %}
