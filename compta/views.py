@@ -665,7 +665,7 @@ def seance_cheques(request):
 		# on construit au fur et à mesure le filtre qu'on va appliquer à la base de données en restreignant toujours
 		# le nombre de requêtes à max_requests
 		cleaned_data = search_ligne_form.cleaned_data
-		if False: # pour plus tard, si on veut mettre un filtre pour ajouter les binets avec chéquier
+		if cleaned_data['include_others']:
 			filter_arg = Q(mandat__type_binet=type_binet_default) | Q(mandat__type_binet=type_binet_optional)
 		else:
 			filter_arg = Q(mandat__type_binet=type_binet_default)
@@ -708,8 +708,6 @@ def seance_cheques(request):
 @permission_required('compta.validate_polymedia')
 def validate_polymedia(request):
 	"""permet de valider les devis polymédia des binets"""
-	max_requests = request.GET.get('max_requests', 50)
-
 
 	search_ligne_form = SearchLigneFormPolymedia(request.POST or None)
 	if search_ligne_form.is_valid() and request.POST['validation'] == 'Rechercher':
@@ -739,9 +737,9 @@ def validate_polymedia(request):
 		if cleaned_data['montant_haut']:
 			filter_arg &= (Q(debit__lte=cleaned_data['montant_haut']) | Q(credit__lte=cleaned_data['montant_haut']))
 
-		lignes = LigneCompta.objects.filter(filter_arg)[0:max_requests]
+		lignes = LigneCompta.objects.filter(filter_arg)
 
 	else:
-		lignes = LigneCompta.objects.filter(poste_depense__nom="Polymédia", is_locked=False)[0:max_requests]
+		lignes = LigneCompta.objects.filter(poste_depense__nom="Polymédia", is_locked=False)
 
 	return render(request, 'compta/validate_polymedia.html', locals())

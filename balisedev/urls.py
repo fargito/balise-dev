@@ -18,5 +18,6 @@ urlpatterns = [
     url(r'^$', views.home),
     url(r'error^$', views.error),
     url(r'circuitdepart/', include('circuitdepart.urls')),
+    url(r'help/', include('help.urls')),
 
 ]

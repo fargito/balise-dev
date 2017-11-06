@@ -234,6 +234,7 @@ class SearchLigneForm(forms.Form):
 	montant_haut = forms.FloatField(required=False, label='Montant haut')
 	montant_bas = forms.FloatField(required=False, label='Montant bas')
 	include_locked = forms.BooleanField(initial=False, required=False, label='Inclure les opérations verrouillées')
+	include_others = forms.BooleanField(initial=False, required=False, label='Inclure avec chéquiers')
 
 
 class SearchLigneFormPolymedia(forms.Form):

@@ -32,7 +32,7 @@ with open(keyfile, "r") as f:
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
 # Application definition
@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'subventions',
     'passations',
     'circuitdepart',
+    'help',
 ]
 
 MIDDLEWARE = [

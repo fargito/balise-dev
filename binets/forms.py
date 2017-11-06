@@ -15,6 +15,7 @@ class DescriptionForm(forms.ModelForm):
 
 class BinetEditForm(forms.ModelForm):
 	"""permet de modifier les binets"""
+	tag_binet = forms.ModelMultipleChoiceField(queryset=TagBinet.objects.all(), required=False, label='Catégories')
 
 	class Meta:
 		model = Binet
@@ -25,6 +26,8 @@ class BinetEditForm(forms.ModelForm):
 
 class BinetCreateForm(forms.ModelForm):
 	"""permet de créer un binet avec un permier mandat"""
+	tag_binet = forms.ModelMultipleChoiceField(queryset=TagBinet.objects.all(), required=False, label='Catégories')
+
 	class Meta:
 		model = Binet
 		exclude = ('creator',)
