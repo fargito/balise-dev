@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^journal/edit_ligne/(?P<id_ligne>\d+)$', views.edit_ligne, name='edit_ligne'),
     url(r'^journal/view_ligne/(?P<id_ligne>\d+)$', views.view_ligne, name='view_ligne'),
     url(r'^journal/lock_unlock_ligne/(?P<id_ligne>\d+)$', views.lock_unlock_ligne, name='lock_unlock_ligne'),
+    url(r'^journal/check_uncheck_ligne/(?P<id_ligne>\d+)$', views.check_uncheck_ligne, name='check_uncheck_ligne'),
     url(r'^journal/lock_unlock_ligne_polymedia/(?P<id_ligne>\d+)$', views.lock_unlock_ligne_polymedia, name='lock_unlock_ligne_polymedia'),
     url(r'^journal/lock_unlock_all/$', views.lock_unlock_all, name='lock_unlock_all'),
     url(r'^journal/create_poste_depense/$', views.create_poste_depense),

@@ -19,17 +19,18 @@ class LigneCompta(models.Model):
 	modificateur = models.ForeignKey(User, verbose_name = 'modifiée par', related_name="modificateur")
 	description = models.CharField(max_length=100)
 	commentaire = models.TextField(blank=True, null=True)
-	reference = models.CharField(max_length=15, null=True)
+	reference = models.CharField(max_length=15, null=True, blank=True)
 	debit = models.DecimalField(null=True, blank=True,max_digits=9, decimal_places=2)
 	credit = models.DecimalField(null=True, blank=True,max_digits=9, decimal_places=2)
 	is_locked = models.BooleanField(default=False)
+	facture_ok = models.BooleanField(default=False)
 	poste_depense = models.ForeignKey('PosteDepense', null=True)
 
 	def __str__(self):
 		return self.description
 
 	class Meta:
-		ordering = ('-date','-id', '-reference')
+		ordering = ('-date', '-reference','-id')
 		permissions = (
 			("validate_polymedia", "Effectuer des validations Polymédia"),
 			)
@@ -53,6 +54,11 @@ class LigneCompta(models.Model):
 	def lock_unlock_self_link(self):
 		"""permet de passer is_locked à sa valeur contraire"""
 		return ('lock_unlock_ligne', [self.id])
+
+	@models.permalink
+	def check_uncheck_self_link(self):
+		"""permet de passer is_locked à sa valeur contraire"""
+		return ('check_uncheck_ligne', [self.id])
 
 	@models.permalink
 	def lock_unlock_self_polymedia_link(self):

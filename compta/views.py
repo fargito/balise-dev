@@ -152,7 +152,7 @@ def mandat_journal(request):
 
 	# paramètre d'ordonnance
 	ordering = request.GET.get('o', None)
-	attributes = ['date', 'reference', 'description', 'poste_depense', 'debit', 'credit']
+	attributes = ['facture_ok', 'date', 'reference', 'description', 'poste_depense', 'debit', 'credit']
 	# on génère les arguments d'ordonnance de la liste
 	arguments = generate_ordering_arguments(ordering, attributes)
 	# on récupère toutes les lignes du mandat
@@ -205,8 +205,8 @@ def delete_ligne(request, id_ligne):
 def edit_ligne(request, id_ligne):
 	"""permet de modifier une ligne et de rajouter des commentaires dessus"""
 	try:
-		mandat = Mandat.objects.get(
-			id = request.session['id_mandat'])
+		ligne = LigneCompta.objects.get(id=id_ligne)
+		mandat = ligne.mandat
 	except KeyError:
 		return redirect('../')
 
@@ -225,11 +225,13 @@ def edit_ligne(request, id_ligne):
 	if request.user not in authorized['edit'] and not(request.user.is_staff):
 		return redirect('../')
 
-	ligne = LigneCompta.objects.get(id=id_ligne)
 
 	if ligne.is_locked and not request.user.is_staff:
 		# si la ligne est locked, seuls les admins peuvent la supprimer
 		return redirect('../')
+
+	# nécessaire si l'appel n'est pas effectué depuis le journal
+	request.session['id_mandat'] = mandat.id
 
 	if request.method == 'POST':
 		# comme le champ poste_depense a besoin du mandat pour être instancié, on doit le créer juste avant l'instanciation
@@ -333,13 +335,39 @@ def lock_unlock_all(request):
 
 	return redirect(request.GET.get('next', '../'))
 
+@login_required
+def check_uncheck_ligne(request, id_ligne):
+	"""permet de checker ou unchecker une ligne accessible aux personnes qui ont le droit edit"""
+	next = request.GET.get('next', '../')
+	try:
+		ligne = LigneCompta.objects.get(id=id_ligne)
+		mandat = ligne.mandat
+	except KeyError:
+		return redirect(next)
+
+	# on récupère la liste des utilisateurs habilités
+	# à supprimer la ligne
+	authorized = mandat.get_authorized_users()
+	if request.user not in authorized['edit'] and not(request.user.is_staff):
+		return redirect(next)
+
+	# dans le cas ou l'appel à la vue de la ligne s'est effectuée depuis un autre endroit que le journal il est possible que le mandat en mémoire ne soit pas bon
+	request.session['id_mandat'] = mandat.id
+
+
+	ligne = LigneCompta.objects.get(id=id_ligne)
+	ligne.facture_ok =  not (ligne.facture_ok)
+	ligne.save()
+	return redirect(next)
+
+	
 
 @login_required
 def view_ligne(request, id_ligne):
 	"""permet de voir une ligne et de rajouter des commentaires dessus"""
 	try:
-		mandat = Mandat.objects.get(
-			id = request.session['id_mandat'])
+		ligne = LigneCompta.objects.get(id=id_ligne)
+		mandat = ligne.mandat
 	except KeyError:
 		return redirect('../')
 
@@ -349,6 +377,8 @@ def view_ligne(request, id_ligne):
 	if request.user not in authorized['view'] and not(request.user.is_staff):
 		return redirect('../')
 
+	# dans le cas ou l'appel à la vue de la ligne s'est effectuée depuis un autre endroit que le journal il est possible que le mandat en mémoire ne soit pas bon
+	request.session['id_mandat'] = mandat.id
 
 	# on récupère toutes les subventions du binet
 	subventions_binet = Subvention.objects.filter(mandat=mandat)
@@ -359,7 +389,6 @@ def view_ligne(request, id_ligne):
 		subventions_names.append(
 			subvention.vague.type_subvention.nom+' '+subvention.vague.annee)
 	
-	ligne = LigneCompta.objects.get(id=id_ligne)
 	return render(request, 'compta/view_ligne.html', locals())
 
 
@@ -714,7 +743,7 @@ def validate_polymedia(request):
 		# on construit au fur et à mesure le filtre qu'on va appliquer à la base de données en restreignant toujours
 		# le nombre de requêtes à max_requests
 		cleaned_data = search_ligne_form.cleaned_data
-		filter_arg = Q(poste_depense__nom="Polymédia")
+		filter_arg = (Q(poste_depense__nom="Polymédia") | Q(poste_depense__nom="Magnan"))
 
 		if not cleaned_data['include_locked']:
 			filter_arg &= Q(is_locked=False)

@@ -12,6 +12,8 @@
 	</div>
 	<div class="subvention-tables_container">
 		{% for poste_depense, debit_poste, credit_poste, deblocages_poste, subtotal, is_positive, is_not_empty in postes_with_total %}
+		{% if not poste_depense.mandat and not is_not_empty %}
+		{% else %}
 		<div class="subventions-deblocages-and-lignes-container">
 			<table class="subventions-deblocage-lignes">
 				<!-- <caption>{{ poste_depense }}</caption> -->
@@ -81,6 +83,7 @@
 				</tfoot>
 			</table>
 		</div>
+		{% endif %}
 		{% endfor %}
 	</div>
 </div>

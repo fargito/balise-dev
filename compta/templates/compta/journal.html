@@ -160,6 +160,7 @@
 								<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="">
 							{% endif %}
 						</th>
+						<th>{% if request.session.edit %}<a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par checkée"/></a>{% endif %}</th>
 						<th class="compta-form-date">
 							<div class='title-order-container'><div>Date</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par date"/></a></div>
 						</th>
@@ -192,7 +193,7 @@
 							{# on met en forme manuellement le formulaire permettant de rentrer une nouvelle ligne #}
 							{{ ligne_form.non_field_errors }}
 							<tr id="new-ligne-compta-errors">
-								<td></td>
+								<td colspan="2"></td>
 								<td class="compta-form-errors-container">
 									{{ ligne_form.date.errors }}
 								</td>
@@ -219,7 +220,7 @@
 							</tr>
 
 							<tr id="new-ligne-compta-form">
-								<td></td>
+								<td colspan="2"></td>
 								<td class="compta-form-date">
 									{{ ligne_form.date }}
 								</td>
@@ -270,6 +271,17 @@
 								{% else %}
 									<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="">
 								{% endif %}
+							{% endif %}
+						</td>
+						<td class="compta-button-container">
+							{% if request.session.edit %}
+								<a href={{ ligne.check_uncheck_self_link }}?next={{ request.get_full_path }}>
+									{% if ligne.facture_ok %}
+										<img src="{% static 'img/check2.ico' %}" alt="Check icone" class='lock_icon' title="La ligne est checkée">
+									{% else %}
+										<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="Checker la ligne">
+									{% endif %}
+								</a>
 							{% endif %}
 						</td>
 						<td class="compta-form-date">{{ ligne.date|date:'d/m/Y' }}</td>
