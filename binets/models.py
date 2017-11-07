@@ -43,6 +43,9 @@ class Mandat(models.Model):
 
 
 	class Meta:
+		permissions = (
+			('see_all_binets', "Voir les binets cachés"),
+			)
 		unique_together = ('binet','promotion',)
 		ordering = ('binet', 'promotion',)
 
