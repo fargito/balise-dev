@@ -86,7 +86,7 @@ def fiche_sign_unsign(request, eleve_id):
 	return redirect(next)
 
 
-@permission_required("circuitdepart.add_problem_depart")
+@permission_required("circuitdepart.add_problemdepart")
 def add_problem(request):
 	"""permet d'ajouter un problème à un utilisateur"""
 
@@ -104,7 +104,7 @@ def add_problem(request):
 	return render(request, 'circuitdepart/add_problem.html', locals())
 
 
-@permission_required('circuitdepart.add_problem_depart')
+@permission_required('circuitdepart.add_problemdepart')
 def mark_as_resolved(request, id_problem):
 	"""permet de marquer comme résolu le problème"""
 	next = request.GET.get('next', '../')

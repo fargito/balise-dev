@@ -168,6 +168,10 @@ def mandat_journal(request):
 	links_base = '?o='
 	ordering_links = list(reversed(generate_ordering_links(ordering, attributes, links_base)))
 	
+	# paramètre de vision de l'aide
+	help_activated = request.GET.get('help', 'false') == 'true'
+
+	has_chequier = not(mandat.type_binet.nom == "Sans chéquier")
 
 	# on récupère les totaux pour le mandat
 	debit_subtotal, credit_subtotal = mandat.get_subtotals()

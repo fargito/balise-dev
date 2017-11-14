@@ -275,3 +275,13 @@ div.ligne-comment {
 .compta-search-form input {
 	width: 6em;
 }
+
+.bluefont {
+	color: blue;
+}
+
+.align-droite {
+	width: 100%;
+	display: flex;
+	justify-content: flex-end;
+}

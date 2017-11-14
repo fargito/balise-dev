@@ -182,12 +182,32 @@
 						{% for subvention_name in subventions_names %}
 						<th class="compta-form-montant">{{ subvention_name }}</th>
 						{% endfor %}
+						<th>
+							<div class=align-droite>
+								<a href=?help=true>
+									<img src="{% static 'img/help.ico' %}" alt="Help Icon" title="Aide"/>
+								</a>
+							</div>
+						</th>
 					</tr>
 				</thead>
 				{% endblock %}
 				<tbody>
 				{% block compta_form %}
 				{% if request.session.edit %}
+					{% if help_activated %}
+							<tr class="bluefont">
+								<td colspan="2">Marqueur</td>
+								<td class='compta-form-date'>Date de dépôt de la facture</td>
+								<td class='compta-form-reference'>Virement,<br> N° chèque </td>
+								<td class='compta-form-description'>Description de la raison de la dépense - fournisseur + 5 derniers chiffres du numéro de facture (ex: Buffet - cora 45986)</td>
+								<td class='compta-form-poste'>Poste de dépense (vous pouvez en ajouter)</td>
+								<td colspan='2'></td>
+								{% if subventions_binet %}
+									<td colspan="5">Effectuez ici les déblocages de subventions</td>
+								{% endif %}
+							</tr>
+					{% endif %}
 					<div class="new-ligne-compta">
 						<form method='post' action='.'>
 							{# on met en forme manuellement le formulaire permettant de rentrer une nouvelle ligne #}
@@ -277,9 +297,9 @@
 							{% if request.session.edit %}
 								<a href={{ ligne.check_uncheck_self_link }}?next={{ request.get_full_path }}>
 									{% if ligne.facture_ok %}
-										<img src="{% static 'img/check2.ico' %}" alt="Check icone" class='lock_icon' title="La ligne est checkée">
+										<img src="{% static 'img/checkbox_checked.ico' %}" alt="Check icone" class='lock_icon' title="La ligne est checkée">
 									{% else %}
-										<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="Checker la ligne">
+										<img src="{% static 'img/checkbox_empty.ico' %}" alt="Icone vide" class='blank_icon' title="Checker la ligne">
 									{% endif %}
 								</a>
 							{% endif %}
@@ -323,7 +343,7 @@
 				{# pour la dernière ligne on affiche les totaux #}
 					<div class="last-line">
 						<tr>
-							<th colspan="5"></th>
+							<th colspan="6"></th>
 							<th class="compta-form-montant">{{ debit_subtotal }}</th>
 							<th class="compta-form-montant">{{ credit_subtotal }}</th>
 							{% for subvention in subventions_binet %}
@@ -334,7 +354,7 @@
 						</tr>
 						{% for subvention in subventions_binet %}
 							<tr>
-								<td colspan="3"></td>
+								<td colspan="4"></td>
 								<td class="compta-form-description" colspan='3'>
 									<div class="compta-deblocage">
 										<a href="../binet_subventions">Déblocage {{ subvention.vague }}</a>
@@ -348,12 +368,12 @@
 							</tr>
 						{% endfor %}
 						<tr>
-							<th colspan="5"></th>
+							<th colspan="6"></th>
 							<th class="compta-form-montant">{{ debit_total }}</th>
 							<th class="compta-form-montant">{{ credit_total }}</th>
 						</tr>
 						<tr>
-							<th colspan="5"></th>
+							<th colspan="6"></th>
 							<th class="compta-form-montant">Balance :</th>
 							<th class="compta-form-montant">
 								{% if is_positive %}

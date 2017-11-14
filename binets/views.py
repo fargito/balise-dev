@@ -51,7 +51,7 @@ def all_binets(request):
 		liste_mandats = liste_mandats.order_by(*arguments)
 		public_only = False
 
-	if not request.user.has_perm('binet.see_all_binets'):
+	if not request.user.has_perm('binets.see_all_binets'):
 		liste_mandats = liste_mandats.filter(binet__is_hidden=False)
 		public_only = True
 

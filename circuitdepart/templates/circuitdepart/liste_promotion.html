@@ -12,7 +12,7 @@
 		<h3>Liste des élèves de la promotion {{ promotion }}</h3>
 		<div class='binets-side-button'>
 			<div class='margin-right-2'>
-				{% if perms.circuitdepart.add_problem_depart %}
+				{% if perms.circuitdepart.add_problemdepart %}
 					<a href='./add_problem'><img src="{% static 'img/add.png' %}" alt="Add icon small" class='view-icon-large' title="Ajouter un problème"></a>
 				{% endif %}
 			</div>
@@ -117,6 +117,7 @@
 										<img src="{% static 'img/delete.ico' %}" alt="Processing icon small" title="Le problème n'est pas résolu">
 									{% endif %}
 								{% endif %}
+								<br>
 							{% endfor %}
 						</td>
 					</tr>
