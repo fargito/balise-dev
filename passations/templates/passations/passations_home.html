@@ -28,6 +28,9 @@
 							<td class='passation-montant'>{{ promotion_data.depenses_promo }}</td>
 							<td class='passation-montant'>{{ promotion_data.recettes_promo }}</td>
 							<td class='passation-montant'>{{ promotion_data.balance_promo }}</td>
+							<td class='passations-promotion'>
+								<a href={{ promotion_data.promotion.get_bilan_url }} title='Afficher le bilan détaillé pour cette promo'>Bilan</a>
+							</td>
 						</tr>
 					{% endfor %}
 				</tbody>

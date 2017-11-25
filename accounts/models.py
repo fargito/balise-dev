@@ -23,6 +23,11 @@ class Promotion(models.Model):
 		return ('passation', [self.nom])
 
 	@models.permalink
+	def get_bilan_url(self):
+		"""returns the link to the detailed bilan of this promotion"""
+		return ('promo_bilan', [self.nom])
+
+	@models.permalink
 	def get_circuitdepart_url(self):
 		"""returns the link to the circuitdepart page for the promotion"""
 		return('circuitdepart', [self.nom])

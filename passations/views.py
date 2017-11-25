@@ -14,7 +14,8 @@ from subventions.helpers import generate_ordering_arguments, generate_ordering_l
 
 @staff_member_required
 def passations_home(request):
-	"""affiche les promotions existantes ainsi que les chiffres globaux dessus"""
+	"""affiche les promotions existantes ainsi que les chiffres globaux dessus
+	Attention les chiffres affichés concernent uniquement les binets avec ou sans chéquier, pas la Kès ni les comptes extés"""
 	promotions = Promotion.objects.all()
 
 	promotions_data = []
@@ -44,7 +45,7 @@ def passations_home(request):
 
 @staff_member_required
 def recapitulatif_promo(request, promotion):
-	"""displays the promotion's mandat and their statuses"""
+	"""displays the promotion's mandats and their statuses"""
 	promotion = Promotion.objects.get(nom=promotion)
 
 	# on récupère le paramètre de recherche
@@ -121,3 +122,15 @@ def mandat_bilan(request, id_mandat):
 	is_positive = (balance >= 0)
 
 	return render(request, 'passations/mandat_bilan.html', locals())
+
+
+
+@staff_member_required
+def promotion_bilan(request, promotion):
+	"""permet d'afficher de façon plus détaillée le bilan d'une promotion"""
+	promotion = Promotion.objects.get(nom=promotion)
+
+
+	
+
+	return render(request, 'passations/promo_bilan.html', locals())
