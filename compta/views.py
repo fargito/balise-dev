@@ -747,7 +747,7 @@ def validate_polymedia(request):
 		# on construit au fur et à mesure le filtre qu'on va appliquer à la base de données en restreignant toujours
 		# le nombre de requêtes à max_requests
 		cleaned_data = search_ligne_form.cleaned_data
-		filter_arg = (Q(poste_depense__nom="Polymédia") | Q(poste_depense__nom="Magnan"))
+		filter_arg = Q(Q(poste_depense__nom="Polymédia") | Q(poste_depense__nom="Magnan"))
 
 		if not cleaned_data['include_locked']:
 			filter_arg &= Q(is_locked=False)
@@ -773,6 +773,6 @@ def validate_polymedia(request):
 		lignes = LigneCompta.objects.filter(filter_arg)
 
 	else:
-		lignes = LigneCompta.objects.filter(poste_depense__nom="Polymédia", is_locked=False)
+		lignes = LigneCompta.objects.filter(Q(Q(poste_depense__nom="Polymédia") | Q(poste_depense__nom="Magnan")), is_locked=False)
 
 	return render(request, 'compta/validate_polymedia.html', locals())
