@@ -155,7 +155,7 @@ def promotion_bilan(request, promotion):
 
 		for mandat in single_type_mandats:
 			# on commence par les bilans bruts de dépenses et recettes propres
-			mandat_credit, mandat_debit = mandat.get_subtotals()
+			mandat_debit, mandat_credit = mandat.get_subtotals()
 			debit_type += mandat_debit
 			credit_type += mandat_credit
 
