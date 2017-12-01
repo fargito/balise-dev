@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
 
 from accounts.models import Promotion
-from binets.models import Binet, Mandat
+from binets.models import Binet, Mandat, TypeBinet
 from subventions.models import Subvention
 from django.db.models import Q
 
@@ -129,8 +129,79 @@ def mandat_bilan(request, id_mandat):
 def promotion_bilan(request, promotion):
 	"""permet d'afficher de façon plus détaillée le bilan d'une promotion"""
 	promotion = Promotion.objects.get(nom=promotion)
+	mandats = Mandat.objects.filter(promotion=promotion)
+	types_binets = TypeBinet.objects.all()
 
+	# afin d'afficher des résultats pertinents avec les sommes, on met les données à afficher dans un tableau
+	partial_bilans = []
 
-	
+	for type_binet in types_binets:
+		# on initialise les données partielles pour un type de binet
+		debit_type = 0
+		credit_type = 0
+		attributions_subventions = {}
+		deblocages_subventions = {}
+		restes_subventions = {}
+		somme_attributions = 0
+		somme_deblocages = 0
+		somme_restes = 0
+
+		# on filtre les mandats correspondant au type
+		single_type_mandats = mandats.filter(type_binet=type_binet)
+
+		nb_mandats = single_type_mandats.count()
+		nb_passed = single_type_mandats.filter(is_active=False).count()
+		nb_rest = nb_mandats - nb_passed
+
+		for mandat in single_type_mandats:
+			# on commence par les bilans bruts de dépenses et recettes propres
+			mandat_credit, mandat_debit = mandat.get_subtotals()
+			debit_type += mandat_debit
+			credit_type += mandat_credit
+
+			# on récupère ensuite les différents déblocages de subvention
+			for subvention in Subvention.objects.filter(mandat=mandat):
+				nom_subvention = str(subvention.vague.type_subvention) + ' ' + str(subvention.vague.annee)
+
+				# on commence par initialiser au cas où les noms ne l'auraient pas été
+				if not nom_subvention in deblocages_subventions.keys():
+					deblocages_subventions[nom_subvention] = 0
+				if not nom_subvention in attributions_subventions.keys():
+					attributions_subventions[nom_subvention] = 0
+				if not nom_subvention in restes_subventions.keys():
+					restes_subventions[nom_subvention] = 0
+
+				# on incrémente ensuite les valeurs
+				attribue = subvention.accorde
+				attributions_subventions[nom_subvention] += attribue
+				somme_attributions += attribue
+
+				deblocages_total = subvention.get_deblocages_total()
+				deblocages_subventions[nom_subvention] += deblocages_total
+				somme_deblocages += deblocages_total
+
+				reste = attribue - deblocages_total
+				restes_subventions[nom_subvention] += reste
+				somme_restes += reste
+
+		# on a maintenant les chiffres intéressants pour ce type de binet
+		# on présente le résultat de façon exploitable dans le template
+		partial_bilans.append({
+			'type_binet': str(type_binet), 
+			'nb_mandats': nb_mandats,
+			'nb_passed': nb_passed,
+			'nb_rest': nb_rest, 
+			'debit': debit_type,
+			'credit': credit_type,
+			'attributions_subventions': attributions_subventions, 
+			'somme_attributions': somme_attributions,
+			'deblocages_subventions': deblocages_subventions,
+			'somme_deblocages': somme_deblocages,
+			'restes_subventions': restes_subventions,
+			'somme_restes': somme_restes,
+			'balance': credit_type + somme_deblocages - debit_type
+			})
+
+		print(restes_subventions)
 
 	return render(request, 'passations/promo_bilan.html', locals())

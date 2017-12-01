@@ -740,7 +740,7 @@ def seance_cheques(request):
 
 @permission_required('compta.validate_polymedia')
 def validate_polymedia(request):
-	"""permet de valider les devis polymédia des binets"""
+	"""permet de valider les devis polymédia et magnan des binets"""
 
 	search_ligne_form = SearchLigneFormPolymedia(request.POST or None)
 	if search_ligne_form.is_valid() and request.POST['validation'] == 'Rechercher':

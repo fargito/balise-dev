@@ -9,13 +9,79 @@
 				<input type="submit" value="Retour" />
 			</form>
 		</div>
-		<h3>Bilan pour la promotion {{ promotion }}</h3>
+		<h3>Bilan détaillé pour la promotion {{ promotion }}</h3>
 		<div class='binets-side-button'>
 		</div>
 	</div>
 	
-	<section>
-		Et oui c'est un peu vide pour l'instant, ça viendra ;)
+	<section id="compta-container">
+		<div id="passations-container">
+			<table id="passations-table">
+				<thead>
+					<tr>
+						<th class='passations-promotion'>Type de binet</th>
+						<th class='passation-montant-reduced'>Mandats</th>
+						<th class='passation-montant-reduced'>Passés</th>
+						<th class='passation-montant-reduced'>Actifs</th>
+						<th class='passation-montant-reduced'>Dépenses</th>
+						<th class='passation-montant-reduced'>Recettes propres</th>
+						<th class='passations-liste-subventions' colspan='2'>Subventions accordées</th>
+						<th class='passations-liste-subventions' colspan='2'>Subventions débloquées</th>
+						<th class='passations-liste-subventions' colspan='2'>Reste des subventions</th>
+						<th class='passation-montant-reduced'>Balance</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for partial_bilan in partial_bilans %}
+						<tr class='passation-ligne'>
+							<td class='passations-promotion'>{{ partial_bilan.type_binet }}</td>
+							<td class='passation-montant-reduced'>{{ partial_bilan.nb_mandats }}</td>
+							<td class='passation-montant-reduced'>{{ partial_bilan.nb_passed }}</td>
+							<td class='passation-montant-reduced'>{{ partial_bilan.nb_rest }}</td>
+							<td class='passation-montant-reduced'>{{ partial_bilan.debit }}</td>
+							<td class='passation-montant-reduced'>{{ partial_bilan.credit }}</td>
+							<td class='passations-liste-subventions compta-deblocage'>
+								{% for attribution in partial_bilan.attributions_subventions.keys %}
+									{{ attribution }}<br>
+								{% endfor %}
+								Total
+							</td>
+							<td class='passation-montant-reduced compta-deblocage'>
+								{% for attribue in partial_bilan.attributions_subventions.values %}
+									{{ attribue }}<br>
+								{% endfor %}
+								<strong>{{ partial_bilan.somme_attributions }}</strong>
+							</td>
+							<td class='passations-liste-subventions compta-deblocage'>
+								{% for attribution in partial_bilan.deblocages_subventions.keys %}
+									{{ attribution }}<br>
+								{% endfor %}
+								Total
+							</td>
+							<td class='passation-montant-reduced compta-deblocage'>
+								{% for debloque in partial_bilan.deblocages_subventions.values %}
+									{{ debloque }}<br>
+								{% endfor %}
+								<strong>{{ partial_bilan.somme_deblocages }}</strong>
+							</td>
+							<td class='passations-liste-subventions compta-deblocage'>
+								{% for attribution in partial_bilan.restes_subventions.keys %}
+									{{ attribution }}<br>
+								{% endfor %}
+								Total
+							</td>
+							<td class='passations-montant-reduced compta-deblocage'>
+								{% for reste in partial_bilan.restes_subventions.values %}
+									{{ reste }}<br>
+								{% endfor %}
+								<strong>{{ partial_bilan.somme_restes }}</strong>
+							</td>
+							<td class='passation-montant-reduced'><strong>{{ partial_bilan.balance }}</strong></td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
 	</section>
 
 

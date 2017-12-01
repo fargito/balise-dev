@@ -104,14 +104,16 @@
 				<tbody>
 				{% for ligne in lignes %}
 					<tr class="ligne-compta">
-						<td class="compta-button-container">
-							<a href={{ ligne.lock_unlock_self_link }}?next={{ request.get_full_path }}>
-								{% if ligne.is_locked %}
-									<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="Déverrouiller la ligne">
-								{% else %}
-									<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="Verrouiller la ligne">
-								{% endif %}
-							</a>
+						<td class="compta-form-montant">
+								<div class=txtcentre>
+								<a href={{ ligne.lock_unlock_self_link }}?next={{ request.get_full_path }}>
+									{% if ligne.is_locked %}
+										<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="Déverrouiller la ligne">
+									{% else %}
+										Payer
+									{% endif %}
+								</a>
+							</div>
 						</td>
 						<td class="compta-form-date">{{ ligne.date|date:'d/m/Y' }}</td>
 						<td class='compta-binet'>{{ ligne.mandat.binet }}</td>
