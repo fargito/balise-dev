@@ -28,7 +28,7 @@
 						<th class='passations-liste-subventions' colspan='2'>Subventions accordées</th>
 						<th class='passations-liste-subventions' colspan='2'>Subventions débloquées</th>
 						<th class='passations-liste-subventions' colspan='2'>Reste des subventions</th>
-						<th class='passation-montant-reduced'>Balance</th>
+						<th class='passation-montant-extra-left'>Balance</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -70,13 +70,13 @@
 								{% endfor %}
 								Total
 							</td>
-							<td class='passations-montant-reduced compta-deblocage'>
+							<td class='passation-montant-reduced compta-deblocage'>
 								{% for reste in partial_bilan.restes_subventions.values %}
 									{{ reste }}<br>
 								{% endfor %}
 								<strong>{{ partial_bilan.somme_restes }}</strong>
 							</td>
-							<td class='passation-montant-reduced'><strong>{{ partial_bilan.balance }}</strong></td>
+							<td class='passation-montant-extra-left'><strong>{{ partial_bilan.balance }}</strong></td>
 						</tr>
 					{% endfor %}
 				</tbody>
