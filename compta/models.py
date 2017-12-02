@@ -132,6 +132,11 @@ class PosteDepense(models.Model):
 				Q(mandat=self.mandat) | Q(mandat=None)).filter(nom__lt=self.nom).count()
 
 	@models.permalink
+	def edit_self_url(self):
+		"""retourne l'url de modification du poste de dépense"""
+		return ('edit_poste_depense', [self.id])
+
+	@models.permalink
 	def delete_self_url(self):
 		"""retourne l'url de destruction du poste de dépense"""
 		return ('delete_poste_depense', [self.id])

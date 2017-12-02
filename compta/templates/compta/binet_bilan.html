@@ -21,6 +21,11 @@
 					<tr>
 						<th class="compta-form-description">
 							{{ poste.poste_depense }}
+							{% if request.session.edit and poste.poste_depense.mandat %}
+								<a href={{ poste.poste_depense.edit_self_url }}?next={{ request.get_full_path }}>
+									<img src="{% static 'img/edit.ico' %}" alt="Edit icone" class='edit_icon' title="Modifier le poste de dépense"/>
+								</a>
+							{% endif %}
 							{% if request.session.edit and not poste.is_not_empty and poste.poste_depense.mandat %}
 								<a href={{ poste.poste_depense.delete_self_url }}?next={{ request.get_full_path }}>
 									<img src="{% static 'img/delete.ico' %}" alt="Delete icone" class='delete_icon' title="Le poste de dépense est vide, le supprimer ?"/>

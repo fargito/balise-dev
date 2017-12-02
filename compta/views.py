@@ -685,13 +685,47 @@ def create_poste_depense(request):
 	if request.user not in authorized['edit'] and not(request.user.is_staff):
 		return redirect('/compta/journal')
 
-	poste_depense_form = PosteDepenseForm(mandat, request.POST or None)
+	poste_depense_form = PosteDepenseForm(mandat, None, request.POST or None)
 
 	if request.method == 'POST':
 		if poste_depense_form.is_valid():
 			created_poste_depense = poste_depense_form.save(commit=False)
 			created_poste_depense.mandat = mandat
 			created_poste_depense.save()
+
+			return redirect(request.GET.get('next', '../'))
+
+	return render(request, 'compta/create_poste_depense.html', locals())
+
+
+@login_required
+def edit_poste_depense(request, id_poste):
+	"""permet de créer un poste de dépense pour le mandat"""
+	try:
+		mandat = Mandat.objects.get(
+			id = request.session['id_mandat'])
+	except KeyError:
+		return redirect('../')
+
+	# on vérifie qui est autorisé à créer des postes
+	authorized = mandat.get_authorized_users()
+	if request.user not in authorized['edit'] and not(request.user.is_staff):
+		return redirect('/compta/journal')
+
+	try:
+		poste = PosteDepense.objects.get(id=id_poste)
+	except KeyError:
+		return redirect('../')
+
+	# on vérifie aussi que le poste qu'on cherche à éditer appartient bien au mandat voulu
+	if mandat != poste.mandat:
+		return redirect('/compta/journal')
+
+	poste_depense_form = PosteDepenseForm(mandat, poste.nom, request.POST or None, instance=poste)
+
+	if request.method == 'POST':
+		if poste_depense_form.is_valid():
+			poste_depense_form.save()
 
 			return redirect(request.GET.get('next', '../'))
 

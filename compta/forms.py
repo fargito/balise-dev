@@ -203,9 +203,10 @@ class CustomDeblocageSubventionFormSet(BaseInlineFormSet):
 
 class PosteDepenseForm(forms.ModelForm):
 	"""définit le formulaire pour créer un nouveau poste de dépense"""
-	def __init__(self, mandat, *args, **kwargs):
+	def __init__(self, mandat, previous_name, *args, **kwargs):
 		super(PosteDepenseForm, self).__init__(*args, **kwargs)
 		self.mandat = mandat
+		self.previous_name = previous_name
 
 	class Meta:
 		model = PosteDepense
@@ -218,12 +219,12 @@ class PosteDepenseForm(forms.ModelForm):
 	def clean(self):
 		"""on vérifie que le poste n'est pas dans les postes pour tous dont le mandat est None)"""
 		cleaned_data = super(PosteDepenseForm, self).clean()
-		print('validating')
 		nom = cleaned_data.get('nom')
 
 		if nom in list(PosteDepense.objects.filter(Q(mandat=None) | Q(mandat=self.mandat)).values_list('nom', flat=True)):
-			msg = 'Ce nom existe déjà ou est réservé'
-			self.add_error('nom', msg)
+			if not (self.previous_name and nom == self.previous_name):
+				msg = 'Ce nom existe déjà ou est réservé'
+				self.add_error('nom', msg)
 
 
 
