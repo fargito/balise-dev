@@ -20,8 +20,8 @@ class LigneCompta(models.Model):
 	description = models.CharField(max_length=100)
 	commentaire = models.TextField(blank=True, null=True)
 	reference = models.CharField(max_length=15, null=True, blank=True)
-	debit = models.DecimalField(null=True, blank=True,max_digits=9, decimal_places=2)
-	credit = models.DecimalField(null=True, blank=True,max_digits=9, decimal_places=2)
+	debit = models.DecimalField(null=True, blank=True, max_digits=9, decimal_places=2)
+	credit = models.DecimalField(null=True, blank=True, max_digits=9, decimal_places=2)
 	is_locked = models.BooleanField(default=False)
 	facture_ok = models.BooleanField(default=False)
 	poste_depense = models.ForeignKey('PosteDepense', null=True)
@@ -115,6 +115,8 @@ class PosteDepense(models.Model):
 
 	nom = models.CharField(max_length=15)
 	mandat = models.ForeignKey('binets.Mandat', null=True, blank=True)
+	previsionnel_debit = models.DecimalField(default=0, max_digits=9, decimal_places=2)
+	previsionnel_credit = models.DecimalField(default=0, max_digits=9, decimal_places=2)
 
 	def __str__(self):
 		return self.nom

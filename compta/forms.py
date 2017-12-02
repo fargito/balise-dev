@@ -210,6 +210,10 @@ class PosteDepenseForm(forms.ModelForm):
 	class Meta:
 		model = PosteDepense
 		exclude = ('mandat',)
+		labels = {
+			"previsionnel_debit": 'Dépenses prévues',
+			"previsionnel_credit": 'Recettes prévues',
+		}
 
 	def clean(self):
 		"""on vérifie que le poste n'est pas dans les postes pour tous dont le mandat est None)"""

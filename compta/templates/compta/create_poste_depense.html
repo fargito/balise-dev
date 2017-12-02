@@ -9,13 +9,20 @@
 				Nouveau poste de dépenses
 			</div>
 		</div>
+		<div class='padding-top-1em txtcentre'>
+			Vous pouvez créer ici un poste de dépense pour regrouper des dépenses en mettant la somme que vous affectez à ce poste de dépense (facultatif)
+		</div>
 
 		<form method='post' action='.'>
 			<div id="poste-form-container">
-				{{ poste_depense_form }}
+				<table>
+					{{ poste_depense_form.as_table }}
 				{% csrf_token %}
+				</table>
 				<input type="submit" name="validation" value="Valider" />
+				
 			</div>
+
 		</form>
 
 	</div>

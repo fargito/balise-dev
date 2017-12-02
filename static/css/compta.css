@@ -241,6 +241,8 @@ div.ligne-comment {
 #poste-form-container input {
 	margin-right: 0.5em;
 	margin-left: 0.5em;
+	margin-bottom: 1em;
+	height: 1.9em;
 }
 
 .compta-import-error {

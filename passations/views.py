@@ -202,6 +202,4 @@ def promotion_bilan(request, promotion):
 			'balance': credit_type + somme_deblocages - debit_type
 			})
 
-		print(restes_subventions)
-
 	return render(request, 'passations/promo_bilan.html', locals())

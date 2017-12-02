@@ -473,6 +473,9 @@ def binet_bilan(request):
 	for poste_depense in postes:
 		# on récupère d'abord toutes les lignes associées avec des postes de dépense du mandat
 		lignes = LigneCompta.objects.filter(poste_depense=poste_depense, mandat=mandat)
+		previsionnel_debit = poste_depense.previsionnel_debit
+		previsionnel_credit = poste_depense.previsionnel_credit
+		previsionnel_subtotal = previsionnel_credit - previsionnel_debit
 		subtotal_debit_poste = 0
 		subtotal_credit_poste = 0
 		subtotals_deblocages_poste = [[subvention, 0] for subvention in subventions_binet]
@@ -492,11 +495,31 @@ def binet_bilan(request):
 				subtotal_credit_poste += ligne.credit
 
 		# on fait la sous_somme du poste
-		subtotal_poste = subtotal_credit_poste - subtotal_debit_poste
+		subtotal_deblocages = 0
 		for deblocage in subtotals_deblocages_poste:
-			subtotal_poste += deblocage[1]
+			subtotal_deblocages += deblocage[1]
+		subtotal_poste = subtotal_credit_poste + subtotal_deblocages - subtotal_debit_poste
 
-		postes_with_total.append((poste_depense, subtotal_debit_poste, subtotal_credit_poste, subtotals_deblocages_poste, subtotal_poste, subtotal_poste >= 0, len(lignes) > 0))
+		postes_with_total.append({
+			'poste_depense': poste_depense,
+			'previsionnel_debit': previsionnel_debit,
+			'previsionnel_credit': previsionnel_credit,
+			'previsionnel_subtotal': previsionnel_subtotal,
+			'previsionnel_is_positive': previsionnel_subtotal >= 0,
+			'reel_debit': subtotal_debit_poste,
+			'reel_credit': subtotal_credit_poste,
+			'reel_deblocages': subtotals_deblocages_poste,
+			'reel_subtotal': subtotal_poste,
+			'reel_is_positive': subtotal_poste >= 0,
+			'diff_debit': - subtotal_debit_poste + previsionnel_debit,
+			'diff_debit_is_positive': - subtotal_debit_poste + previsionnel_debit >= 0,
+			'diff_credit': subtotal_credit_poste + subtotal_deblocages - previsionnel_credit,
+			'diff_credit_is_positive': subtotal_credit_poste + subtotal_deblocages - previsionnel_credit >= 0,
+			'diff_subtotal': subtotal_poste - previsionnel_subtotal,
+			'diff_subtotal_is_positive': subtotal_poste - previsionnel_subtotal >= 0,
+			'is_not_empty': len(lignes) > 0,
+			'nb_recettes': len(subtotals_deblocages_poste) + 1,
+			})
 
 
 	# LIGNES SANS POSTE SPECIFIE
@@ -523,11 +546,31 @@ def binet_bilan(request):
 
 
 		# on fait la sous_somme du poste
-		subtotal_no_poste = subtotal_credit_no_poste - subtotal_debit_no_poste
+		subtotal_deblocages = 0
 		for deblocage in subtotals_deblocages_poste:
-			subtotal_no_poste += deblocage[1]
+			subtotal_deblocages += deblocage[1]
+		subtotal_no_poste = subtotal_credit_no_poste + subtotal_deblocages - subtotal_debit_no_poste
 
-		postes_with_total.append(("Non spécifié", subtotal_debit_no_poste, subtotal_credit_no_poste, subtotals_deblocages_poste, subtotal_no_poste, subtotal_no_poste >= 0, True))
+		postes_with_total.append({
+			'poste_depense': "Non spécifié",
+			'previsionnel_debit': 0,
+			'previsionnel_credit': 0,
+			'previsionnel_subtotal': 0,
+			'previsionnel_is_positive': True,
+			'reel_debit': subtotal_debit_no_poste,
+			'reel_credit': subtotal_credit_no_poste,
+			'reel_deblocages': subtotals_deblocages_poste,
+			'reel_subtotal': subtotal_no_poste,
+			'reel_is_positive': subtotal_no_poste >= 0,
+			'diff_debit': - subtotal_debit_no_poste,
+			'diff_debit_is_positive': - subtotal_debit_no_poste >= 0,
+			'diff_credit': subtotal_credit_no_poste + subtotal_deblocages,
+			'diff_credit_is_positive': subtotal_credit_no_poste + subtotal_deblocages >= 0,
+			'diff_subtotal': subtotal_no_poste,
+			'diff_subtotal_is_positive': subtotal_no_poste >= 0,
+			'is_not_empty': True,
+			'nb_recettes': len(subtotals_deblocages_poste) + 1,
+			})
 
 	request.session['active_tab'] = 'Bilan'
 	return render(request, 'compta/binet_bilan.html', locals())

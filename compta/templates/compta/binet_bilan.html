@@ -11,8 +11,8 @@
 		</div>
 	</div>
 	<div class="subvention-tables_container">
-		{% for poste_depense, debit_poste, credit_poste, deblocages_poste, subtotal, is_positive, is_not_empty in postes_with_total %}
-		{% if not poste_depense.mandat and not is_not_empty %}
+		{% for poste in postes_with_total %}
+		{% if not poste.poste_depense.mandat and not poste.is_not_empty %}
 		{% else %}
 		<div class="subventions-deblocages-and-lignes-container">
 			<table class="subventions-deblocage-lignes">
@@ -20,33 +20,58 @@
 				<thead>
 					<tr>
 						<th class="compta-form-description">
-							{{ poste_depense }}
-							{% if not is_not_empty and poste_depense.mandat %}
-								<a href={{ poste_depense.delete_self_url }}?next={{ request.get_full_path }}>
+							{{ poste.poste_depense }}
+							{% if request.session.edit and not poste.is_not_empty and poste.poste_depense.mandat %}
+								<a href={{ poste.poste_depense.delete_self_url }}?next={{ request.get_full_path }}>
 									<img src="{% static 'img/delete.ico' %}" alt="Delete icone" class='delete_icon' title="Le poste de dépense est vide, le supprimer ?"/>
 								</a>
 							{% endif %}
 						</th>
 						<th class="compta-form-montant">
-							Débit
+							Réel
 						</th>
 						<th class="compta-form-montant">
-							Crédit
+							Prévisionnel
+						</th>
+						<th class="compta-form-montant">
+							Différence
 						</th>
 					</tr>
 				</thead>
 				<tbody class="subventions-deblocage-lignes">
 					<tr class="ligne-compta">
 						<td class="compta-form-description">Dépenses</td>
-						<td class="compta-form-montant">{{ debit_poste }}</td>
-						<td class="compta-form-montant"></td>
+						<td class="compta-form-montant">{{ poste.reel_debit }}</td>
+						<td class="compta-form-montant">{{ poste.previsionnel_debit }}</td>
+						<td class="compta-form-montant">
+							{% if poste.diff_debit_is_positive %}
+								<div class="compta-positive">
+									{{ poste.diff_debit }}
+								</div>
+								{% else %}
+								<div class="compta-negative">
+									{{ poste.diff_debit }}
+								</div>
+							{% endif %}
+						</td>
 					</tr>
 					<tr class="ligne-compta">
 						<td class="compta-form-description">Recettes propres</td>
-						<td class="compta-form-montant"></td>
-						<td class="compta-form-montant">{{ credit_poste }}</td>
+						<td class="compta-form-montant">{{ poste.reel_credit }}</td>
+						<td class="compta-form-montant" rowspan='{{ poste.nb_recettes }}'>{{ poste.previsionnel_credit }}</td>
+						<td class="compta-form-montant" rowspan='{{ poste.nb_recettes }}'>
+							{% if poste.diff_credit_is_positive %}
+								<div class="compta-positive">
+									{{ poste.diff_credit }}
+								</div>
+								{% else %}
+								<div class="compta-negative">
+									{{ poste.diff_credit }}
+								</div>
+							{% endif %}
+						</td>
 					</tr>
-					{% for subvention, subtotal in deblocages_poste %}
+					{% for subvention, subtotal in poste.reel_deblocages %}
 						{% if subtotal %}
 							<tr class="ligne-compta">
 								<td class="compta-form-description">
@@ -54,7 +79,6 @@
 										Déblocages {{ subvention.vague.type_subvention }} {{ subvention.vague.annee }}
 									</div>
 								</td>
-								<td class="compta-form-montant"></td>
 								<td class="compta-form-montant">
 									<div class="compta-deblocage">
 										{{ subtotal }}
@@ -67,15 +91,36 @@
 				<tfoot>
 					<tr>
 						<th class="compta-form-description">Sous-total {{ poste_depense }}</th>
-						<th class="compta-form-montant"></th>
 						<th class="compta-form-montant">
-							{% if is_positive %}
+							{% if poste.reel_is_positive %}
 								<div class="compta-positive">
-									{{ subtotal }}
+									{{ poste.reel_subtotal }}
 								</div>
 								{% else %}
 								<div class="compta-negative">
-									{{ subtotal }}
+									{{ poste.reel_subtotal }}
+								</div>
+							{% endif %}
+						</th>
+						<th class="compta-form-montant">
+							{% if poste.previsionnel_is_positive %}
+								<div class="compta-positive">
+									{{ poste.previsionnel_subtotal }}
+								</div>
+								{% else %}
+								<div class="compta-negative">
+									{{ poste.previsionnel_subtotal }}
+								</div>
+							{% endif %}
+						</th>
+						<th class="compta-form-montant">
+							{% if poste.diff_subtotal_is_positive %}
+								<div class="compta-positive">
+									{{ poste.diff_subtotal }}
+								</div>
+								{% else %}
+								<div class="compta-negative">
+									{{ poste.diff_subtotal }}
 								</div>
 							{% endif %}
 						</th>
