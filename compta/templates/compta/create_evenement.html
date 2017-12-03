@@ -1,0 +1,25 @@
+{% extends 'compta/journal.html' %}
+{# cette page récupère le menu de la page journal #}
+{% load static %}
+
+{% block compta_page %}
+	<div id="compta-table-container">
+		<div id="view-ligne-title">
+			<div class='txtcentre'>
+				Nouvel événement
+			</div>
+		</div>
+		<div class='padding-top-1em txtcentre'>
+			Les événements permettent de regrouper entre eux des postes de dépense pour plus de lisibilité dans votre compta. Vous n'êtes pas obligés de les utiliser ;)
+		</div>
+		<form method='post' action=''>
+			<div id="poste-form-container">
+				<table>
+					{{ evenement_form.as_table }}
+				{% csrf_token %}
+				</table>
+				<input type="submit" name="validation" value="Valider" />		
+			</div>
+		</form>
+	</div>
+{% endblock %}

@@ -115,15 +115,19 @@ class PosteDepense(models.Model):
 
 	nom = models.CharField(max_length=15)
 	mandat = models.ForeignKey('binets.Mandat', null=True, blank=True)
+	evenement = models.ForeignKey('Evenement', null=True, blank=True)
 	previsionnel_debit = models.DecimalField(default=0, max_digits=9, decimal_places=2)
 	previsionnel_credit = models.DecimalField(default=0, max_digits=9, decimal_places=2)
 
 	def __str__(self):
-		return self.nom
+		if self.evenement:
+			return self.evenement.code + '/' + self.nom
+		else:
+			return self.nom
 
 	class Meta:
-		ordering = ('nom',)
-		unique_together = ('nom', 'mandat',)
+		ordering = ('evenement', 'nom',)
+		unique_together = ('nom', 'evenement', 'mandat',)
 
 
 	def get_default_index(self):
@@ -140,3 +144,27 @@ class PosteDepense(models.Model):
 	def delete_self_url(self):
 		"""retourne l'url de destruction du poste de dépense"""
 		return ('delete_poste_depense', [self.id])
+
+
+
+class Evenement(models.Model):
+	"""definit un evenement, c'est-à-dire un regroupement de postes de dépenses.
+	Comme les postes de dépenses, ces événements sont associés à des mandats, pour éviter que chaque mandat
+	se retrouve avec les postes de tout le monde.
+	Les postes qui ont un evenement None sont mis dans un événement par défaut du binet"""
+
+	nom = models.CharField(max_length=15)
+	code = models.CharField(max_length=3)
+	mandat = models.ForeignKey('binets.Mandat')
+
+	def __str__(self):
+		return self.nom
+
+	class Meta:
+		ordering = ('nom',)
+		unique_together = ('nom', 'code', 'mandat',)
+
+	@models.permalink
+	def edit_self_url(self):
+		"""retourne l'url de modification de l'evenement"""
+		return ('edit_evenement', [self.id])

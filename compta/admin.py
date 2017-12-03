@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import LigneCompta, PosteDepense
+from .models import LigneCompta, PosteDepense, Evenement
 
 # enregistrement de la LigneCompta comme objet dans l'interface admin
 
@@ -17,5 +17,12 @@ class PosteDepenseAdmin(admin.ModelAdmin):
 	ordering     =  ('mandat', 'nom')
 	search_fields = ('nom', 'mandat')
 
+class EvenementAdmin(admin.ModelAdmin):
+	list_display =  ('nom', 'mandat', 'code',)
+	list_filter  =  ('nom', 'mandat',)
+	ordering     =  ('mandat', 'nom')
+	search_fields = ('nom', 'mandat')
+
 admin.site.register(LigneCompta, LigneComptaAdmin)
 admin.site.register(PosteDepense, PosteDepenseAdmin)
+admin.site.register(Evenement, EvenementAdmin)

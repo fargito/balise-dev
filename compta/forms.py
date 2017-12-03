@@ -1,7 +1,7 @@
 from django import forms
 from decimal import Decimal
 from django.db.models import Q
-from .models import LigneCompta, PosteDepense
+from .models import LigneCompta, PosteDepense, Evenement
 from subventions.models import DeblocageSubvention
 from accounts.models import Promotion
 from binets.models import Binet, Mandat
@@ -203,10 +203,13 @@ class CustomDeblocageSubventionFormSet(BaseInlineFormSet):
 
 class PosteDepenseForm(forms.ModelForm):
 	"""définit le formulaire pour créer un nouveau poste de dépense"""
+
 	def __init__(self, mandat, previous_name, *args, **kwargs):
 		super(PosteDepenseForm, self).__init__(*args, **kwargs)
 		self.mandat = mandat
 		self.previous_name = previous_name
+
+		self.fields['evenement'].queryset = Evenement.objects.filter(mandat=self.mandat)
 
 	class Meta:
 		model = PosteDepense
@@ -214,18 +217,59 @@ class PosteDepenseForm(forms.ModelForm):
 		labels = {
 			"previsionnel_debit": 'Dépenses prévues',
 			"previsionnel_credit": 'Recettes prévues',
+			"evenement": "Evénement",
 		}
 
 	def clean(self):
 		"""on vérifie que le poste n'est pas dans les postes pour tous dont le mandat est None)"""
 		cleaned_data = super(PosteDepenseForm, self).clean()
 		nom = cleaned_data.get('nom')
+		evenement = cleaned_data.get('evenement')
 
-		if nom in list(PosteDepense.objects.filter(Q(mandat=None) | Q(mandat=self.mandat)).values_list('nom', flat=True)):
+		# on vérifie également que le poste est attribué à un événement qui appartient bien au bon binet
+		if evenement.mandat != self.mandat:
+			msg = "Cet événement n'appartient pas à votre mandat"
+			self.add_error('evenement', msg)
+
+
+		if nom in list(PosteDepense.objects.filter(Q(mandat=None) | Q(mandat=self.mandat, evenement=evenement)).values_list('nom', flat=True)):
 			if not (self.previous_name and nom == self.previous_name):
 				msg = 'Ce nom existe déjà ou est réservé'
 				self.add_error('nom', msg)
 
+		
+
+class EvenementForm(forms.ModelForm):
+	"""définit le formulaire pour créer un nouvel evenement"""
+	def __init__(self, mandat, previous_name, previous_code, *args, **kwargs):
+		super(EvenementForm, self).__init__(*args, **kwargs)
+		self.mandat = mandat
+		self.previous_name = previous_name
+		self.previous_code = previous_code
+
+	class Meta:
+		model = Evenement
+		exclude = ('mandat',)
+		labels = {
+		"code": "Code de 3 caractères",
+		}
+
+	def clean(self):
+		"""on vérifie que l'evenement n'existe pas"""
+		cleaned_data = super(EvenementForm, self).clean()
+		nom = cleaned_data.get('nom')
+		code = cleaned_data.get('code')
+
+		if nom in list(Evenement.objects.filter(mandat=self.mandat).values_list('nom', flat=True)):
+			if not (self.previous_name and nom == self.previous_name):
+				msg = 'Ce nom existe déjà ou est réservé'
+				self.add_error('nom', msg)
+
+		if code in list(Evenement.objects.filter(mandat=self.mandat).values_list('code', flat=True)):
+			# TODO Ajouter la meme condition que pour les noms puis modifier le __init__
+			if not (self.previous_code and code == self.previous_code):
+				msg = 'Ce code existe déjà ou est réservé'
+				self.add_error('code', msg)
 
 
 

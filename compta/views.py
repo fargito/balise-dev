@@ -6,13 +6,13 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
 
 from binets.models import Mandat, TypeBinet
-from .models import LigneCompta, PosteDepense
+from .models import LigneCompta, PosteDepense, Evenement
 from subventions.models import VagueSubventions, Subvention, DeblocageSubvention, TypeSubvention
 from django.db.models import Q
 
 from django import forms
 from .forms import LigneComptaForm, DeblocageSubventionForm, BaseDeblocageSubventionFormSet, CustomDeblocageSubventionFormSet
-from .forms import PosteDepenseForm, SearchLigneForm, SearchLigneFormPolymedia
+from .forms import PosteDepenseForm, SearchLigneForm, SearchLigneFormPolymedia, EvenementForm
 from binets.forms import DescriptionForm
 from django.forms import formset_factory, inlineformset_factory
 from imports.forms import ImportFileForm
@@ -770,6 +770,93 @@ def delete_poste_depense(request, id_poste):
 
 	return redirect(next)
 
+@login_required
+def create_evenement(request):
+	"""permet de créer un événement pour le mandat"""
+	try:
+		mandat = Mandat.objects.get(
+			id = request.session['id_mandat'])
+	except KeyError:
+		return redirect('../')
+
+	# on vérifie qui est autorisé à créer des postes
+	authorized = mandat.get_authorized_users()
+	if request.user not in authorized['edit'] and not(request.user.is_staff):
+		return redirect('/compta/journal')
+
+	evenement_form = EvenementForm(mandat, None, None, request.POST or None)
+
+	if request.method == 'POST':
+		if evenement_form.is_valid():
+			created_evenement = evenement_form.save(commit=False)
+			created_evenement.mandat = mandat
+			created_evenement.save()
+
+			return redirect(request.GET.get('next', '../'))
+
+	return render(request, 'compta/create_evenement.html', locals())
+
+
+@login_required
+def edit_evenement(request, id_evenement):
+	"""permet de modifier un événement"""
+	try:
+		mandat = Mandat.objects.get(
+			id = request.session['id_mandat'])
+	except KeyError:
+		return redirect('../')
+
+	# on vérifie qui est autorisé à créer des postes
+	authorized = mandat.get_authorized_users()
+	if request.user not in authorized['edit'] and not(request.user.is_staff):
+		return redirect('/compta/journal')
+
+	try:
+		evenement = Evenement.objects.get(id=id_evenement)
+	except KeyError:
+		return redirect('../')
+
+	# on vérifie aussi que le poste qu'on cherche à éditer appartient bien au mandat voulu
+	if mandat != evenement.mandat:
+		return redirect('/compta/journal')
+
+	evenement_form = EvenementForm(mandat, evenement.nom, evenement.code, request.POST or None, instance=evenement)
+
+	if request.method == 'POST':
+		if evenement_form.is_valid():
+			evenement_form.save()
+
+			return redirect(request.GET.get('next', '../'))
+
+	return render(request, 'compta/create_evenement.html', locals())
+
+
+@login_required
+def delete_evenement(request, id_evenement):
+	"""permet de détruire un événement si et seulement si il est vide"""
+	try:
+		mandat = Mandat.objects.get(
+			id = request.session['id_mandat'])
+	except KeyError:
+		return redirect('../')
+
+	# on vérifie qui est autorisé à supprimer des postes
+	authorized = mandat.get_authorized_users()
+	if request.user not in authorized['edit'] and not(request.user.is_staff):
+		return redirect('/compta/journal')
+
+	# on récupère la redirection
+	next = request.GET.get('next', '../')
+
+	try:
+		evenement = Evenement.objects.get(id=id_evenement)
+	except:
+		return redirect(next)
+
+	if PosteDepense.objects.filter(evenement=evenement).count() == 0:
+		poste.delete()
+
+	return redirect(next)
 
 
 @staff_member_required
