@@ -467,6 +467,8 @@ def binet_bilan(request):
 
 	# on met en forme le tableau de résultats partiels par poste
 	postes_with_total = []
+	previsionnel_balance_total = 0
+
 
 
 	# POSTES DEFINIS
@@ -476,6 +478,7 @@ def binet_bilan(request):
 		previsionnel_debit = poste_depense.previsionnel_debit
 		previsionnel_credit = poste_depense.previsionnel_credit
 		previsionnel_subtotal = previsionnel_credit - previsionnel_debit
+		previsionnel_balance_total += previsionnel_subtotal
 		subtotal_debit_poste = 0
 		subtotal_credit_poste = 0
 		subtotals_deblocages_poste = [[subvention, 0] for subvention in subventions_binet]
@@ -571,6 +574,14 @@ def binet_bilan(request):
 			'is_not_empty': True,
 			'nb_recettes': len(subtotals_deblocages_poste) + 1,
 			})
+
+
+	reel_balance_total = mandat.get_balance()
+	diff_balance_total = - previsionnel_balance_total + reel_balance_total
+
+	reel_balance_total_is_positive = reel_balance_total >= 0
+	previsionnel_balance_total_is_positive = previsionnel_balance_total >= 0
+	diff_balance_total_is_positive = diff_balance_total >= 0
 
 	request.session['active_tab'] = 'Bilan'
 	return render(request, 'compta/binet_bilan.html', locals())

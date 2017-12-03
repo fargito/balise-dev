@@ -16,14 +16,13 @@
 					</th>
 					<th class="binet-description">Description</th>
 					<th class="role-in-binet">Rôle</th>
-					{% if request.user.is_staff %}
-						<th class='role-in-binet'>
-							<div class='title-order-container'><div>Type</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par promo"/></a></div>
-						</th>
-						<th>
-							<div class='title-order-container'><div>Actif</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par promo"/></a></div>
-						</th>
-					{% endif %}
+					<th class='role-in-binet'>
+						<div class='title-order-container'><div>Type</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par type de binet"/></a></div>
+					</th>
+					<th>
+						<div class='title-order-container'><div>Actif</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par passé"/></a></div>
+					</th>
+					
 				</tr>
 			</thead>
 			<tbody>
@@ -46,17 +45,17 @@
 							kessier
 						{% endif %}
 						</td>
-						{% if request.user.is_staff %}
-							<td class='role-in-binet'>
-								{{ mandat.type_binet }}
-							</td>
-							<td>
-								{% if mandat.is_active %}
-									Actif
-								{% else %}
-									Passé
-								{% endif %}
-						{% endif %}
+						<td class='role-in-binet'>
+							{{ mandat.type_binet }}
+						</td>
+						<td>
+							{% if mandat.is_active %}
+								Actif
+							{% else %}
+								Passé
+							{% endif %}
+						</td>
+						
 					</tr>
 
 				{% endfor %}
