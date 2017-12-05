@@ -168,3 +168,8 @@ class Evenement(models.Model):
 	def edit_self_url(self):
 		"""retourne l'url de modification de l'evenement"""
 		return ('edit_evenement', [self.id])
+
+	@models.permalink
+	def delete_self_url(self):
+		"""retourne l'url de suppression de l'evenement"""
+		return ('delete_evenement', [self.id])

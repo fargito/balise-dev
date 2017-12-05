@@ -227,7 +227,7 @@ class PosteDepenseForm(forms.ModelForm):
 		evenement = cleaned_data.get('evenement')
 
 		# on vérifie également que le poste est attribué à un événement qui appartient bien au bon binet
-		if evenement.mandat != self.mandat:
+		if evenement and evenement.mandat != self.mandat:
 			msg = "Cet événement n'appartient pas à votre mandat"
 			self.add_error('evenement', msg)
 

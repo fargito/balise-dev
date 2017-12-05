@@ -5,6 +5,138 @@
 
 {% block compta_page %}
 <div id="compta-table-container">
+	{% if evenements %}
+	<div class='txtcentre'>
+		<div id="view-deblocages-title">
+			Bilan global
+		</div>
+	</div>
+	<div class="subvention-tables_container">
+		<div class="subventions-deblocages-and-lignes-container">
+			<table class="subventions-deblocage-lignes">
+				<thead>
+					<tr>
+						<th class="compta-form-description">
+							Evénements
+						</th>
+						<th class="compta-form-description">
+							Postes
+						</th>
+						<th class="compta-form-montant">
+							Réel
+						</th>
+						<th class="compta-form-montant">
+							Prévisionnel
+						</th>
+						<th class="compta-form-montant">
+							Différence
+						</th>
+					</tr>
+				</thead>
+				<tbody class="subventions-deblocage-lignes">
+					{% for evenement in evenements_with_totals %}
+						<tr class={{ evenement.color }}>
+							<td class="compta-form-description" rowspan={{ evenement.nb_postes }}>
+								<a href={{ evenement.evenement.edit_self_url }}?next={{ request.get_full_path }}>
+									<strong>{{ evenement.evenement }}</strong>
+								</a>
+								{% if request.session.edit and not evenement.is_not_empty %}
+									<a href={{ evenement.evenement.delete_self_url }}?next={{ request.get_full_path }}>
+										<img src="{% static 'img/delete.ico' %}" alt="Delete icone" class='delete_icon' title="L'événement est vide, le supprimer ?"/>
+									</a>
+								{% endif %}
+							</td>
+							<td colspan="4"></td>
+						</tr>
+
+
+						{% for poste in evenement.totals %}
+						{% if not poste.poste_depense.mandat and not poste.is_not_empty %}
+						{% else %}
+						<tr class={{ evenement.color }}>
+							<td class="compta-form-description">
+								{% if poste.poste_depense.nom %}
+									{{ poste.poste_depense.nom }}
+								{% else %}
+									{{ poste.poste_depense }}
+								{% endif %}
+								</td>
+							<td class="compta-form-montant">{{ poste.reel_subtotal }}</td>
+							<td class="compta-form-montant">
+								{% if poste.poste_depense.mandat %}
+								<a class='link-black' href={{ poste.poste_depense.edit_self_url }}?next={{ request.get_full_path }}>
+									{{ poste.previsionnel_subtotal }}
+								</a>
+								{% else %}
+									{{ poste.previsionnel_subtotal }}
+								{% endif %}
+							</td>
+							<td class="compta-form-montant">
+								{% if poste.diff_subtotal_is_positive %}
+									<div class="compta-positive">
+										{{ poste.diff_subtotal }}
+									</div>
+									{% else %}
+									<div class="compta-negative">
+										{{ poste.diff_subtotal }}
+									</div>
+								{% endif %}
+							</td>
+						</tr>
+						{% endif %}
+						{% endfor %}
+						<tr class={{ evenement.color }}>
+							<td><strong>Sous-total {{ evenement.evenement }}</strong></td>
+							<td></td>
+							<td class="compta-form-montant"><strong>{{ evenement.reel_balance_evenement }}</strong></td>
+							<td class="compta-form-montant"><strong>{{ evenement.previsionnel_balance_evenement }}</strong></td>
+							<td class="compta-form-montant"><strong>{{ evenement.diff_balance_evenement }}</strong></td>
+						</tr>
+					{% endfor %}
+				</tbody>
+				<tfoot>
+					<tr>
+						<th class="compta-form-description">Total</th>
+						<th></th>
+						<th class="compta-form-montant">
+							{% if reel_balance_total_is_positive %}
+								<div class="compta-positive">
+									{{ reel_balance_total }}
+								</div>
+							{% else %}
+								<div class="compta-negative">
+									{{ reel_balance_total }}
+								</div>
+							{% endif %}
+						</th>
+						<th class="compta-form-montant">
+							{% if previsionnel_balance_total_is_positive %}
+								<div class="compta-positive">
+									{{ previsionnel_balance_total }}
+								</div>
+							{% else %}
+								<div class="compta-negative">
+									{{ previsionnel_balance_total }}
+								</div>
+							{% endif %}
+						</th>
+						<th class="compta-form-montant">
+							{% if diff_balance_total_is_positive %}
+								<div class="compta-positive">
+									{{ diff_balance_total }}
+								</div>
+								{% else %}
+								<div class="compta-negative">
+									{{ diff_balance_total }}
+								</div>
+							{% endif %}
+						</th>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+	{% else %}
 	<div class='txtcentre'>
 		<div id="view-deblocages-title">
 			Bilan global
@@ -101,6 +233,7 @@
 			</table>
 		</div>
 	</div>
+	{% endif %}
 	<div class='txtcentre'>
 		<div id="view-deblocages-title">
 			Bilan détaillé par poste de dépense

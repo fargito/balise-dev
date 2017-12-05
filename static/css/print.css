@@ -77,6 +77,9 @@ img.centre {
 tr.ligne-compta:nth-child(even) {background: #FFF}
 tr.ligne-compta:nth-child(odd) {background: #DDD}
 
+.compta-even{background: #FFF}
+.compta-odd{background: #DDD}
+
 .compta-deblocage {
 	font-style: italic;
 }

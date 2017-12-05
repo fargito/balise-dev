@@ -47,6 +47,9 @@ input.compta-nav-option {
 tr.ligne-compta:nth-child(even) {background: #FFF}
 tr.ligne-compta:nth-child(odd) {background: #DDD}
 
+.compta-even{background: #FFF}
+.compta-odd{background: #DDD}
+
 td.compta-form-montant {
 	width: 7em;
 	min-width: 7em;

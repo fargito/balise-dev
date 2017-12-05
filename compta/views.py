@@ -462,6 +462,8 @@ def binet_bilan(request):
 	# on récupère tous les postes de dépense du mandat et les postes génériques
 	postes = PosteDepense.objects.filter(Q(mandat=mandat) | Q(mandat=None))
 
+	evenements = Evenement.objects.filter(mandat=mandat)
+
 	# on récupère aussi les subventions du binet
 	subventions_binet = Subvention.objects.filter(mandat=mandat)
 
@@ -469,113 +471,103 @@ def binet_bilan(request):
 	postes_with_total = []
 	previsionnel_balance_total = 0
 
+	evenements_with_totals = []
+	evenement_is_even = False # on met un compteur pour savoir s'il est pair ou non pour la couleur du tableau
 
+	# POSTES DEFINIS ET DANS DES EVENEMENTS
+	for evenement in evenements:
+		evenement_postes = postes.filter(evenement=evenement)
+		evenement_postes_with_total = []
+		previsionnel_balance_evenement = 0
+		reel_balance_evenement = 0
+		diff_balance_evenement = 0
+		for poste_depense in evenement_postes:
+			poste_totals = get_poste_totals(poste_depense, mandat)
+			previsionnel_balance_total += poste_totals['previsionnel_subtotal']
+			previsionnel_balance_evenement += poste_totals['previsionnel_subtotal']
+			reel_balance_evenement += poste_totals['reel_subtotal']
+			diff_balance_evenement += poste_totals['diff_subtotal']
+			# gestion avec les événements
+			evenement_postes_with_total.append(poste_totals)
 
-	# POSTES DEFINIS
-	for poste_depense in postes:
-		# on récupère d'abord toutes les lignes associées avec des postes de dépense du mandat
-		lignes = LigneCompta.objects.filter(poste_depense=poste_depense, mandat=mandat)
-		previsionnel_debit = poste_depense.previsionnel_debit
-		previsionnel_credit = poste_depense.previsionnel_credit
-		previsionnel_subtotal = previsionnel_credit - previsionnel_debit
-		previsionnel_balance_total += previsionnel_subtotal
-		subtotal_debit_poste = 0
-		subtotal_credit_poste = 0
-		subtotals_deblocages_poste = [[subvention, 0] for subvention in subventions_binet]
+			# gestion avec les postes seuls
+			postes_with_total.append(poste_totals)
 
-		for ligne in lignes:
-			if ligne.debit:
-				subtotal_debit_poste += ligne.debit
-				# si la ligne est un débit on incrémente les compteurs des déblocages pour les différentes subventions
-				k = 0
-				for subvention in subventions_binet:
-					montant_deblocage = DeblocageSubvention.objects.get(ligne_compta=ligne, subvention=subvention).montant
-					if montant_deblocage:
-						subtotals_deblocages_poste[k][1] += montant_deblocage
+		if evenement_is_even: color = 'compta-even'
+		else: color = 'compta-odd'
 
-					k += 1
-			if ligne.credit:
-				subtotal_credit_poste += ligne.credit
-
-		# on fait la sous_somme du poste
-		subtotal_deblocages = 0
-		for deblocage in subtotals_deblocages_poste:
-			subtotal_deblocages += deblocage[1]
-		subtotal_poste = subtotal_credit_poste + subtotal_deblocages - subtotal_debit_poste
-
-		postes_with_total.append({
-			'poste_depense': poste_depense,
-			'previsionnel_debit': previsionnel_debit,
-			'previsionnel_credit': previsionnel_credit,
-			'previsionnel_subtotal': previsionnel_subtotal,
-			'previsionnel_is_positive': previsionnel_subtotal >= 0,
-			'reel_debit': subtotal_debit_poste,
-			'reel_credit': subtotal_credit_poste,
-			'reel_deblocages': subtotals_deblocages_poste,
-			'reel_subtotal': subtotal_poste,
-			'reel_is_positive': subtotal_poste >= 0,
-			'diff_debit': - subtotal_debit_poste + previsionnel_debit,
-			'diff_debit_is_positive': - subtotal_debit_poste + previsionnel_debit >= 0,
-			'diff_credit': subtotal_credit_poste + subtotal_deblocages - previsionnel_credit,
-			'diff_credit_is_positive': subtotal_credit_poste + subtotal_deblocages - previsionnel_credit >= 0,
-			'diff_subtotal': subtotal_poste - previsionnel_subtotal,
-			'diff_subtotal_is_positive': subtotal_poste - previsionnel_subtotal >= 0,
-			'is_not_empty': len(lignes) > 0,
-			'nb_recettes': len(subtotals_deblocages_poste) + 1,
+		evenements_with_totals.append({
+			"evenement": evenement,
+			"totals": evenement_postes_with_total,
+			"nb_postes": len(evenement_postes_with_total) + 1,
+			"is_even": evenement_is_even,
+			"color": color,
+			"is_not_empty": len(evenement_postes) > 0,
+			"previsionnel_balance_evenement": previsionnel_balance_evenement,
+			"reel_balance_evenement": reel_balance_evenement,
+			"diff_balance_evenement": diff_balance_evenement,
 			})
+		evenement_is_even = not evenement_is_even
+
+
+	# POSTES DEFINIS SANS EVENEMENT
+	postes_alone = postes.filter(evenement=None)
+
+	no_event_postes_totals = []
+	no_event_previsionnel_balance = 0
+	no_event_reel_balance = 0
+	no_event_diff_balance = 0
+	for poste_depense in postes_alone:
+		poste_totals = get_poste_totals(poste_depense, mandat)
+		previsionnel_balance_total += poste_totals['previsionnel_subtotal']
+		no_event_previsionnel_balance += poste_totals['previsionnel_subtotal']
+		no_event_reel_balance += poste_totals['reel_subtotal']
+		no_event_diff_balance += poste_totals['diff_subtotal']
+		postes_with_total.append(poste_totals)
+		no_event_postes_totals.append(poste_totals)
 
 
 	# LIGNES SANS POSTE SPECIFIE
 	# on récupère ensuite les lignes non spécifiées
-	lignes = LigneCompta.objects.filter(poste_depense=None, mandat=mandat)
-	if len(lignes) > 0:
-		subtotal_debit_no_poste = 0
-		subtotal_credit_no_poste = 0
-		subtotals_deblocages_poste = [[subvention, 0] for subvention in subventions_binet]
+	poste_totals = get_poste_totals(None, mandat)
+	previsionnel_balance_total += poste_totals['previsionnel_subtotal']
+	no_event_previsionnel_balance += poste_totals['previsionnel_subtotal']
+	no_event_reel_balance += poste_totals['reel_subtotal']
+	no_event_diff_balance += poste_totals['diff_subtotal']
+	postes_with_total.append(poste_totals)
+	no_event_postes_totals.append(poste_totals)
 
-		for ligne in lignes:
-			if ligne.debit:
-				subtotal_debit_no_poste += ligne.debit
-				# si la ligne est un débit on incrémente les compteurs des déblocages pour les différentes subventions
-				k = 0
-				for subvention in subventions_binet:
-					montant_deblocage = DeblocageSubvention.objects.get(ligne_compta=ligne, subvention=subvention).montant
-					if montant_deblocage:
-						subtotals_deblocages_poste[k][1] += montant_deblocage
-					k += 1
+	if evenement_is_even: color = 'compta-even'
+	else: color = 'compta-odd'
 
-			if ligne.credit:
-				subtotal_credit_no_poste += ligne.credit
+	# on est obligés de compter pour savoir combien de span va devoir faire la dernière ligne
+	compteur = 0
+	for poste in no_event_postes_totals:
+		has_mandat = False
 
+		try:
+			if poste['poste_depense'].mandat:
+				has_mandat = True
+		except AttributeError:
+			pass
 
-		# on fait la sous_somme du poste
-		subtotal_deblocages = 0
-		for deblocage in subtotals_deblocages_poste:
-			subtotal_deblocages += deblocage[1]
-		subtotal_no_poste = subtotal_credit_no_poste + subtotal_deblocages - subtotal_debit_no_poste
+		if has_mandat or poste['is_not_empty']:
+			compteur += 1
 
-		postes_with_total.append({
-			'poste_depense': "Non spécifié",
-			'previsionnel_debit': 0,
-			'previsionnel_credit': 0,
-			'previsionnel_subtotal': 0,
-			'previsionnel_is_positive': True,
-			'reel_debit': subtotal_debit_no_poste,
-			'reel_credit': subtotal_credit_no_poste,
-			'reel_deblocages': subtotals_deblocages_poste,
-			'reel_subtotal': subtotal_no_poste,
-			'reel_is_positive': subtotal_no_poste >= 0,
-			'diff_debit': - subtotal_debit_no_poste,
-			'diff_debit_is_positive': - subtotal_debit_no_poste >= 0,
-			'diff_credit': subtotal_credit_no_poste + subtotal_deblocages,
-			'diff_credit_is_positive': subtotal_credit_no_poste + subtotal_deblocages >= 0,
-			'diff_subtotal': subtotal_no_poste,
-			'diff_subtotal_is_positive': subtotal_no_poste >= 0,
-			'is_not_empty': True,
-			'nb_recettes': len(subtotals_deblocages_poste) + 1,
-			})
+	evenements_with_totals.append({
+		"evenement": "Non spécifié",
+		"totals": no_event_postes_totals,
+		"nb_postes": compteur + 1,
+		"is_even": evenement_is_even,
+		"color": color,
+		"is_not_empty": True,
+		"previsionnel_balance_evenement": no_event_previsionnel_balance,
+		"reel_balance_evenement": no_event_reel_balance,
+		"diff_balance_evenement": no_event_diff_balance,
+		})
 
 
+	# on s'occupe ensuite du bilan global qui est affiché en haut de la page
 	reel_balance_total = mandat.get_balance()
 	diff_balance_total = - previsionnel_balance_total + reel_balance_total
 
@@ -585,6 +577,76 @@ def binet_bilan(request):
 
 	request.session['active_tab'] = 'Bilan'
 	return render(request, 'compta/binet_bilan.html', locals())
+
+
+def get_poste_totals(poste_depense, mandat):
+	"""fonction d'aide, retourne les totaux pour le bilan pour un poste de dépense donné.
+	Si le poste est None, fonctionnement un peu différent"""
+	# on récupère d'abord toutes les lignes associées avec des postes de dépense du mandat
+	if poste_depense:
+		lignes = LigneCompta.objects.filter(poste_depense=poste_depense, mandat=mandat)
+		previsionnel_debit = poste_depense.previsionnel_debit
+		previsionnel_credit = poste_depense.previsionnel_credit
+		previsionnel_subtotal = previsionnel_credit - previsionnel_debit
+
+	else:
+		lignes = LigneCompta.objects.filter(poste_depense=None, mandat=mandat)
+		previsionnel_debit = 0
+		previsionnel_credit = 0
+		previsionnel_subtotal = 0
+
+	# on récupère aussi les subventions du binet
+	subventions_binet = Subvention.objects.filter(mandat=mandat)
+
+
+	subtotal_debit_poste = 0
+	subtotal_credit_poste = 0
+	subtotals_deblocages_poste = [[subvention, 0] for subvention in subventions_binet]
+
+	for ligne in lignes:
+		if ligne.debit:
+			subtotal_debit_poste += ligne.debit
+			# si la ligne est un débit on incrémente les compteurs des déblocages pour les différentes subventions
+			k = 0
+			for subvention in subventions_binet:
+				montant_deblocage = DeblocageSubvention.objects.get(ligne_compta=ligne, subvention=subvention).montant
+				if montant_deblocage:
+					subtotals_deblocages_poste[k][1] += montant_deblocage
+
+				k += 1
+		if ligne.credit:
+			subtotal_credit_poste += ligne.credit
+
+	# on fait la sous_somme du poste
+	subtotal_deblocages = 0
+	for deblocage in subtotals_deblocages_poste:
+		subtotal_deblocages += deblocage[1]
+	subtotal_poste = subtotal_credit_poste + subtotal_deblocages - subtotal_debit_poste
+
+
+	if not poste_depense:
+		poste_depense = "Non spécifié"
+
+	return {
+		'poste_depense': poste_depense,
+		'previsionnel_debit': previsionnel_debit,
+		'previsionnel_credit': previsionnel_credit,
+		'previsionnel_subtotal': previsionnel_subtotal,
+		'previsionnel_is_positive': previsionnel_subtotal >= 0,
+		'reel_debit': subtotal_debit_poste,
+		'reel_credit': subtotal_credit_poste,
+		'reel_deblocages': subtotals_deblocages_poste,
+		'reel_subtotal': subtotal_poste,
+		'reel_is_positive': subtotal_poste >= 0,
+		'diff_debit': - subtotal_debit_poste + previsionnel_debit,
+		'diff_debit_is_positive': - subtotal_debit_poste + previsionnel_debit >= 0,
+		'diff_credit': subtotal_credit_poste + subtotal_deblocages - previsionnel_credit,
+		'diff_credit_is_positive': subtotal_credit_poste + subtotal_deblocages - previsionnel_credit >= 0,
+		'diff_subtotal': subtotal_poste - previsionnel_subtotal,
+		'diff_subtotal_is_positive': subtotal_poste - previsionnel_subtotal >= 0,
+		'is_not_empty': len(lignes) > 0,
+		'nb_recettes': len(subtotals_deblocages_poste) + 1,
+		}
 
 
 @login_required
@@ -854,7 +916,7 @@ def delete_evenement(request, id_evenement):
 		return redirect(next)
 
 	if PosteDepense.objects.filter(evenement=evenement).count() == 0:
-		poste.delete()
+		evenement.delete()
 
 	return redirect(next)
 
