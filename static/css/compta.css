@@ -297,3 +297,7 @@ div.ligne-comment {
 	display: flex;
 	justify-content: flex-end;
 }
+
+.padding-4 {
+	padding-left: 4em;
+}

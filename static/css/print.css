@@ -281,3 +281,7 @@ th.nom-binet {
 	background-color: rgba(0,0,0,0);
 	margin-bottom: 13cm;
 }
+
+.padding-4 {
+	padding-left: 4em;
+}

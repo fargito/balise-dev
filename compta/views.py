@@ -470,6 +470,8 @@ def binet_bilan(request):
 	# on met en forme le tableau de résultats partiels par poste
 	postes_with_total = []
 	previsionnel_balance_total = 0
+	previsionnel_debit_total = 0
+	previsionnel_credit_total = 0
 
 	evenements_with_totals = []
 	evenement_is_even = False # on met un compteur pour savoir s'il est pair ou non pour la couleur du tableau
@@ -479,13 +481,23 @@ def binet_bilan(request):
 		evenement_postes = postes.filter(evenement=evenement)
 		evenement_postes_with_total = []
 		previsionnel_balance_evenement = 0
+		previsionnel_debit_evenement = 0
+		previsionnel_credit_evenement = 0
 		reel_balance_evenement = 0
+		reel_debit_evenement = 0
+		reel_credit_with_deblocages_evenement = 0
 		diff_balance_evenement = 0
 		for poste_depense in evenement_postes:
 			poste_totals = get_poste_totals(poste_depense, mandat)
 			previsionnel_balance_total += poste_totals['previsionnel_subtotal']
+			previsionnel_debit_total += poste_totals['previsionnel_debit']
+			previsionnel_credit_total += poste_totals['previsionnel_credit']
 			previsionnel_balance_evenement += poste_totals['previsionnel_subtotal']
+			previsionnel_debit_evenement += poste_totals['previsionnel_debit']
+			previsionnel_credit_evenement += poste_totals['previsionnel_credit']
 			reel_balance_evenement += poste_totals['reel_subtotal']
+			reel_debit_evenement += poste_totals['reel_debit']
+			reel_credit_with_deblocages_evenement += poste_totals['reel_credit_with_deblocages']
 			diff_balance_evenement += poste_totals['diff_subtotal']
 			# gestion avec les événements
 			evenement_postes_with_total.append(poste_totals)
@@ -504,8 +516,15 @@ def binet_bilan(request):
 			"color": color,
 			"is_not_empty": len(evenement_postes) > 0,
 			"previsionnel_balance_evenement": previsionnel_balance_evenement,
+			"previsionnel_debit_evenement": previsionnel_debit_evenement,
+			"previsionnel_credit_evenement": previsionnel_credit_evenement,
 			"reel_balance_evenement": reel_balance_evenement,
+			"reel_debit_evenement": reel_debit_evenement,
+			"reel_credit_with_deblocages_evenement": reel_credit_with_deblocages_evenement,
 			"diff_balance_evenement": diff_balance_evenement,
+			"reel_balance_evenement_is_positive": reel_balance_evenement >= 0,
+			"previsionnel_balance_evenement_is_positive": previsionnel_balance_evenement >= 0,
+			"diff_balance_evenement_is_positive": diff_balance_evenement >= 0,
 			})
 		evenement_is_even = not evenement_is_even
 
@@ -515,13 +534,23 @@ def binet_bilan(request):
 
 	no_event_postes_totals = []
 	no_event_previsionnel_balance = 0
+	no_event_previsionnel_credit = 0
+	no_event_previsionnel_debit = 0
 	no_event_reel_balance = 0
+	no_event_reel_debit = 0
+	no_event_reel_credit_with_deblocages = 0
 	no_event_diff_balance = 0
 	for poste_depense in postes_alone:
 		poste_totals = get_poste_totals(poste_depense, mandat)
 		previsionnel_balance_total += poste_totals['previsionnel_subtotal']
+		previsionnel_debit_total += poste_totals['previsionnel_debit']
+		previsionnel_credit_total += poste_totals['previsionnel_credit']
 		no_event_previsionnel_balance += poste_totals['previsionnel_subtotal']
 		no_event_reel_balance += poste_totals['reel_subtotal']
+		no_event_previsionnel_debit += poste_totals['previsionnel_debit']
+		no_event_previsionnel_credit += poste_totals['previsionnel_credit']
+		no_event_reel_debit += poste_totals['reel_debit']
+		no_event_reel_credit_with_deblocages += poste_totals['reel_credit_with_deblocages']
 		no_event_diff_balance += poste_totals['diff_subtotal']
 		postes_with_total.append(poste_totals)
 		no_event_postes_totals.append(poste_totals)
@@ -531,9 +560,15 @@ def binet_bilan(request):
 	# on récupère ensuite les lignes non spécifiées
 	poste_totals = get_poste_totals(None, mandat)
 	previsionnel_balance_total += poste_totals['previsionnel_subtotal']
+	previsionnel_debit_total += poste_totals['previsionnel_debit']
+	previsionnel_credit_total += poste_totals['previsionnel_credit']
 	no_event_previsionnel_balance += poste_totals['previsionnel_subtotal']
 	no_event_reel_balance += poste_totals['reel_subtotal']
 	no_event_diff_balance += poste_totals['diff_subtotal']
+	no_event_previsionnel_debit += poste_totals['previsionnel_debit']
+	no_event_previsionnel_credit += poste_totals['previsionnel_credit']
+	no_event_reel_debit += poste_totals['reel_debit']
+	no_event_reel_credit_with_deblocages += poste_totals['reel_credit_with_deblocages']
 	postes_with_total.append(poste_totals)
 	no_event_postes_totals.append(poste_totals)
 
@@ -562,12 +597,20 @@ def binet_bilan(request):
 		"color": color,
 		"is_not_empty": True,
 		"previsionnel_balance_evenement": no_event_previsionnel_balance,
+		"previsionnel_debit_evenement": no_event_previsionnel_debit,
+		"previsionnel_credit_evenement": no_event_previsionnel_credit,
 		"reel_balance_evenement": no_event_reel_balance,
+		"reel_debit_evenement": no_event_reel_debit,
+		"reel_credit_with_deblocages_evenement": no_event_reel_credit_with_deblocages,
 		"diff_balance_evenement": no_event_diff_balance,
+		"reel_balance_evenement_is_positive": no_event_reel_balance >= 0,
+		"previsionnel_balance_evenement_is_positive": no_event_previsionnel_balance >= 0,
+		"diff_balance_evenement_is_positive": no_event_diff_balance >= 0,
 		})
 
 
 	# on s'occupe ensuite du bilan global qui est affiché en haut de la page
+	reel_debit_total, reel_credit_with_deblocages_total = mandat.get_totals()
 	reel_balance_total = mandat.get_balance()
 	diff_balance_total = - previsionnel_balance_total + reel_balance_total
 
@@ -635,6 +678,7 @@ def get_poste_totals(poste_depense, mandat):
 		'previsionnel_is_positive': previsionnel_subtotal >= 0,
 		'reel_debit': subtotal_debit_poste,
 		'reel_credit': subtotal_credit_poste,
+		'reel_credit_with_deblocages': subtotal_deblocages + subtotal_credit_poste,
 		'reel_deblocages': subtotals_deblocages_poste,
 		'reel_subtotal': subtotal_poste,
 		'reel_is_positive': subtotal_poste >= 0,

@@ -18,14 +18,16 @@
 					<tr>
 						<th class="compta-form-description">
 							Evénements
+							<a href="/compta/journal/create_evenement?next={{ request.get_full_path }}"><img class='add-icon' src="{% static 'img/add2.ico' %}" alt="Add Icon" title="Nouvel événement"/></a>
 						</th>
 						<th class="compta-form-description">
 							Postes
+							<a href="/compta/journal/create_poste_depense?next={{ request.get_full_path }}"><img class='add-icon' src="{% static 'img/add2.ico' %}" alt="Add Icon" title="Nouveau poste de dépenses"/></a>
 						</th>
-						<th class="compta-form-montant">
+						<th class="padding-4" colspan="2">
 							Réel
 						</th>
-						<th class="compta-form-montant">
+						<th class="padding-4" colspan="2">
 							Prévisionnel
 						</th>
 						<th class="compta-form-montant">
@@ -34,10 +36,18 @@
 					</tr>
 				</thead>
 				<tbody class="subventions-deblocage-lignes">
+					<tr>
+						<td colspan="2"></td>
+						<td class="compta-form-montant">Débit</td>
+						<td class="compta-form-montant">Crédit</td>
+						<td class="compta-form-montant">Débit</td>
+						<td class="compta-form-montant">Crédit</td>
+						<td></td>
+					</tr>
 					{% for evenement in evenements_with_totals %}
 						<tr class={{ evenement.color }}>
 							<td class="compta-form-description" rowspan={{ evenement.nb_postes }}>
-								<a href={{ evenement.evenement.edit_self_url }}?next={{ request.get_full_path }}>
+								<a href={{ evenement.evenement.edit_self_url }}?next={{ request.get_full_path }} title="Modifier l'événement">
 									<strong>{{ evenement.evenement }}</strong>
 								</a>
 								{% if request.session.edit and not evenement.is_not_empty %}
@@ -46,29 +56,47 @@
 									</a>
 								{% endif %}
 							</td>
-							<td colspan="4"></td>
+							<td colspan="6"></td>
 						</tr>
-
-
 						{% for poste in evenement.totals %}
 						{% if not poste.poste_depense.mandat and not poste.is_not_empty %}
 						{% else %}
 						<tr class={{ evenement.color }}>
 							<td class="compta-form-description">
-								{% if poste.poste_depense.nom %}
-									{{ poste.poste_depense.nom }}
+								{% if poste.poste_depense.mandat %}
+								<a class='link-black' href={{ poste.poste_depense.edit_self_url }}?next={{ request.get_full_path }} title="Modifier le poste de dépenses">
+									{% if poste.poste_depense.nom %}
+										{{ poste.poste_depense.nom }}
+									{% else %}
+										{{ poste.poste_depense }}
+									{% endif %}
+								</a>
 								{% else %}
-									{{ poste.poste_depense }}
+									{% if poste.poste_depense.nom %}
+										{{ poste.poste_depense.nom }}
+									{% else %}
+										{{ poste.poste_depense }}
+									{% endif %}
 								{% endif %}
 								</td>
-							<td class="compta-form-montant">{{ poste.reel_subtotal }}</td>
+							<td class="compta-form-montant">{{ poste.reel_debit }}</td>
+							<td class="compta-form-montant">{{ poste.reel_credit_with_deblocages }}</td>
 							<td class="compta-form-montant">
 								{% if poste.poste_depense.mandat %}
 								<a class='link-black' href={{ poste.poste_depense.edit_self_url }}?next={{ request.get_full_path }}>
-									{{ poste.previsionnel_subtotal }}
+									{{ poste.previsionnel_debit }}
 								</a>
 								{% else %}
-									{{ poste.previsionnel_subtotal }}
+									{{ poste.previsionnel_debit }}
+								{% endif %}
+							</td>
+							<td class="compta-form-montant">
+								{% if poste.poste_depense.mandat %}
+								<a class='link-black' href={{ poste.poste_depense.edit_self_url }}?next={{ request.get_full_path }}>
+									{{ poste.previsionnel_credit }}
+								</a>
+								{% else %}
+									{{ poste.previsionnel_credit }}
 								{% endif %}
 							</td>
 							<td class="compta-form-montant">
@@ -86,18 +114,72 @@
 						{% endif %}
 						{% endfor %}
 						<tr class={{ evenement.color }}>
-							<td><strong>Sous-total {{ evenement.evenement }}</strong></td>
+							<td rowspan="2"><strong>Sous-total {{ evenement.evenement }}</strong></td>
 							<td></td>
-							<td class="compta-form-montant"><strong>{{ evenement.reel_balance_evenement }}</strong></td>
-							<td class="compta-form-montant"><strong>{{ evenement.previsionnel_balance_evenement }}</strong></td>
-							<td class="compta-form-montant"><strong>{{ evenement.diff_balance_evenement }}</strong></td>
+							<td class="compta-form-montant"><strong>{{ evenement.reel_debit_evenement }}</strong></td>
+							<td class="compta-form-montant"><strong>{{ evenement.reel_credit_with_deblocages_evenement }}</strong></td>
+							<td class="compta-form-montant"><strong>{{ evenement.previsionnel_debit_evenement }}</strong></td>
+							<td class="compta-form-montant"><strong>{{ evenement.previsionnel_credit_evenement }}</strong></td>
+							<td></td>
+						</tr>
+						<tr class={{ evenement.color }}>
+							<td colspan="2"></td>
+							<td class="compta-form-montant"><strong>
+								{% if evenement.reel_balance_evenement_is_positive %}
+									<div class="compta-positive">
+										{{ evenement.reel_balance_evenement }}
+									</div>
+									{% else %}
+									<div class="compta-negative">
+										{{ evenement.reel_balance_evenement }}
+									</div>
+								{% endif %}
+							</strong></td>
+							<td></td>
+							<td class="compta-form-montant"><strong>
+								{% if evenement.previsionnel_balance_evenement_is_positive %}
+									<div class="compta-positive">
+										{{ evenement.previsionnel_balance_evenement }}
+									</div>
+									{% else %}
+									<div class="compta-negative">
+										{{ evenement.previsionnel_balance_evenement }}
+									</div>
+								{% endif %}
+							</strong></td>
+							<td class="compta-form-montant"><strong>
+								{% if evenement.diff_balance_evenement_is_positive %}
+									<div class="compta-positive">
+										{{ evenement.diff_balance_evenement }}
+									</div>
+									{% else %}
+									<div class="compta-negative">
+										{{ evenement.diff_balance_evenement }}
+									</div>
+								{% endif %}
+							</strong></td>
 						</tr>
 					{% endfor %}
 				</tbody>
 				<tfoot>
 					<tr>
-						<th class="compta-form-description">Total</th>
+						<th class="compta-form-description" rowspan="2">Total</th>
 						<th></th>
+						<th class="compta-form-montant">
+							{{ reel_debit_total }}
+						</th>
+						<th class="compta-form-montant">
+							{{ reel_credit_with_deblocages_total }}
+						</th>
+						<th class="compta-form-montant">
+							{{ previsionnel_debit_total }}
+						</th>
+						<th class="compta-form-montant">
+							{{ previsionnel_credit_total }}
+						</th>
+					</tr>
+					<tr>
+						<th colspan="2"></th>
 						<th class="compta-form-montant">
 							{% if reel_balance_total_is_positive %}
 								<div class="compta-positive">
@@ -109,6 +191,7 @@
 								</div>
 							{% endif %}
 						</th>
+						<th></th>
 						<th class="compta-form-montant">
 							{% if previsionnel_balance_total_is_positive %}
 								<div class="compta-positive">
@@ -149,6 +232,7 @@
 					<tr>
 						<th class="compta-form-description">
 							Postes
+							<a href="/compta/journal/create_poste_depense?next={{ request.get_full_path }}"><img class='add-icon' src="{% static 'img/add2.ico' %}" alt="Add Icon" title="Nouveau poste de dépenses"/></a>
 						</th>
 						<th class="compta-form-montant">
 							Réel
