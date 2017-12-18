@@ -274,8 +274,8 @@ class EvenementForm(forms.ModelForm):
 
 
 class SearchLigneForm(forms.Form):
-	date_debut = forms.DateField(required=False, label='Après')
-	date_fin = forms.DateField(required=False, label='Avant')
+	date_debut = forms.DecimalField(required=False, label='Après')
+	date_fin = forms.DecimalField(required=False, label='Avant')
 	binet = forms.CharField(required=False)
 	promotion = forms.ModelChoiceField(queryset=Promotion.objects.all(), required=False)
 	reference = forms.CharField(required=False, label="Référence")
@@ -288,8 +288,8 @@ class SearchLigneForm(forms.Form):
 
 class SearchLigneFormPolymedia(forms.Form):
 	"""contrairement au précédent, ce formulaire ne demande pas le poste de dépenses"""
-	date_debut = forms.DateField(required=False, label='Après')
-	date_fin = forms.DateField(required=False, label='Avant')
+	date_debut = forms.DecimalField(required=False, label='Après')
+	date_fin = forms.DecimalField(required=False, label='Avant')
 	binet = forms.CharField(required=False)
 	promotion = forms.ModelChoiceField(queryset=Promotion.objects.all(), required=False)
 	montant_haut = forms.FloatField(required=False, label='Montant haut')

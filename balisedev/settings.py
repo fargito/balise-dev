@@ -190,6 +190,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_COOKIE_AGE = 600 # after 10 minutes, the session is expired and you have to login again
 SESSION_SAVE_EVERY_REQUEST = True
 
+USE_THOUSAND_SEPARATOR = True
+
 
 # on the BR servers, the routage is done before arriving to this point
 if DEBUG:

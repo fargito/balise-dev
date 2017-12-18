@@ -12,8 +12,8 @@
 	</div>
 	{% if evenements %}{# on commence par le cas où le binet utilise les événements #}
 	<div class="subvention-tables_container">
-		<div class="subventions-deblocages-and-lignes-container">
-			<table class="subventions-deblocage-lignes">
+		<div id="compta-table-container">
+			<table id="compta-table">
 				<thead>
 					<tr>
 						<th class="compta-form-description">
@@ -222,8 +222,8 @@
 	{% else %}
 	{# puis le cas où il utilise juste les postes de dépense #}
 	<div class="subvention-tables_container">
-		<div class="subventions-deblocages-and-lignes-container">
-			<table class="subventions-deblocage-lignes">
+		<div id="compta-table-container">
+			<table id="compta-table">
 				<thead>
 					<tr>
 						<th class="compta-form-description">
@@ -357,9 +357,8 @@
 		{% for poste in postes_with_total %}
 		{% if not poste.poste_depense.mandat and not poste.is_not_empty %}
 		{% else %}
-		<div class="subventions-deblocages-and-lignes-container">
-			<table class="subventions-deblocage-lignes">
-				<!-- <caption>{{ poste_depense }}</caption> -->
+		<div id="compta-table-container">
+			<table id="compta-table">
 				<thead>
 					<tr>
 						<th class="compta-form-description">

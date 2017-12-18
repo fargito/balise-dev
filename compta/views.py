@@ -968,7 +968,7 @@ def delete_evenement(request, id_evenement):
 @staff_member_required
 def seance_cheques(request):
 	"""permet d'effectuer une séance de chèques pour les binets sans chéquiers"""
-	max_requests = request.GET.get('max_requests', 50)
+	max_requests = float(request.GET.get('max_requests', 50))
 
 	type_binet_default = TypeBinet.objects.get(nom='Sans chéquier')
 	type_binet_optional = TypeBinet.objects.get(nom='Avec chéquier')
@@ -1011,7 +1011,7 @@ def seance_cheques(request):
 		if cleaned_data['montant_haut']:
 			filter_arg &= (Q(debit__lte=cleaned_data['montant_haut']) | Q(credit__lte=cleaned_data['montant_haut']))
 
-		lignes = LigneCompta.objects.filter(filter_arg)[0:max_requests]
+		lignes = LigneCompta.objects.filter(filter_arg)#[0:max_requests]
 
 	else:
 		lignes = LigneCompta.objects.filter(mandat__type_binet=type_binet_default, is_locked=False)[0:max_requests]
