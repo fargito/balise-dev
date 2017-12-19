@@ -5,16 +5,16 @@ from .models import Binet, Mandat, TypeBinet, TagBinet
 
 class BinetAdmin(admin.ModelAdmin):
 	list_display = ('nom', 'description', 'remarques_admins',)
-	list_filter = ('nom',)
 	ordering = ('nom',)
+	list_filter = ('tag_binet',)
 	search_fields = ('nom',)
 
 
 class MandatAdmin(admin.ModelAdmin):
 	list_display = ('binet', 'promotion', 'president', 'tresorier', 'type_binet', 'is_active', 'description', 'remarques_admins')
-	list_filter = ('binet', 'promotion', 'president', 'tresorier', 'type_binet', 'is_active')
-	ordering = ('binet','promotion')
-	search_fields = ('binet', 'promotion', 'president', 'tresorier',)
+	list_filter = ('promotion', 'type_binet', 'is_active', 'binet__tag_binet')
+	ordering = ('binet', 'promotion')
+	search_fields = ('binet__nom', 'promotion__nom', 'president__username', 'tresorier__username')
 
 
 class TypeBinetAdmin(admin.ModelAdmin):

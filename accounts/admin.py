@@ -9,7 +9,7 @@ class PromotionAdmin(admin.ModelAdmin):
 
 class EleveAdmin(admin.ModelAdmin):
 	list_display = ('nom', 'prenom', 'promotion',)
-	list_filter = ('promotion', 'nom', 'prenom',)
+	list_filter = ('promotion',)
 	ordering = ('promotion', 'nom', 'prenom',)
 	search_fields = ('nom', 'prenom',)
 

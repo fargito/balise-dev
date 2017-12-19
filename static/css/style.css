@@ -76,6 +76,11 @@ img.frankiz-logo {
 	padding-top: 1em;
 }
 
+.padding-sides-0-5 {
+	padding-left: 0.5em;
+	padding-right: 0.5em;
+}
+
 .link-black {
 	color:inherit;
 }

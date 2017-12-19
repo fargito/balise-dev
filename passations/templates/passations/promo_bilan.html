@@ -20,9 +20,9 @@
 				<thead>
 					<tr>
 						<th class='passations-promotion'>Type de binet</th>
-						<th class='passation-montant-reduced'>Mandats</th>
-						<th class='passation-montant-reduced'>Passés</th>
-						<th class='passation-montant-reduced'>Actifs</th>
+						<th class='txtcentre padding-sides-0-5'>Mandats</th>
+						<th class='txtcentre padding-sides-0-5'>Passés</th>
+						<th class='txtcentre padding-sides-0-5'>Actifs</th>
 						<th class='passation-montant-reduced'>Dépenses</th>
 						<th class='passation-montant-reduced'>Recettes propres</th>
 						<th class='passations-liste-subventions' colspan='2'>Subventions accordées</th>
@@ -35,9 +35,9 @@
 					{% for partial_bilan in partial_bilans %}
 						<tr class='passation-ligne'>
 							<td class='passations-promotion'>{{ partial_bilan.type_binet }}</td>
-							<td class='passation-montant-reduced'>{{ partial_bilan.nb_mandats }}</td>
-							<td class='passation-montant-reduced'>{{ partial_bilan.nb_passed }}</td>
-							<td class='passation-montant-reduced'>{{ partial_bilan.nb_rest }}</td>
+							<td class='txtcentre padding-sides-0-5'>{{ partial_bilan.nb_mandats }}</td>
+							<td class='txtcentre padding-sides-0-5'>{{ partial_bilan.nb_passed }}</td>
+							<td class='txtcentre padding-sides-0-5'>{{ partial_bilan.nb_rest }}</td>
 							<td class='passation-montant-reduced'>{{ partial_bilan.debit }}</td>
 							<td class='passation-montant-reduced'>{{ partial_bilan.credit }}</td>
 							<td class='passations-liste-subventions compta-deblocage'>
