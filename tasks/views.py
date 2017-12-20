@@ -4,4 +4,6 @@ from django.contrib.auth.decorators import login_required, permission_required
 
 @login_required
 def tasks_home(request):
+	"""page sur laquelle on voit toutes ses tasks avec les commentaires"""
+	
 	return render(request, 'tasks/tasks_home.html', locals())
