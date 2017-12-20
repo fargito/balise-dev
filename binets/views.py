@@ -30,7 +30,14 @@ def all_binets(request):
 		# on transfome la chaine brute en liste pour traiter séparément les mots
 		search_arguments_list = search_arguments.split()
 		# on construit une liste d'argments Q
-		search_list = [Q(Q(binet__nom__icontains=q) | Q(president__eleve__nom__icontains=q) | Q(tresorier__eleve__nom__icontains=q)) for q in search_arguments_list]
+		search_list = [Q(Q(binet__nom__icontains=q) |
+			Q(president__eleve__nom__icontains=q) | 
+			Q(president__eleve__prenom__icontains=q) | 
+			Q(tresorier__eleve__nom__icontains=q) |
+			Q(tresorier__eleve__prenom__icontains=q) |
+			Q(president__username__icontains=q) |
+			Q(tresorier__username__icontains=q)
+			) for q in search_arguments_list]
 		# on concatène ces arguments
 		search = search_list.pop()
 		for item in search_list:
