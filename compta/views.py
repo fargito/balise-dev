@@ -28,10 +28,10 @@ import pandas
 @login_required
 def my_binets(request):
 	"""this page allows the user to select the binets
-	in which he has a role. If he's admin, he can have them all.
+	in which he has a role.
 	This views allows the user to place a Binet object in the session.
 	It will be implied in the compta module that this Object is in
-	th session parameters"""
+	the session parameters"""
 
 	# paramètre d'ordonnance
 	ordering = request.GET.get('o', None)

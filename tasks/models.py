@@ -16,13 +16,14 @@ class Task(models.Model):
 	is_closed = models.BooleanField(default=False)
 	is_urgent = models.BooleanField(default=False)
 	due_date = models.DateField(auto_now_add=False, auto_now=False, verbose_name="A faire avant le")
+	title = models.CharField(max_length=20)
 	description = models.TextField()
 
 	class Meta:
 		ordering = ('is_urgent', 'due_date',)
 
 	def __str__(self):
-		return str(self.initiator) + '@' + str(self.mandat) + ' : ' + self.description[0:20] + '...'
+		return str(self.initiator) + '@' + str(self.mandat) + ' : ' + self.title
 
 
 
