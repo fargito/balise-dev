@@ -58,6 +58,9 @@ def create_local_account(request):
 			# on crée un profil utilisateur si il n'existe pas déjà dans la base de données
 			try:
 				new_user = User.objects.get(username=username)
+				if not new_user.email:
+					new_user.email = email
+					new_user.save()
 			except User.DoesNotExist:
 				new_user = User.objects.create_user(username, 
 					email)

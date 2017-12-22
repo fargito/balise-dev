@@ -24,7 +24,7 @@ class CreateUserForm(forms.Form):
 	username = forms.CharField(label="Identifiant prenom.nom")
 	password1 = forms.CharField(label="Mot de passe", widget=forms.PasswordInput)
 	password2 = forms.CharField(label="Confirmez mot de passe", widget=forms.PasswordInput)
-
+	
 	def clean_password2(self):
 		password1 = self.cleaned_data['password1']
 		password2 = self.cleaned_data['password2']
