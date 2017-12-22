@@ -22,5 +22,4 @@ def tasks_home(request):
 
 	my_tasks = Task.objects.filter(search_filter)
 
-	print(my_mandats)
 	return render(request, 'tasks/tasks_home.html', locals())

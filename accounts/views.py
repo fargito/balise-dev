@@ -55,9 +55,12 @@ def create_local_account(request):
 			# on récupère les données du formulaire
 			username = user_form.cleaned_data['username']
 			email = username+'@polytechnique.edu'
-			# on crée un profil utilisateur
-			new_user = User.objects.create_user(username, 
-				email)
+			# on crée un profil utilisateur si il n'existe pas déjà dans la base de données
+			try:
+				new_user = User.objects.get(username=username)
+			except User.DoesNotExist:
+				new_user = User.objects.create_user(username, 
+					email)
 			eleve = account_form.save(commit = False)
 			eleve.user = new_user
 			eleve.save()

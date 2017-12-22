@@ -20,7 +20,7 @@ class Task(models.Model):
 	description = models.TextField()
 
 	class Meta:
-		ordering = ('is_urgent', 'due_date',)
+		ordering = ('is_closed', '-is_urgent', 'due_date',)
 
 	def __str__(self):
 		return str(self.initiator) + '@' + str(self.mandat) + ' : ' + self.title

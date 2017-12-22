@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
 	<section class="binet-title-and-return-container">
 		<div class="binets-return-button">
@@ -9,9 +11,48 @@
 		</div>
 		<h3>Mes tâches</h3>
 		<div class='binets-side-button'>
+			<div class='passation-icon'>
+				<a href='add'>
+					<img src="{% static 'img/add.png' %}" alt="Add icon large" class='view-icon-large' title="Nouvelle tâche">
+				</a>
+			</div>
 		</div>
 	</section>
 	<section>
-		Ici prochainement le module tasks
+		{% if not my_tasks %}
+		<div class='welcome-container txtcentre'>
+			Vous n'avez pas de tâche en cours. Vous pouvez en ajouter pour demander des informations avec les kessiers binets, les tenir au courant d'un problème que vous rencontrez etc.
+		</div>
+		{% else %}
+			{% for task in my_tasks %}
+				<div class='task-container'>
+					<div class='task-header'>
+						<div class='task-header-left'>
+							<div class='task-title'>
+								{{ task.mandat }} - {{ task.title }}
+							</div>
+							<div class='task-img-container'>
+								{% if not task.is_closed %}
+									{% if task.is_urgent %}
+										<img src="{% static 'img/caution.png' %}" alt="Caution icon large" class='view-icon-large' title="Urgent">
+									{% endif %}
+								{% else %}
+									<img src="{% static 'img/check.png' %}" alt="Check icon large" class='view-icon-large' title="Résolu">
+								{% endif %}
+							</div>
+							<div class="task-header-complement">
+								créée par {{ task.initiator }} le {{ task.creation_date }}
+							</div>
+						</div>
+						<div class='task-header-right'>
+							<a href="">Détails</a>
+						</div>
+					</div>
+					<div class="task-content-body">
+						{{ task.description|linebreaks }}
+					</div>
+				</div>
+			{% endfor %}
+		{% endif %}
 	</section> 
 {% endblock %}

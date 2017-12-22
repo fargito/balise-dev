@@ -38,6 +38,6 @@ class CreateUserWithoutPwdForm(forms.Form):
 
 	def clean(self):
 		cleaned_data = super(CreateUserWithoutPwdForm, self).clean()
-		if len(User.objects.filter(username=cleaned_data["username"])) == 1:
-			msg = "Cet identifiant est déjà utilisé"
-			self.add_error("username", msg)
+		# if len(User.objects.filter(username=cleaned_data["username"])) == 1:
+		# 	msg = "Cet identifiant est déjà utilisé"
+		# 	self.add_error("username", msg)
