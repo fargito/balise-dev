@@ -1,8 +1,25 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	Ici prochainement le module d'aide avec les différents tutos<br>
-	{% if request.user.is_staff %}
-		{{ attributes }}
-	{% endif %}
+	<section class="binet-title-and-return-container">
+		<div class="binets-return-button">
+			<form action="../">
+				<input type="submit" value="Retour" />
+			</form>
+		</div>
+		<h3 class='print-hidden'>Aide</h3>
+		<div class='binets-side-button'>
+		</div>
+	</section>
+	<section>
+		<div class='txtcentre padding-bottom-2'>Bienvenue sur le module d'aide de Balise. Vous trouverez ici les liens vers les guides des binets avec ou sans chéquiers qui vous ont normalement été distribués lors de votre passation ainsi que de l'aide sur l'utilisation de Balise (à venir).
+		</div>
+		<div class='txtcentre'>
+			<p><a href="avec_chequier">Guide des binets avec chéquier</a></p>
+			<p><a href="sans_chequier">Guide des binets sans chéquier</a></p>
+			<p><a href="charte_des_binets">Charte des binets</a></p>
+			<p><a href="organisation_evenement">Guide d'organisation des activités binets</a></p>
+			<p><a href="remise_cheque">Comment faire une remise de chèques</a></p>
+		</div>
+	</section>
 {% endblock %}

@@ -36,7 +36,11 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a href="/" class='navbar-brand'><p class='kesdorado'>Accueil</p></a>
+        {% if request.user.is_staff %}
+          <a href="/help" class='navbar-brand'><p class='kesdorado'>Aide</p></a>
+        {% else %}
+          <a href="/" class='navbar-brand'><p class='kesdorado'>Accueil</p></a>
+        {% endif %}
       </div>
       {% block nav %}
         <div class='collapse navbar-collapse' id='onglets'>
@@ -46,7 +50,9 @@
               <li><a href="/binets" class='navbar-brand'><p class='kesdorado'>Liste des binets</p></a></li>
               <li><a href="/subventions" class='navbar-brand'><p class='kesdorado'>Subventions</p></a></li>
               <li><a href="/compta" class='navbar-brand'><p class='kesdorado'>Compta</p></a></li>
-
+              {% if not request.user.is_staff %}{# on met le lien vers le module d'aide uniquement pour les non-admins #}
+                <li><a href="/help" class='navbar-brand'><p class='kesdorado'>Aide</p></a></li>
+              {% endif %}
               {% if user.is_staff %}
                 <li><a href="/backend" class='navbar-brand'><p class='kesdorado'>Administration</p></a></li>
                 <li><a href="/compta/seance_cheques" class='navbar-brand'><p class='kesdorado'>Séance de chèques</p></a></li>
