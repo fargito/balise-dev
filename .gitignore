@@ -10,3 +10,4 @@ secret.key
 my.cnf
 imports/file_handlers/default.pwd
 imports/logs/*
+help/guides/*

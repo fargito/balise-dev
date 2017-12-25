@@ -1,25 +1,36 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
-	<section class="binet-title-and-return-container">
-		<div class="binets-return-button">
+	<div class='binet-title-and-return-container'>
+		<div class="binets-return-button print-hidden">
 			<form action="../">
 				<input type="submit" value="Retour" />
 			</form>
 		</div>
-		<h3 class='print-hidden'>Aide</h3>
-		<div class='binets-side-button'>
+		<h3>Aide</h3>
+		<div class='binets-return-button print-hidden'>
+			{% if perms.help.add_helparticle %}{# l'utilisateur staff peut ajouter des guides #}
+				<a href={% url 'add_article' %}><img src="{% static 'img/add.png' %}" alt="Add icon large" class='add-icon-large' title="Nouveau guide"></a>
+			{% endif %}
 		</div>
-	</section>
+	</div>
+	<div class='binets-search-container print-hidden'>
+		<div class='binets-search-subcontainer'>
+			<form id="searchform" action="" method="get" accept-charset="utf-8">
+			    <input class="searchfield" id="searchbox" name="q" type="text" placeholder="Rechercher" value='{{ search_arguments|default_if_none:'' }}'>
+			    <input type='submit' value='Valider'>
+		    </form>
+		</div>
+	</div>
 	<section>
 		<div class='txtcentre padding-bottom-2'>Bienvenue sur le module d'aide de Balise. Vous trouverez ici les liens vers les guides des binets avec ou sans chéquiers qui vous ont normalement été distribués lors de votre passation ainsi que de l'aide sur l'utilisation de Balise (à venir).
 		</div>
 		<div class='txtcentre'>
-			<p><a href="avec_chequier">Guide des binets avec chéquier</a></p>
-			<p><a href="sans_chequier">Guide des binets sans chéquier</a></p>
-			<p><a href="charte_des_binets">Charte des binets</a></p>
-			<p><a href="organisation_evenement">Guide d'organisation des activités binets</a></p>
-			<p><a href="remise_cheque">Comment faire une remise de chèques</a></p>
+			{% for article in articles %}
+				<p><a href={{ article.get_article_url }}>{{ article.title }}</a> {{ article.subtitle }}</p>
+			{% endfor %}
 		</div>
 	</section>
 {% endblock %}

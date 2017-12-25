@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+	<section class="binet-title-and-return-container">
+		<div class="binets-return-button">
+			<form action={% url 'help_home' %}>
+				<input type="submit" value="Retour" />
+			</form>
+		</div>
+		<h3 class='print-hidden'>Ajouter un fichier pdf</h3>
+		<div class='binets-side-button'>
+		</div>
+	</section>
+	<section>
+		<form enctype="multipart/form-data" method='post' action=''>
+			<div>
+				<table>
+					{{ help_article_form.as_table }}
+					{{ import_file_form.as_table }}
+				{% csrf_token %}
+				</table>
+				<input type="submit" name="validation" value="Valider" />
+				
+			</div>
+
+		</form>
+	</section>
+{% endblock %}

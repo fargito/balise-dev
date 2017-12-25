@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+	<section class="binet-title-and-return-container">
+		<div class="binets-return-button">
+			<form action={% url 'help_home' %}>
+				<input type="submit" value="Retour" />
+			</form>
+		</div>
+		<h3 class='print-hidden'>Choisir le type d'article</h3>
+		<div class='binets-side-button'>
+		</div>
+	</section>
+	<section>
+		<div class='txtcentre padding-bottom-2'>
+			<p>Afin de permettre aux présidents et trésoriers de binets de disposer des informations dont ils ont besoin pour la gestion courante de leurs binets (et aussi pour qu'ils évitent de vous poser la question toutes les 2 minutes :p), vous pouvez ajouter ici de l'aide. Cette aide peut être de 2 types :</p>
+			<p><a href=pdf>Sous forme d'un fichier pdf</a></p>
+			<p><a href=html>En tant que texte que vous rentrez sur le site</a></p>
+			<p>Dans tous les cas, elles ne seront accessibles qu'aux utilisateurs s'étant identifiés</p>
+		</div>
+	</section>
+{% endblock %}
