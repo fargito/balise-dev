@@ -1,7 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<h2>Listes de diffusion</h2>
+	<div class='binet-title-and-return-container'>
+		<div class="binets-return-button print-hidden">
+			<form action="../">
+				<input type="submit" value="Retour" />
+			</form>
+		</div>
+		<h3>Listes de diffusion</h3>
+		<div class='binets-return-button print-hidden'>
+		</div>
+	</div>
 	<ul>
 		{% for type_binet, presidents, tresoriers in ordered_data %}
 			<li>

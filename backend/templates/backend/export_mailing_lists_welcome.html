@@ -1,15 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<h2>Exportation de listes de diffusion</h2>
-	<p></p>
-	<ul>
-		<li><a href="actifs/">Tous les mandats actifs</a></li>
+<div class='binet-title-and-return-container'>
+		<div class="binets-return-button print-hidden">
+			<form action="../">
+				<input type="submit" value="Retour" />
+			</form>
+		</div>
+		<h3>Exportation de listes de diffusion</h3>
+		<div class='binets-return-button print-hidden'>
+		</div>
+	</div>
+	<div class='txtcentre'>
+		<p><a href="actifs/">Tous les mandats actifs</a></p>
 		{% for promotion in promotions %}
-			<li><a href="actifs/{{ promotion }}">Mandats actifs promotion {{ promotion }}</a></li>
-			<li><a href="promotion/{{ promotion }}">Tous les mandats promotion {{ promotion }}</a></li>
+			<p><a href="actifs/{{ promotion }}">Mandats actifs promotion {{ promotion }}</a></p>
+			<p><a href="promotion/{{ promotion }}">Tous les mandats promotion {{ promotion }}</a></p>
 
 		{% endfor %}
-	</ul>
+	</div>
 
 {% endblock %}

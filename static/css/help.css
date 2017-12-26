@@ -1,0 +1,27 @@
+#help-list {
+	margin: auto;
+}
+
+td.help-case {
+	padding: 1em;
+}
+
+.min-width-20 {
+	min-width: 20em;
+}
+
+td.help-case p {
+	margin: 0em;
+}
+
+th.help-case {
+	padding-right: 1em;
+	padding-left: 1em;
+}
+
+tr.help-line:nth-child(even) {background: #FFF}
+tr.help-line:nth-child(odd) {background: #DDD}
+
+.view-icon-medium {
+	width: 1em;
+}

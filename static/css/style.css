@@ -84,3 +84,31 @@ img.frankiz-logo {
 .link-black {
 	color:inherit;
 }
+
+.italic {
+	text-decoration: italic;
+}
+
+.admin-icons-container {
+	width: 100%;
+	display: flex;
+	justify-content: space-around;
+}
+
+.admin-icon-large {
+	margin-top: 4em;
+	margin-right: 2em;
+	margin-left: 2em;
+	width: 5em;
+}
+
+.admin-icon-and-text {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	width: 30em;
+}
+
+.admin-ul-container {
+	padding: auto;
+}

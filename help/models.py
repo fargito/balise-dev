@@ -10,7 +10,7 @@ class HelpArticle(models.Model):
 	title = models.CharField(max_length=500, verbose_name='Titre')
 	subtitle = models.TextField(null=True, blank=True, verbose_name='Description rapide')
 	is_pdf = models.BooleanField(default=True) # décrit les deux cas d'utilisation ci-dessus
-	filename = models.CharField(max_length=300, blank=True, null=True) #attention afin de préserver contre l'import de mauvais fichiers l'extension .pdf n'est pas contenue dans le filename
+	filename = models.CharField(max_length=300, blank=True, null=True) # attention afin de préserver contre l'import de mauvais fichiers l'extension .pdf n'est pas contenue dans le filename
 
 	def __str__(self):
 		return self.title
@@ -34,4 +34,10 @@ class HelpArticle(models.Model):
 	@models.permalink
 	def delete_self_url(self):
 		"""retourne le lien vers la page de vision de l'article, uniquement pour un pdf"""
-		return ('delete_article', [self.filename])
+		return ('delete_article', [self.id])
+
+
+class HelpParagraph(models.Model):
+	"""permet de définir un paragraphe d'un article. Il y a un titre et un texte"""
+	title = models.CharField(max_length=500, verbose_name='Titre de paragraphe')
+	subtitle = models.TextField(verbose_name='Texte')

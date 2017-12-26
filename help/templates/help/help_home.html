@@ -27,10 +27,27 @@
 	<section>
 		<div class='txtcentre padding-bottom-2'>Bienvenue sur le module d'aide de Balise. Vous trouverez ici les liens vers les guides des binets avec ou sans chéquiers qui vous ont normalement été distribués lors de votre passation ainsi que de l'aide sur l'utilisation de Balise (à venir).
 		</div>
-		<div class='txtcentre'>
-			{% for article in articles %}
-				<p><a href={{ article.get_article_url }}>{{ article.title }}</a> {{ article.subtitle }}</p>
-			{% endfor %}
-		</div>
+
+		<table id="help-list">
+			<thead>
+				<tr>
+					<th class='help-case'>Titre</th>
+					<th class='help-case'>Description</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for article in articles %}
+				<tr class='help-line'>
+					<td class='help-case min-width-20'><strong><a href={{ article.get_article_url }}>{{ article.title }}</a></strong></td>
+					<td class='help-case italic'>{{ article.subtitle|linebreaks }}</td>
+					{% if perms.help.add_helparticle %}
+						<td class='help-case'>
+							<a href={{ article.delete_self_url }}><img src="{% static 'img/delete.png' %}" alt="Delete icon large" class='view-icon-medium' title="Supprimer ce guide"></a>
+						</td>
+					{% endif %}
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
 	</section>
 {% endblock %}

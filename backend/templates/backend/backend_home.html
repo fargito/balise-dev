@@ -1,9 +1,64 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
-	<h2>Interface d'administration</h2>
-	<p>Bienvenue sur l'interface d'administration. Normalement tu es kessier si tu es là.</p>
-	<ul>
+	<div class='binet-title-and-return-container'>
+		<div class="binets-return-button print-hidden">
+			<form action="../">
+				<input type="submit" value="Retour" />
+			</form>
+		</div>
+		<h3>Interface d'administration</h3>
+		<div class='binets-return-button print-hidden'>
+		</div>
+	</div>
+	<p class='txtcentre'>Bienvenue sur l'interface d'administration. Normalement tu es kessier si tu es là.</p>
+	<div class='admin-icons-container txtcentre'>
+		<div class='admin-icon-and-text'>
+			<a href='/admin'>
+				<img src="{% static 'img/admin.png' %}" alt="Add icon large" class='admin-icon-large' title="Administration Django">
+			</a>
+			<a href='/admin'>
+				Administration Django<br>(normalement tu as pas besoin d'aller là)
+			</a>
+		</div>
+		<div class='admin-icon-and-text'>
+			<a href='/accounts/create_local_account?previous=/backend'>
+				<img src="{% static 'img/add_user.png' %}" alt="Add icon large" class='admin-icon-large' title="Nouvel utilisateur local">
+			</a>
+			<a href='/accounts/create_local_account?previous=/backend'>
+				Créer un compte utilisateur local
+			</a>
+		</div>
+		<div class='admin-icon-and-text'>
+			<a href='import_eleves/'>
+				<img src="{% static 'img/add_users.png' %}" alt="Add icon large" class='admin-icon-large' title="Ajouter des utilisateurs via Excel">
+			</a>
+			<a href='import_eleves/'>
+				Ajouter des utilisateurs via Excel
+			</a>
+		</div>
+	</div>
+	<div class='admin-icons-container txtcentre'>
+		<div class='admin-icon-and-text'>
+			<a href='export_mailing_lists/'>
+				<img src="{% static 'img/mail.png' %}" alt="Add icon large" class='admin-icon-large' title="Exporter les listes de diffusion">
+			</a>
+			<a href='export_mailing_lists/'>
+				Exporter les listes de diffusion
+			</a>
+		</div>
+		<div class='admin-icon-and-text'>
+			<a href='/help'>
+				<img src="{% static 'img/help.png' %}" alt="Add icon large" class='admin-icon-large' title="Voir la page d'aide">
+			</a>
+			<a href='/help'>
+				Voir la page d'aide
+			</a>
+		</div>
+	</div>
+	<!-- <ul>
 		<li><a href="/admin">Administration Django (normalement tu as pas besoin d'aller là)</a></li>
 		<li><a href="import_eleves">Ajouter des utilisateurs via Excel</a></li>
 		<li><a href="import_binets">Ajouter des binets via Excel</a></li>
@@ -12,6 +67,6 @@
 		<li><a href="/accounts/create_local_account?previous=/backend">Créer un compte utilisateur local</a></li>
 		<li><a href="/help">Voir la page d'aide</a></li>
 		<li><a href="export_mailing_lists/">Exporter les listes de diffusion</a></li>
-	</ul>
+	</ul> -->
 
 {% endblock %}

@@ -3,11 +3,13 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.http import FileResponse, Http404
 from django.db.models import Q
 
+from django.forms import formset_factory, inlineformset_factory
+
 from django.conf import settings
 import os
 
-from .models import HelpArticle
-from .forms import HelpArticleForm, ImportFileForm
+from .models import HelpArticle, HelpParagraph
+from .forms import HelpArticleForm, ImportFileForm, HelpParagraphForm
 
 from django.core.files import File
 
@@ -108,6 +110,20 @@ def add_pdf_article(request):
 
 
 @permission_required('help.add_helparticle')
+def add_html_article(request):
+	help_article_form = HelpArticleForm(request.POST or None)
+	if request.method == 'POST':
+		"on a déjà fait une entrée"
+		
+
+	else:
+		extra = 0
+
+
+	return
+
+
+@permission_required('help.add_helparticle')
 def delete_article(request, article_id):
 	"""permet de détruire un HelpArticle en prenant en compte que s'il est de type pdf if faut supprimer le
 	pdf de help/guides/"""
@@ -121,15 +137,11 @@ def delete_article(request, article_id):
 	if article.is_pdf:
 		# on récupère le  lien vers le fichier
 		pathname = settings.BASE_DIR + '/help/guides/' + article.filename + '.pdf'
-		print(pathname)
-		os.remove(pathname)
+		try:
+			os.remove(pathname)
+		except FileNotFoundError:
+			pass
 
 	article.delete()
 
 	return redirect(next)
-
-
-
-@permission_required('help.add_helparticle')
-def add_html_article(request):
-	return
