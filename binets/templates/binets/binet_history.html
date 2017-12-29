@@ -90,11 +90,15 @@
 								{% endif %}
 							</a>
 						</td>
+					{% endif %}
+					{% if perms.binets.change_mandat %}
 						<td>
 							<a href={{ available_mandat.edit_self_url }}>
 								<img src="{% static 'img/edit.png' %}" alt="Edit icon large" class='view-icon-large' title="Modifier le mandat">
 							</a>
 						</td>
+					{% endif %}
+					{% if request.user.is_staff %}
 						<td>
 							<a href={{ available_mandat.get_bilan_url }}><img src="{% static 'img/bullet_list.png' %}" alt="List icon large" class='view-icon-large' title="Voir le bilan"></a>
 						</td>

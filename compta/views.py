@@ -400,10 +400,11 @@ def view_ligne(request, id_ligne):
 	poste_form = PosteAndCommentForm(mandat, request.POST, instance=ligne)
 
 	if request.method == 'POST':
-		if poste_form.is_valid():
+		if poste_form.is_valid() and request.user in authorized['edit']:
 			ligne = poste_form.save(commit=False)
 			ligne.modificateur = request.user
 			ligne.save()
+			return redirect('../')
 
 	
 	return render(request, 'compta/view_ligne.html', locals())

@@ -23,7 +23,7 @@ class LigneComptaForm(forms.ModelForm):
 	
 	class Meta:
 		model = LigneCompta
-		exclude = ('mandat','auteur','modificateur', 'add_date', 'edit_date', 'is_locked')
+		fields = ('date', 'reference', 'description', 'poste_depense', 'debit', 'credit')
 		required = {'credit': False, 'debit': False, 'poste_depense': False}
 
 
