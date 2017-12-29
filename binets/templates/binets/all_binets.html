@@ -10,7 +10,7 @@
 			{% endif %}
 		</div>
 		<h3>Liste des binets</h3>
-		<div class='binets-return-button print-hidden'>
+		<div class='binets-side-button print-hidden'>
 			{% if perms.binets.add_binet %}
 				<a href={% url 'new_binet' %}><img src="{% static 'img/add.png' %}" alt="Add icon large" class='add-icon-large' title="Nouveau binet"></a>
 			{% endif %}
