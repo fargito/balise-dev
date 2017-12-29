@@ -67,19 +67,21 @@
 				{% endif %}
 			</div>
 
-			<div class="compta-large-button-container">
-				{% if request.session.active_tab == 'Subventions' %}
-				<div class="compta-option-activated">
+			{% if mandat.has_subventions %}{# on n'affiche cet onglet que si le binet a eu des subventions #}
+				<div class="compta-large-button-container">
+					{% if request.session.active_tab == 'Subventions' %}
+					<div class="compta-option-activated">
+						<form action="/compta/binet_subventions">
+							<input class="compta-nav-option" type="submit" value="Subventions" />
+						</form>
+					</div>
+					{% else %}
 					<form action="/compta/binet_subventions">
 						<input class="compta-nav-option" type="submit" value="Subventions" />
 					</form>
+					{% endif %}
 				</div>
-				{% else %}
-				<form action="/compta/binet_subventions">
-					<input class="compta-nav-option" type="submit" value="Subventions" />
-				</form>
-				{% endif %}
-			</div>
+			{% endif %}
 
 			<div class="compta-large-button-container">
 				{% if request.session.active_tab == 'Bilan' %}

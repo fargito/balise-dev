@@ -54,6 +54,21 @@ class LigneComptaForm(forms.ModelForm):
 
 
 
+class PosteAndCommentForm(forms.ModelForm):
+	"""définit un formulaire pour ne modifier que le poste et la description d'une ligne dans view_ligne"""
+	def __init__(self, mandat, *args, **kwargs):
+		super(PosteAndCommentForm, self).__init__(*args, **kwargs)
+
+		self.mandat = mandat
+		self.fields['poste_depense'].queryset = PosteDepense.objects.filter(Q(mandat=self.mandat) | Q(mandat=None))
+
+	class Meta:
+		model = LigneCompta
+		fields = ('poste_depense', 'commentaire',)
+		required = {'poste_depense': False, 'commentaire': False}
+
+
+
 class DeblocageSubventionForm(forms.ModelForm):
 	"""définit un formulaire permettant de créer un déblocage de subventions sur une vague"""
 

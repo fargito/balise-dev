@@ -106,7 +106,9 @@ td.compta-form-validate {
 }
 
 #id_date {
-	width: 6.4em;
+	width: 5.5em;
+	margin-left: 0.3em;
+	margin-right: 0.2em;
 }
 
 #id_reference {

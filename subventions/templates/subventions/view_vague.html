@@ -41,7 +41,7 @@
 							{% if request.user.is_staff %}
 								<a href={{ subvention.verser_self_url }}?next={{ request.get_full_path }}>
 									{% if subvention.is_versee %}
-										<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="La subvention a été versée">
+										<img src="{% static 'img/pay.ico' %}" alt="Pay icone" class='lock_icon' title="La subvention a été versée">
 									{% else %}
 										<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="Verser la subvention">
 									{% endif %}
@@ -50,7 +50,7 @@
 						</td>
 						<td class="subventions-nom-binet">
 							{% if request.user.is_staff %}
-								<a href={{ subvention.mandat.get_mandat_journal }}?next=binet_subventions>{{ subvention.mandat.binet }}</a>
+								<a href={{ subvention.mandat.get_mandat_journal }}?next=binet_subventions&previous={{ request.get_full_path }}>{{ subvention.mandat.binet }}</a>
 							{% else %}
 								<a href={{ subvention.mandat.binet.get_history_url }}>{{ subvention.mandat.binet }}</a>
 							{% endif %}

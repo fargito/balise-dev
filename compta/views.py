@@ -12,7 +12,7 @@ from django.db.models import Q
 
 from django import forms
 from .forms import LigneComptaForm, DeblocageSubventionForm, BaseDeblocageSubventionFormSet, CustomDeblocageSubventionFormSet
-from .forms import PosteDepenseForm, SearchLigneForm, SearchLigneFormPolymedia, EvenementForm
+from .forms import PosteDepenseForm, SearchLigneForm, SearchLigneFormPolymedia, EvenementForm, PosteAndCommentForm
 from binets.forms import DescriptionForm
 from django.forms import formset_factory, inlineformset_factory
 from imports.forms import ImportFileForm
@@ -371,7 +371,7 @@ def check_uncheck_ligne(request, id_ligne):
 
 @login_required
 def view_ligne(request, id_ligne):
-	"""permet de voir une ligne et de rajouter des commentaires dessus"""
+	"""permet de voir une ligne et de rajouter des commentaires dessus. On peut également modifier le poste de dépense"""
 	try:
 		ligne = LigneCompta.objects.get(id=id_ligne)
 		mandat = ligne.mandat
@@ -395,6 +395,16 @@ def view_ligne(request, id_ligne):
 	for subvention in subventions_binet:
 		subventions_names.append(
 			subvention.vague.type_subvention.nom+' '+subvention.vague.annee)
+
+
+	poste_form = PosteAndCommentForm(mandat, request.POST, instance=ligne)
+
+	if request.method == 'POST':
+		if poste_form.is_valid():
+			ligne = poste_form.save(commit=False)
+			ligne.modificateur = request.user
+			ligne.save()
+
 	
 	return render(request, 'compta/view_ligne.html', locals())
 

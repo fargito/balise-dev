@@ -136,6 +136,11 @@ class Mandat(models.Model):
 		"""returns true if a more recent mandat has been created"""
 		return Mandat.objects.filter(binet=self.binet)[0] != self
 
+	def has_subventions(self):
+		"""retourne True si le mandat a des subventions"""
+		return Subvention.objects.filter(mandat=self).count() > 0
+
+
 	def get_status_verbose(self):
 		"""used for the passation module : keyword used to describe the mandat's status"""
 		if self.is_active:
