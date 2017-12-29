@@ -19,7 +19,6 @@ class HelpArticle(models.Model):
 		unique_together = ('title',)
 		ordering = ('title',)
 
-
 	@models.permalink
 	def get_article_url(self):
 		"""retourne le lien vers la page de vision de l'article, que ce soit un
@@ -39,5 +38,6 @@ class HelpArticle(models.Model):
 
 class HelpParagraph(models.Model):
 	"""permet de définir un paragraphe d'un article. Il y a un titre et un texte"""
+	article = models.ForeignKey(HelpArticle)
 	title = models.CharField(max_length=500, verbose_name='Titre de paragraphe')
 	subtitle = models.TextField(verbose_name='Texte')

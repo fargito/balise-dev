@@ -112,15 +112,21 @@ def add_pdf_article(request):
 @permission_required('help.add_helparticle')
 def add_html_article(request):
 	help_article_form = HelpArticleForm(request.POST or None)
+	ParagraphFormset = inlineformset_factory(HelpArticle, HelpParagraph, fields='__all__', extra=extra)
+	paragraph_formset = ParagraphFormset(request.POST or None)
+	
 	if request.method == 'POST':
-		"on a déjà fait une entrée"
-		
+		extra = 1
+
 
 	else:
-		extra = 0
+		extra = 1 # on commence avec un paragraphe, avec possibilité d'en rajouter
 
+	
 
-	return
+	print(paragraph_formset.extra)
+
+	return render(request, 'help/create_html_article.html', locals())
 
 
 @permission_required('help.add_helparticle')

@@ -202,12 +202,8 @@ def delete_ligne(request, id_ligne):
 		if not ligne.is_locked or request.user.is_staff:
 			# si l'écriture est locked, seuls les admins peuvent la supprimer
 			# de même si des déblocages versés ont été fait dessus
-			deblocages_subvention = DeblocageSubvention.objects.filter(ligne_compta=ligne)
-			none_versee = True
-			for deblocage in deblocages_subvention:
-				if deblocage.subvention.is_versee:
-					none_versee = False
-			if none_versee or request.user.is_staff:
+			
+			if not(ligne.has_versed_deblocage()) or request.user.is_staff:
 				ligne.delete()
 	return redirect('../')
 

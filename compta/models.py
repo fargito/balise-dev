@@ -105,6 +105,16 @@ class LigneCompta(models.Model):
 				ligne_deblocages.append({'montant': deblocage[0].montant})
 		return ligne_deblocages
 
+	def has_versed_deblocage(self):
+		"""permet de savoir si des subventions on été versées sur la ligne"""
+		deblocages_subvention = DeblocageSubvention.objects.filter(ligne_compta=self)
+		none_versee = True
+		for deblocage in deblocages_subvention:
+			if deblocage.montant and deblocage.subvention.is_versee:
+				none_versee = False
+
+		return not(none_versee)
+
 
 
 class PosteDepense(models.Model):

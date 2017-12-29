@@ -10,6 +10,9 @@
 		</div>
 		<h3>Subventions {{ vague.type_subvention }} {{ vague.annee }}</h3>
 		<div class="binets-return-button">
+			<a href="{{ vague.verser_subventions_sans_chequier }}">
+				<img src="{% static 'img/pay.png' %}" alt="Pay icon large" class='add-icon-large' title="Verser toutes les subventions des binets sans chéquier">
+			</a>
 		</div>
 	</section>
 	<section id="compta-container">
@@ -82,4 +85,7 @@
 			</table>
 		</div>
 	</section>
+	{% if not public_only %}
+		<footer class="print-watermark print-only">DIFFUSION RESTREINTE KES</footer>
+	{% endif %}
 {% endblock %}

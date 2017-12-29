@@ -17,8 +17,7 @@ class EleveVos(models.Model):
 	promotion = models.ForeignKey('accounts.Promotion')
 	nom = models.CharField(max_length=100)
 	prenom = models.CharField(max_length=100)
-		
-	
+
 
 class VOS(models.Model):
 	"""ici un VOS. L'attribut promotion correspond à la promotion organisatrice"""
@@ -30,6 +29,7 @@ class VOS(models.Model):
 
 	def __str__(self):
 		return "VOS {0}".format(self.section)
+
 
 class Participation(models.Model):
 	"""table de participation a un evenement"""
@@ -44,6 +44,7 @@ class Participation(models.Model):
 		else:
 			return "{0} ne participe pas au {1}".format(self.eleve, self.evenement)
 
+
 class MontantCheque(models.Model):
 	"""table des montants des différents chèques"""
 	evenement = models.ForeignKey('vos.VOS')
@@ -53,6 +54,7 @@ class MontantCheque(models.Model):
 
 	def __str__(self):
 		return "Chèque n°{0} : {1} €".format(self.ordre, self.montant)
+
 
 class Encaissement(models.Model):
 	"""table des encaissements par élève"""
@@ -64,6 +66,7 @@ class Encaissement(models.Model):
 
 	def __str__(self):
 		return self.montant
+
 
 class Remboursement(models.Model):
 	"""table des remboursements par élève"""

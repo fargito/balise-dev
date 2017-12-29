@@ -49,6 +49,11 @@ class VagueSubventions(models.Model):
 		de subventions"""
 		return ('view_vague', [self.id])
 
+	@models.permalink
+	def verser_subventions_sans_chequier(self):
+		"""retourne l'url permettant de verser toutes les subventions des binets sans chéquier d'un coup"""
+		return ('verser_subventions_sans_chequier', [self.id])
+
 
 
 class Subvention(models.Model):

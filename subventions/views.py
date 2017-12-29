@@ -53,6 +53,11 @@ def view_vague(request, id_vague):
 	links_base = '?o='
 	ordering_links = list(reversed(generate_ordering_links(ordering, attributes, links_base)))
 
+	if request.user.is_staff:
+		public_only = False
+	else:
+		public_only = True
+
 
 	return render(request, 'subventions/view_vague.html', locals())
 
@@ -71,5 +76,32 @@ def verser_subvention(request, id_subvention):
 
 	subvention.is_versee = not subvention.is_versee
 	subvention.save()
+
+	return redirect(next)
+
+
+@staff_member_required
+def verser_subventions_sans_chequier(request, id_vague):
+	"""permet de verser/dé-verser toutes les subventions pour les binets sans chéquier"""
+	try:
+		vague_subventions = VagueSubventions(id=id_vague)
+	except KeyError:
+		return redirect('../')
+
+	next = request.GET.get('next', vague_subventions.view_self_url())
+
+	subventions = Subvention.objects.filter(vague = vague_subventions, mandat__type_binet__nom='Sans chéquier')
+
+	# pour pouvoir tout dé-verser si on s'est trompé, il faut pouvoir savoir si tout a été versé
+	all_versed = True
+	for subvention in subventions:
+		all_versed &= subvention.is_versee
+
+	for subvention in subventions:
+		if all_versed:
+			subvention.is_versee = False
+		else:
+			subvention.is_versee = True
+		subvention.save()
 
 	return redirect(next)
