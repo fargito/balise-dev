@@ -6,7 +6,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
 
 from binets.models import Mandat, TypeBinet
-from .models import LigneCompta, PosteDepense, Evenement
+from .models import LigneCompta, PosteDepense, Evenement, HiddenOperation
 from subventions.models import VagueSubventions, Subvention, DeblocageSubvention, TypeSubvention
 from django.db.models import Q
 
@@ -189,6 +189,8 @@ def mandat_journal(request):
 @login_required
 def delete_ligne(request, id_ligne):
 	"""supprime une ligne comptable et redirige vers le journal"""
+	next = request.GET.get('next', '../')
+
 	try:
 		mandat = Mandat.objects.get(
 			id = request.session['id_mandat'])
@@ -205,12 +207,50 @@ def delete_ligne(request, id_ligne):
 			
 			if not(ligne.has_versed_deblocage()) or request.user.is_staff:
 				ligne.delete()
-	return redirect('../')
+	return redirect(next)
+
+
+@staff_member_required
+def pass_ligne_to_next(request, id_ligne):
+	"""permet de passer une ligne vers le mandat suivant"""
+	try:
+		ligne = LigneCompta.objects.get(id=id_ligne)
+	except KeyError:
+		return redirect('../')
+
+	if ligne.mandat.has_next():
+		next_mandat = ligne.mandat.get_next()
+		ligne.mandat = next_mandat
+		ligne.save()
+
+	next = request.GET.get('next', ligne.mandat.get_mandat_journal())
+
+	return redirect(next)
+
+
+@staff_member_required
+def pass_ligne_to_previous(request, id_ligne):
+	"""permet de passer une ligne vers le mandat suivant"""
+	try:
+		ligne = LigneCompta.objects.get(id=id_ligne)
+	except KeyError:
+		return redirect('../')
+
+	if ligne.mandat.has_previous():
+		previous_mandat = ligne.mandat.get_previous()
+		ligne.mandat = previous_mandat
+		ligne.save()
+
+	next = request.GET.get('next', ligne.mandat.get_mandat_journal())
+
+	return redirect(next)
 
 
 @login_required
 def edit_ligne(request, id_ligne):
 	"""permet de modifier une ligne et de rajouter des commentaires dessus"""
+	next = request.GET.get('next', '../')
+
 	try:
 		ligne = LigneCompta.objects.get(id=id_ligne)
 		mandat = ligne.mandat
@@ -276,7 +316,7 @@ def edit_ligne(request, id_ligne):
 
 				ligne.save()
 
-				return redirect('../')
+				return redirect(next)
 				
 
 	else:
@@ -1071,3 +1111,60 @@ def validate_polymedia(request):
 		lignes = LigneCompta.objects.filter(Q(Q(poste_depense__nom="Polymédia") | Q(poste_depense__nom="Magnan")), is_locked=False)
 
 	return render(request, 'compta/validate_polymedia.html', locals())
+
+
+@staff_member_required
+def all_operations(request):
+	"""permet de voir toutes les opérations"""
+	next = request.GET.get('next', '../')
+
+	# on récupère le paramètre de recherche
+	search_arguments = request.GET.get('q', None)
+
+	if search_arguments:
+		# on transfome la chaine brute en liste pour traiter séparément les mots
+		search_arguments_list = search_arguments.split()
+		# on construit une liste d'argments Q
+		search_list = [Q(title__icontains=q) for q in search_arguments_list]
+		# on concatène ces arguments
+		search = search_list.pop()
+		for item in search_list:
+			search |= item
+		operations = HiddenOperation.objects.filter(search)
+	else:
+		operations = HiddenOperation.objects.all()
+
+	return render(request, 'compta/all_operations.html', locals())
+
+
+@staff_member_required
+def operation_details(request, operation_id):
+	"""permet de voir le détail des lignes compta rassemblées sur l'opération"""
+	next = request.GET.get('next', '../')
+
+	try:
+		operation = HiddenOperation.objects.get(id=operation_id)
+	except KeyError:
+		return redirect('.')
+
+	# paramètre d'ordonnance
+	ordering = request.GET.get('o', None)
+	attributes = ['mandat__binet__nom', 'mandat__promotion__nom', 'facture_ok', 'date', 'reference', 'description', 'debit', 'credit']
+	# on génère les arguments d'ordonnance de la liste
+	arguments = generate_ordering_arguments(ordering, attributes)
+	# on récupère toutes les lignes du mandat
+	# on récupère les arguments filtrés
+	if arguments:
+		lignes = LigneCompta.objects.filter(hidden_operation=operation).order_by(*arguments)
+	else:
+		lignes = LigneCompta.objects.filter(hidden_operation=operation)
+
+	# on génère les liens qui serviront à l'ordonnance dans la page
+	# si aucun n'a été activé, par défault c'est par date (index 0)
+	# sachant qu'on va accéder aux éléments par pop(), on doit inverser l'ordre
+	links_base = '?o='
+	ordering_links = list(reversed(generate_ordering_links(ordering, attributes, links_base)))
+
+	
+
+	return render(request, 'compta/operation_details.html', locals())

@@ -14,50 +14,83 @@
 		</div>
 	</div>
 	<p class='txtcentre'>Bienvenue sur l'interface d'administration. Normalement tu es kessier si tu es là.</p>
-	<div class='admin-icons-container txtcentre'>
-		<div class='admin-icon-and-text'>
-			<a href='/admin'>
-				<img src="{% static 'img/admin.png' %}" alt="Add icon large" class='admin-icon-large' title="Administration Django">
-			</a>
-			<a href='/admin'>
-				Administration Django<br>(normalement tu as pas besoin d'aller là)
-			</a>
-		</div>
-		<div class='admin-icon-and-text'>
-			<a href='/accounts/create_local_account?previous=/backend'>
-				<img src="{% static 'img/add_user.png' %}" alt="Add icon large" class='admin-icon-large' title="Nouvel utilisateur local">
-			</a>
-			<a href='/accounts/create_local_account?previous=/backend'>
-				Créer un compte utilisateur local
-			</a>
-		</div>
-		<div class='admin-icon-and-text'>
-			<a href='import_eleves/'>
-				<img src="{% static 'img/add_users.png' %}" alt="Add icon large" class='admin-icon-large' title="Ajouter des utilisateurs via Excel">
-			</a>
-			<a href='import_eleves/'>
-				Ajouter des utilisateurs via Excel
-			</a>
-		</div>
-	</div>
-	<div class='admin-icons-container txtcentre'>
-		<div class='admin-icon-and-text'>
-			<a href='export_mailing_lists/'>
-				<img src="{% static 'img/mail.png' %}" alt="Add icon large" class='admin-icon-large' title="Exporter les listes de diffusion">
-			</a>
-			<a href='export_mailing_lists/'>
-				Exporter les listes de diffusion
-			</a>
-		</div>
-		<div class='admin-icon-and-text'>
-			<a href='/help'>
-				<img src="{% static 'img/help.png' %}" alt="Add icon large" class='admin-icon-large' title="Voir la page d'aide">
-			</a>
-			<a href='/help'>
-				Voir la page d'aide
-			</a>
-		</div>
-	</div>
+
+
+	<table class='compta-width100'>
+		<tbody>
+			<tr>
+				<td class='txtcentre compta-12em'>
+					<a href='/admin'>
+						<img src="{% static 'img/admin.png' %}" alt="Add icon large" class='admin-icon-large' title="Administration Django">
+					</a>
+				</td>
+				<td class='txtcentre compta-12em'>
+					<a href='/accounts/create_local_account?previous=/backend'>
+						<img src="{% static 'img/add_user.png' %}" alt="Add icon large" class='admin-icon-large' title="Nouvel utilisateur local">
+					</a>
+				</td>
+				<td class='txtcentre compta-12em'>
+					<a href='import_eleves/'>
+						<img src="{% static 'img/add_users.png' %}" alt="Add icon large" class='admin-icon-large' title="Ajouter des utilisateurs via Excel">
+					</a>
+				</td>
+			</tr>
+			<tr>
+				<td class='txtcentre compta-12em'>
+					<a href='/admin'>
+						Administration Django<br>(normalement tu as pas besoin d'aller là)
+					</a>
+				</td>
+				<td class='txtcentre compta-12em'>
+					<a href='/accounts/create_local_account?previous=/backend'>
+						Créer un compte utilisateur local
+					</a>
+				</td>
+				<td class='txtcentre compta-12em'>
+					<a href='import_eleves/'>
+						Ajouter des utilisateurs via Excel
+					</a>
+				</td>
+			</tr>
+			{# ligne 2 #}
+			<tr>
+				<td class='txtcentre compta-12em'>
+					<a href={% url 'all_operations' %}>
+						<img src="{% static 'img/money_pack.png' %}" alt="Money pack icon large" class='admin-icon-large' title="Verser des opérations à plusieurs binets">
+					</a>
+				</td>
+				<td class='txtcentre compta-12em'>
+					<a href='export_mailing_lists/'>
+						<img src="{% static 'img/mail.png' %}" alt="Add icon large" class='admin-icon-large' title="Exporter les listes de diffusion">
+					</a>
+				</td>
+				<td class='txtcentre compta-12em'>
+					<a href='/help'>
+						<img src="{% static 'img/help.png' %}" alt="Add icon large" class='admin-icon-large' title="Voir la page d'aide">
+					</a>
+				</td>
+			</tr>
+			<tr>
+				<td class='txtcentre compta-12em'>
+					<a href={% url 'all_operations' %}>
+						Verser des opérations à plusieurs binets
+					</a>
+				</td>
+				<td class='txtcentre compta-12em'>
+					<a href='export_mailing_lists/'>
+						Exporter les listes de diffusion
+					</a>
+				</td>
+				<td class='txtcentre compta-12em'>
+					<a href='/help'>
+						Voir la page d'aide
+					</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+
 	<!-- <ul>
 		<li><a href="/admin">Administration Django (normalement tu as pas besoin d'aller là)</a></li>
 		<li><a href="import_eleves">Ajouter des utilisateurs via Excel</a></li>

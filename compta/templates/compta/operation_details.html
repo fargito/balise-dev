@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+	<div class='binet-title-and-return-container'>
+		<div class="binets-return-button print-hidden">
+			<form action=".">
+				<input type="submit" value="Retour" />
+			</form>
+		</div>
+		<h3>{{ operation }}</h3>
+		<div class='binets-side-button print-hidden'>
+		</div>
+	</div>
+	<div class="txtcentre padding-bottom-2">
+		Détails des lignes compta sur {{ operation }}
+	</div>
+
+
+	<div id="compta-table-container">
+			<table id="compta-table">
+				{% block compta_titles %}
+				<thead>
+					<tr>
+						<th class='compta-binet display-flex-center'>
+							<div class='title-order-container'><div>Binet</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par binet"/></a></div>
+						</th>
+						<th class='compta-promo2'>
+							<div class='title-order-container'><div>Promotion</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par promotion"/></a></div>
+						</th>
+						<th>{% if request.session.edit %}<a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par verrouillée"/></a>{% endif %}</th>
+						<th class="compta-form-date">
+							<div class='title-order-container'><div>Date</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par date"/></a></div>
+						</th>
+						<th class="compta-form-date">
+							<div class='title-order-container'><div>Référence</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par référence"/></a></div>
+						</th>
+						<th class="compta-form-description">
+							<div class='title-order-container'><div>Description - facture</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par description"/></a></div>
+						</th>
+						<th class="compta-form-montant">
+							<div class='title-order-container'><div>Débit</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par débit"/></a></div>
+						</th>
+						<th class="compta-form-montant">
+							<div class='title-order-container'><div>Crédit</div><a href={{ ordering_links.pop }}><img class='order-icon' src="{% static 'img/order.ico' %}" alt="Order Icon" title="Ordonner par crédit"/></a></div>
+						</th>
+					</tr>
+				</thead>
+				{% endblock %}
+				<tbody>
+				{% for ligne in lignes %}
+					<tr class="ligne-compta">
+						<td class='compta-binet'><strong>{{ ligne.mandat.binet }}</strong></td>
+						<td class='compta-promo2'>{{ ligne.mandat.promotion }}</td>
+						<td class="compta-button-container">
+							<a href={{ ligne.lock_unlock_self_link }}?next={{ request.get_full_path }}>
+								{% if ligne.is_locked %}
+									<img src="{% static 'img/locked.ico' %}" alt="Lock icone" class='lock_icon' title="Déverrouiller la ligne">
+								{% else %}
+									<img src="{% static 'img/blank.ico' %}" alt="Icone vide" class='blank_icon' title="Verrouiller la ligne">
+								{% endif %}
+							</a>
+						</td>
+						<td class="compta-form-date">{{ ligne.date|date:'d/m/Y' }}</td>
+						<td class="compta-form-reference">{{ ligne.reference|default_if_none:"" }}</td>
+						<td class="compta-form-description"><a href={{ ligne.edit_self_link }}?next={{ request.get_full_path }}>{{ ligne.description }}</a></td>
+						<td class="compta-form-montant">{% if ligne.debit %}{{ ligne.debit|default_if_none:"" }}{% endif %}</td>
+						<td class="compta-form-montant">{% if ligne.credit %}{{ ligne.credit|default_if_none:"" }}{% endif %}</td>
+						{% if request.session.edit and not ligne.is_locked or request.user.is_staff %}
+							<td class="compta-button-container">
+								<a href={{ ligne.edit_self_link }}?next={{ request.get_full_path }}>
+									<img src="{% static 'img/edit.ico' %}" alt="Edit icone" class='edit_icon' title="Modifier la ligne"/>
+								</a>
+							</td>
+							{% if not ligne.has_versed_deblocage or request.user.is_staff %}{# si il y a des déblocages versés sur la ligne, on n'affiche pas le bouton supprimer aux utilisateurs normaux qui ne peuvent de toute façon pas la supprimer #}
+								<td class="compta-button-container">
+									<a href={{ ligne.delete_self_link }}?next={{ request.get_full_path }}>
+										<img src="{% static 'img/delete.ico' %}" alt="Delete icone" class='delete_icon' title="Supprimer la ligne"/>
+									</a>
+								</td>
+							{% else %}
+								<td></td>
+							{% endif %}
+						{% else %}
+							<td colspan="2">
+						{% endif %}
+					</tr>
+				{% endfor %}
+				</tbody>
+				<tfoot>
+				{# pour la dernière ligne on affiche les totaux #}
+					<div class="last-line">
+						<tr>
+							<th colspan="6"></th>
+							<th class="compta-form-montant">{{ debit_subtotal }}</th>
+							<th class="compta-form-montant">{{ credit_subtotal }}</th>
+							{% for subvention in subventions_binet %}
+							<th class="compta-form-montant">
+								<div class="compta-deblocage">{{ subvention.get_deblocages_total }}</div>
+							</th>
+							{% endfor %}
+						</tr>
+						<tr>
+							<th colspan="6"></th>
+							<th class="compta-form-montant">{{ debit_total }}</th>
+							<th class="compta-form-montant">{{ credit_total }}</th>
+						</tr>
+						<tr>
+							<th colspan="6"></th>
+							<th class="compta-form-montant">Balance :</th>
+							<th class="compta-form-montant">
+								{% if is_positive %}
+								<div class=compta-positive>
+									{{ balance }}
+								</div>
+								{% else %}
+								<div class="compta-negative">
+									{{ balance }}
+								</div>
+								{% endif %}
+							</th>					
+						</tr>
+					</div>
+				</tfoot>
+			</table>
+		</div>
+
+{% endblock %}

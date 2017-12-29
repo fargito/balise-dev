@@ -276,6 +276,13 @@ div.ligne-comment {
 	padding-left: 1em;
 }
 
+.compta-promo2 {
+	min-width: 3em;
+	text-align: center;
+	padding-left: 0.2em;
+	padding-right: 0.8em;
+}
+
 .compta-width100 {
 	width: 100%;
 }
@@ -306,4 +313,29 @@ div.ligne-comment {
 
 .padding-bottom-2 {
 	padding-bottom: 2em;
+}
+
+.margins-2 {
+	margin-left: 2em;
+	margin-right: 2em;
+}
+
+.display-flex {
+	display: flex;
+}
+
+.display-flex-center {
+	display: flex;
+	justify-content: center;
+}
+
+.compta-next-and-previous {
+	margin: auto;
+	display: flex;
+	justify-content: center;
+	margin-top: 2.8em;
+}
+
+.compta-12em{
+	width: 12em;
 }

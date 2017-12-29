@@ -318,7 +318,6 @@ def export_mailing_lists_promotion(request, promo):
 	for type_binet in types_binets:
 		ordered_data.append((type_binet, presidents[type_binet], tresoriers[type_binet]))
 
-
 	return render(request, 'backend/export_mailing_lists.html', locals())
 
 
@@ -345,7 +344,5 @@ def export_mailing_lists_promotion_actifs(request, promo):
 	ordered_data = []
 	for type_binet in types_binets:
 		ordered_data.append((type_binet, presidents[type_binet], tresoriers[type_binet]))
-
-
 
 	return render(request, 'backend/export_mailing_lists.html', locals())

@@ -24,7 +24,8 @@ class LigneCompta(models.Model):
 	credit = models.DecimalField(null=True, blank=True, max_digits=9, decimal_places=2)
 	is_locked = models.BooleanField(default=False)
 	facture_ok = models.BooleanField(default=False)
-	poste_depense = models.ForeignKey('PosteDepense', null=True)
+	poste_depense = models.ForeignKey('PosteDepense', null=True, blank=True)
+	hidden_operation = models.ForeignKey('HiddenOperation', null=True, blank=True)
 
 	def __str__(self):
 		return self.description
@@ -65,6 +66,15 @@ class LigneCompta(models.Model):
 		"""permet de passer is_locked à sa valeur contraire"""
 		return ('lock_unlock_ligne_polymedia', [self.id])
 
+	@models.permalink
+	def pass_to_next(self):
+		"""passe la ligne au suivant"""
+		return ('pass_ligne_to_next', [self.id])
+
+	@models.permalink
+	def pass_to_previous(self):
+		"""passe la ligne au suivant"""
+		return ('pass_ligne_to_previous', [self.id])
 
 	def get_deblocages(self):
 		"""retourne une liste de querysets contenant les déblocages effectués sur les différentes
@@ -112,7 +122,6 @@ class LigneCompta(models.Model):
 		for deblocage in deblocages_subvention:
 			if deblocage.montant and deblocage.subvention.is_versee:
 				none_versee = False
-
 		return not(none_versee)
 
 
@@ -183,3 +192,22 @@ class Evenement(models.Model):
 	def delete_self_url(self):
 		"""retourne l'url de suppression de l'evenement"""
 		return ('delete_evenement', [self.id])
+
+
+
+class HiddenOperation(models.Model):
+	"""permet de relier entre elles de façon uniquement accessible par les kessiers money des opérations.
+	Permet notamment de faire les subventions banque.
+	En gros permet de verser via un excel des opérations sur plusieurs binets"""
+	title = models.CharField(max_length=100)
+	date = models.DateTimeField(auto_now_add=True, auto_now=False,
+								verbose_name="ajoutée le")
+	creator = models.ForeignKey(User)
+
+	def __str__(self):
+		return self.title
+
+	@models.permalink
+	def operation_url(self):
+		"""retourne la page de l'opération"""
+		return ('operation_details', [self.id])

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+	<div class='binet-title-and-return-container'>
+		<div class="binets-return-button print-hidden">
+		</div>
+		<h3>Opérations</h3>
+		<div class='binets-side-button print-hidden'>
+			<a href=#><img src="{% static 'img/add.png' %}" alt="Add icon large" class='add-icon-large' title="Nouveau binet"></a>
+		</div>
+	</div>
+	<div class="txtcentre">
+		Les opérations vous permettent de regrouper plusieurs lignes de compta de plusieurs binets différents, comme par exemple pour les subventions banque. Vous pouvez rajouter des opérations en important des fichiers excels
+	</div>
+	<div class='binets-search-container print-hidden'>
+		<div class='binets-search-subcontainer'>
+			<form id="searchform" action="" method="get" accept-charset="utf-8">
+			    <input class="searchfield" id="searchbox" name="q" type="text" placeholder="Rechercher" value='{{ search_arguments|default_if_none:'' }}'>
+			    <input type='submit' value='Valider'>
+		    </form>
+		</div>
+	</div>
+
+	<ul>
+		{% for operation in operations %}
+			<li><a href="{{ operation.operation_url }}">{{ operation }}</a></li>
+		{% endfor %}
+	</ul>
+
+{% endblock %}

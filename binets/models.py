@@ -136,6 +136,37 @@ class Mandat(models.Model):
 		"""returns true if a more recent mandat has been created"""
 		return Mandat.objects.filter(binet=self.binet)[0] != self
 
+	def has_previous(self):
+		"""returns true if the mandat is not the oldest"""
+		mandats = Mandat.objects.filter(binet=self.binet)
+		return (mandats[len(mandats)-1] != self)
+
+	def _get_rank_in_history(self, mandats):
+		"""retourne le rang du mandat dans les mandats du binet"""
+		for rank in range(len(mandats)):
+			if mandats[rank] == self:
+				return rank
+
+	def get_next(self):
+		"""retourne le mandat suivant s'il existe et sinon lui-même"""
+		mandats = Mandat.objects.filter(binet=self.binet)
+		rank = self._get_rank_in_history(mandats)
+
+		if rank != 0:
+			return mandats[rank - 1]
+		else:
+			return None
+
+	def get_previous(self):
+		"""retourne le mandat suivant s'il existe et sinon lui-même"""
+		mandats = Mandat.objects.filter(binet=self.binet)
+		rank = self._get_rank_in_history(mandats)
+
+		if rank != len(mandats) - 1:
+			return mandats[rank + 1]
+		else:
+			return None
+
 	def has_subventions(self):
 		"""retourne True si le mandat a des subventions"""
 		return Subvention.objects.filter(mandat=self).count() > 0

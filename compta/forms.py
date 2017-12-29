@@ -23,7 +23,7 @@ class LigneComptaForm(forms.ModelForm):
 	
 	class Meta:
 		model = LigneCompta
-		fields = ('date', 'reference', 'description', 'poste_depense', 'debit', 'credit')
+		fields = ('date', 'reference', 'description', 'poste_depense', 'debit', 'credit', 'commentaire')
 		required = {'credit': False, 'debit': False, 'poste_depense': False}
 
 

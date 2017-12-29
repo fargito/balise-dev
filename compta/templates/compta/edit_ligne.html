@@ -5,8 +5,24 @@
 {% block compta_page %}
 	<div id="compta-table-container">
 		<form method='post' action=''>
-			<div id="view-ligne-title">
-				Modifier l'opération
+			<div class='display-flex'>
+				<div id="view-ligne-title">
+					Modifier l'opération
+				</div>
+				{% if request.user.is_staff %}
+					<div class="compta-next-and-previous">
+						{% if ligne.mandat.has_previous %}
+							<a href="{{ ligne.pass_to_previous }}">
+								<img src="{% static 'img/previous.png' %}" alt="Previous icon large" class='view-icon-large margins-2' title="Passer la ligne au mandat précédent">
+							</a>
+						{% endif %}
+						{% if ligne.mandat.has_next %}
+							<a href="{{ ligne.pass_to_next }}">
+								<img src="{% static 'img/next.png' %}" alt="Next icon large" class='view-icon-large margins-2' title="Passer la ligne au mandat suivant">
+							</a>
+						{% endif %}
+					</div>
+				{% endif %}
 			</div>
 			<table id="compta-table">
 				<thead>
@@ -121,7 +137,10 @@
 				<ul class="view-ligne-infos">
 					<li>Mandat : {{ ligne.mandat }}</li>
 					<li>Création : {{ ligne.add_date }} par <a href={{ ligne.auteur.eleve.get_infos_url }}>{{ ligne.auteur }}</a></li>
-				<li>Dernière modification : {{ ligne.edit_date }} par <a href={{ ligne.modificateur.eleve.get_infos_url }}>{{ ligne.modificateur }}</a></li>
+					<li>Dernière modification : {{ ligne.edit_date }} par <a href={{ ligne.modificateur.eleve.get_infos_url }}>{{ ligne.modificateur }}</a></li>
+					{% if request.user.is_staff %}
+						<li>Ajout lors de <a href=#>{{ ligne.hidden_operation }}</a></li>
+					{% endif %}
 				</ul>
 
 				<div class="ligne-comment">
