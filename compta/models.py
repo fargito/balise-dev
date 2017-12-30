@@ -204,7 +204,7 @@ class HiddenOperation(models.Model):
 	"""permet de relier entre elles de façon uniquement accessible par les kessiers money des opérations.
 	Permet notamment de faire les subventions banque.
 	En gros permet de verser via un excel des opérations sur plusieurs binets"""
-	title = models.CharField(max_length=100, verbose_name='Nom')
+	title = models.CharField(max_length=30, verbose_name='Nom')
 	add_date = models.DateTimeField(auto_now_add=True, auto_now=False,
 								verbose_name="ajoutée le")
 	close_date = models.DateTimeField(auto_now_add=False, auto_now=True,
@@ -223,6 +223,11 @@ class HiddenOperation(models.Model):
 	def operation_url(self):
 		"""retourne la page de l'opération"""
 		return ('operation_details', [self.id])
+
+	@models.permalink
+	def import_url(self):
+		"""retourne la page pour importer des lignes sur l'opération"""
+		return ('import_lignes_operation', [self.id])
 
 	def get_totals(self):
 		"""retourne la somme des dépenses et des recettes propres des lignes sur l'opération"""

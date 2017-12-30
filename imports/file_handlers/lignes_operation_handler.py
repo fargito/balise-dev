@@ -1,10 +1,13 @@
-from compta.models import LigneCompta, PosteDepense
+from compta.models import LigneCompta, PosteDepense, HiddenOperation
+from binets.models import Mandat
 import pandas
 import datetime
 
+from django.core.exceptions import ObjectDoesNotExist
 
-def validate_import_lignes(request, imported_lignes, mandat):
-	"""permet de valider l'import de lignes compta et de sortir à l'utilisateur quelles sont les erreurs"""
+
+def validate_import_lignes_operation(request, imported_lignes, operation):
+	"""permet de valider l'import de lignes compta sur une operation"""
 	# permet de suivre la validité de l'import
 	parsed_imports = []
 	is_valid = True
@@ -110,27 +113,6 @@ def validate_import_lignes(request, imported_lignes, mandat):
 		except:
 			pass
 
-		########################################################
-		# Poste de dépenses
-
-		try:
-			parsed_import['poste'] = imported_ligne['Poste']
-		except:
-			try:
-				parsed_import['poste'] = imported_ligne['poste']
-			except:
-				parsed_import['poste'] = None
-		# on remplace les valeurs vides par None
-		try:
-			if not float(parsed_import['poste']) > 0:
-				parsed_import['poste'] = None
-		except:
-			pass
-
-		# pour polymédia on met au bon format
-		if (parsed_import['poste'] == 'Polymedia' or parsed_import['poste'] == 'polymedia' or parsed_import['poste'] == 'polymédia' or parsed_import['poste'] == 'CPM' or parsed_import['poste'] == 'cpm'):
-			parsed_import['poste'] = 'Polymédia'
-
 		##########################################################
 		# Référence
 
@@ -155,6 +137,43 @@ def validate_import_lignes(request, imported_lignes, mandat):
 		except:
 			pass
 
+
+		##########################################################
+		# Binet
+
+		try:
+			parsed_import['binet'] = imported_ligne['Binet']
+		except:
+			try:
+				parsed_import['binet'] = imported_ligne['binet']
+			except:
+				parsed_import['binet'] = None
+
+		# on remplace les valeurs vides par None
+		try:
+			if not float(parsed_import['binet']) > 0:
+				parsed_import['binet'] = None
+		except:
+			pass
+
+		##########################################################
+		# Promotion
+
+		try:
+			parsed_import['promotion'] = imported_ligne['Promotion']
+		except:
+			try:
+				parsed_import['promotion'] = imported_ligne['promotion']
+			except:
+				parsed_import['promotion'] = None
+
+		# on remplace les valeurs vides par None
+		try:
+			if not float(parsed_import['promotion']) > 0:
+				parsed_import['promotion'] = None
+		except:
+			pass
+
 		##############################################################
 		# tests de la cohérence de la ligne
 
@@ -162,36 +181,40 @@ def validate_import_lignes(request, imported_lignes, mandat):
 			is_valid = False
 			parsed_import['errors'].append('Une ligne ne peut pas être à la fois débit et crédit')
 
+		# test de l'existence du mandat
+
+		try:
+			mandat = Mandat.objects.get(promotion__nom=parsed_import['promotion'],
+										binet__nom=parsed_import['binet'])
+		except ObjectDoesNotExist:
+			is_valid = False
+			parsed_import['errors'].append("Le mandat n'existe pas")
+
 
 		parsed_imports.append(parsed_import)
 
 	return is_valid, parsed_imports
 
 
-def create_lignes_compta(request, imported_lignes, mandat):
-	"""creates compta lines. takes a dict of the values to be put in the line"""
+def create_lignes_compta_operation(request, imported_lignes, operation):
+	"""creates compta lines. takes a dict of the values to be put in the line
+	Attention toutes les lignes créées sont directement locked"""
 	print('Creating compta lines')
 	request.session['messages'] = []
 	for ligne in imported_lignes:
-
-		# on commence par récupérer le poste de dépense
-		poste = ligne['poste']
-
-		# si le poste est attribué à tous, on ne le recrée pas pour ce mandat
-		if poste:
-			if poste in list(PosteDepense.objects.filter(mandat=None).values_list('nom', flat=True)):
-				poste = PosteDepense.objects.get(mandat=None, nom=poste)
-			else:
-				poste, is_created = PosteDepense.objects.get_or_create(mandat=mandat, nom=poste)
+		# on récupère le mandat
+		mandat = Mandat.objects.get(promotion__nom=ligne['promotion'],
+									binet__nom=ligne['binet'])
 
 		created_ligne = LigneCompta.objects.create(
+			hidden_operation=operation,
+			is_locked=True,
 			mandat=mandat,
 			date=ligne['date'],
 			reference=ligne['reference'],
 			auteur=request.user,
 			modificateur=request.user,
 			description=ligne['description'],
-			poste_depense=poste,
 			debit=ligne['debit'],
 			credit=ligne['credit'])
 		created_ligne.save()

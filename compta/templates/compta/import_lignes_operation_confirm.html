@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{# cette page récupère le menu de la page journal #}
+{% load static %}
+
+
+{% block content %}
+	{% if sent %}
+	C'est envoyé mon gros
+	{% else %}
+	<div id="view-deblocages-title">
+		{% if is_valid %}{# si l'import n'est pas valide, on affiche les erreurs #}
+			Confirmer les opérations suivantes ?
+		{% else %}
+			Erreur lors du traitement des données
+		{% endif %}
+	</div>
+	<div id="compta-table-container">
+		<table id="compta-table">
+			<thead>
+				<tr>
+					{% if not is_valid %}<th class='compta-import-error'>Erreurs</th>{% endif %}
+					<th class='compta-binet'>Binet</th>
+					<th class='compta-promo2'>Promotion</th>
+					<th>
+						Effectée le
+					</th>
+					<th class='compta-form-reference'>Référence</th>
+					<th class="compta-form-description">
+						Description
+					</th>
+					<th class="compta-form-poste">Poste</th>
+					<th class="compta-form-montant">
+						Débit
+					</th>
+					<th class="compta-form-montant">
+						Crédit
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for ligne in parsed_import_list %}
+				<tr class="ligne-compta">
+					{% if not is_valid %}
+						<td class='compta-import-error'>
+							{% for error in ligne.errors %}
+								{{ error }}
+							{% endfor %}
+						</td>
+					{% endif %}
+					<td class='compta-binet'>{{ ligne.binet }}
+					<td class='compta-promo2'>{{ ligne.promotion }}
+					<td class="compta-form-date">{{ ligne.date|date:'d/m/Y' }}</td>
+					<td class='compta-form-reference'>{{ ligne.reference|default_if_none:"" }}
+					<td class="compta-form-description">{{ ligne.description }}</td>
+					<td class='compta-form-poste'>{{ ligne.poste|default_if_none:"" }}
+					<td class="compta-form-montant">{{ ligne.debit|default_if_none:"" }}</td>
+					<td class="compta-form-montant">{{ ligne.credit|default_if_none:"" }}</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+		{% if is_valid %}
+			<form method="post" action="">
+			    {% csrf_token %}
+			    <input type="submit" name="validation" value="Valider" />
+			    <input type="submit" name="validation" value="Annuler" />
+			</form>
+		{% else %}
+			<div class="import-form-container">
+				<form enctype="multipart/form-data" method="post" action="">
+				    {% csrf_token %}
+				    {{ import_form.as_p }}
+					<input type="submit" name="validation" value="Upload" />
+				</form>
+			</div>
+		{% endif %}
+	</div>
+	{% endif %}
+{% endblock %}

@@ -34,4 +34,5 @@ urlpatterns = [
     url(r'^operations/$', views.all_operations, name='all_operations'),
     url(r'^operations/(?P<operation_id>\d+)$', views.operation_details, name='operation_details'),
     url(r'^operations/create', views.create_operation, name='create_operation'),
+    url(r'^operations/import/(?P<operation_id>\d+)$', views.import_lignes_operation, name='import_lignes_operation'),
 ]

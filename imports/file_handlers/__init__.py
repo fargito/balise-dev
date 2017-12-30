@@ -4,6 +4,7 @@ from .subventions_handler import create_subventions
 from .file_handler import file_handler
 from .lignes_compta_handler import create_lignes_compta, validate_import_lignes
 from .binet_officiel_handler import create_binet_from_liste_officielle, parse_liste_binets_officielle
+from .lignes_operation_handler import create_lignes_compta_operation, validate_import_lignes_operation
 
 __all__ = [
 	'file_handler',
@@ -14,4 +15,6 @@ __all__ = [
 	'validate_import_lignes',
 	'create_binet_from_liste_officielle',
 	'parse_liste_binets_officielle',
+	'create_lignes_compta_operation',
+	'validate_import_lignes_operation',
 	]

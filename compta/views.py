@@ -13,11 +13,12 @@ from django.db.models import Q
 from django import forms
 from .forms import LigneComptaForm, DeblocageSubventionForm, BaseDeblocageSubventionFormSet, CustomDeblocageSubventionFormSet
 from .forms import PosteDepenseForm, SearchLigneForm, SearchLigneFormPolymedia, EvenementForm, PosteAndCommentForm, HiddenOperationForm
-from binets.forms import DescriptionForm
+from binets.forms import DescriptionForm, MandatPickForm
 from django.forms import formset_factory, inlineformset_factory
 from imports.forms import ImportFileForm
 
 from imports.file_handlers import file_handler, create_lignes_compta, validate_import_lignes
+from imports.file_handlers import create_lignes_compta_operation, validate_import_lignes_operation
 
 from subventions.helpers import generate_ordering_arguments, generate_ordering_links
 
@@ -1180,13 +1181,37 @@ def operation_details(request, operation_id):
 		return redirect('.')
 
 	ligne_form = LigneComptaForm(request.POST or None)
+	mandat_form = MandatPickForm(request.POST or None)
 
+	if mandat_form.is_valid() and ligne_form.is_valid():
+		try:
+			binet = mandat_form.cleaned_data['binet']
+			promotion = mandat_form.cleaned_data['promotion']
+			mandat = Mandat.objects.get(binet=binet, promotion=promotion)
+		except ObjectDoesNotExist:
+			return redirect('.')
 
+		# on a maintenant tout ce qu'il faut pour créer la ligne
 
+		ligne = ligne_form.save(commit=False)
+		ligne.auteur = request.user
+		ligne.modificateur = request.user
+		ligne.mandat = mandat
+		ligne.hidden_operation = operation
+		ligne.is_locked = True
+		ligne.save()
+		# ... et adapter l'opération
+		operation.closer = request.user
+		operation.save()
 
-
-
-
+		print(request.POST)
+		# on veut rendre le formulaire en y laissant des infos
+		ligne_form = LigneComptaForm(initial={
+								'description': request.POST['description'],
+								'date': request.POST['date'],
+								'reference': request.POST['reference'],
+								})
+		mandat_form = MandatPickForm()
 
 
 	# paramètre d'ordonnance
@@ -1229,3 +1254,66 @@ def create_operation(request):
 		return redirect(next)
 
 	return render(request, 'compta/create_operation.html', locals())
+
+
+@staff_member_required
+def import_lignes_operation(request, operation_id):
+	"""permet de rentrer plusieurs lignes sur une seule opération via import excel"""
+	try:
+		operation = HiddenOperation.objects.get(id=operation_id)
+	except KeyError:
+		return redirect('../')
+
+	if request.method == 'POST':
+		if request.POST['validation'] == 'Upload':
+			import_form = ImportFileForm(request.POST, request.FILES)
+
+			if import_form.is_valid():
+				# on copie l'import en mémoire
+				date = datetime.today()
+				pathname = 'imports/logs/lignes_imports/import__operation_compta'
+				
+				request.session['pathname'] = pathname
+				# on enregistre le fichier temporaire
+				file_handler(request.FILES['excel_file'], pathname)
+
+				# on redirige vers la validation
+				sent = False
+				# on lit les données importées et on les met dans un dict
+				imported_lignes = pandas.read_excel(open(pathname, 'rb'), sheetname=0, na_values = ['-'])
+				imported_lignes = imported_lignes.transpose().to_dict().values()
+
+
+				# on vérifie que l'import est correct
+				is_valid, parsed_import_list = validate_import_lignes_operation(request, imported_lignes, operation)
+
+				request.session['messages'] = []
+				request.session['messages'].append('Copied the file in the database')
+
+				return render(request, 'compta/import_lignes_operation_confirm.html', locals())
+		else:
+			if request.POST['validation'] == 'Valider':
+				imported_lignes = pandas.read_excel(open(request.session[
+					'pathname'], 'rb'), sheetname=0, na_values = ['-'])
+				imported_lignes = imported_lignes.transpose().to_dict().values()
+				# on vérifie que l'import est correct et on obtient la liste nettoyée
+				is_valid, parsed_import_list = validate_import_lignes_operation(request, imported_lignes, operation)
+
+				create_lignes_compta_operation(request, parsed_import_list, operation)
+				# on supprime le fichier temporaire
+				del request.session['pathname']
+				sent = True
+
+
+			if request.POST['validation'] == 'Annuler':
+				# on supprime le fichier temporaire
+				del request.session['pathname']
+				request.session['messages'] = ['Requête annulée']
+				sent = True
+
+			return redirect('operation_details', operation_id=operation.id)
+
+	else:
+		import_form = ImportFileForm()
+
+	return render(request, 'compta/import_lignes_operation.html', locals())

@@ -3,21 +3,26 @@
 {% load static %}
 
 {% block content %}
-	<div class='binet-title-and-return-container'>
-		<div class="binets-return-button print-hidden">
+	<section class='binet-title-and-return-container'>
+		<div class="binets-return-button">
 			<form action=".">
 				<input type="submit" value="Retour" />
 			</form>
 		</div>
 		<h3>{{ operation }}</h3>
-		<div class='binets-side-button print-hidden'>
+		<div class='binets-side-button'>
+			<a href="{{ operation.import_url }}">
+				<img src="{% static 'img/upload.png' %}" alt="Upload icon large" class='add-icon-large print-hidden' title="Importer un fichier excel">
+			</a>
 		</div>
-	</div>
-	<div class='txtcentre padding-bottom-2'>
-		Créée par : <a href={{ operation.creator.eleve.get_infos_url }}>{{ operation.creator }}</a> le {{ operation.add_date }}<br>
-		Fermée par : <a href={{ operation.closer.eleve.get_infos_url }}>{{ operation.closer }}</a> le {{ operation.close_date }}
-	</div>
-	<div id="compta-table-container">
+	</section>
+
+	<section id="compta-container">
+		<div class='txtcentre padding-bottom-2'>
+			Créée par : <a href={{ operation.creator.eleve.get_infos_url }}>{{ operation.creator }}</a> le {{ operation.add_date }}<br>
+			Fermée par : <a href={{ operation.closer.eleve.get_infos_url }}>{{ operation.closer }}</a> le {{ operation.close_date }}
+		</div>
+		<div id="compta-table-container">
 			<table id="compta-table">
 				{% block compta_titles %}
 				<thead>
@@ -47,9 +52,14 @@
 					<div class="new-ligne-compta">
 						<form method='post' action=''>
 							{# on met en forme manuellement le formulaire permettant de rentrer une nouvelle ligne #}
-							{{ ligne_form.non_field_errors }}
+							{{ ligne_form.non_field_errors }}{{ mandat_form.non_fields_errors }}
 							<tr id="new-ligne-compta-errors">
-								<td colspan="2"></td>
+								<td class="compta-form-errors-container">
+									{{ mandat_form.binet.errors }}
+								</td>
+								<td class="compta-form-errors-container">
+									{{ mandat_form.promotion.errors }}
+								</td>
 								<td class="compta-form-errors-container">
 									{{ ligne_form.date.errors }}
 								</td>
@@ -67,7 +77,12 @@
 							</tr>
 
 							<tr id="new-ligne-compta-form">
-								<td colspan="2"></td>
+								<td class="compta-form-binet">
+									{{ mandat_form.binet }}
+								</td>
+								<td class="compta-form-date">
+									{{ mandat_form.promotion }}
+								</td>
 								<td class="compta-form-date">
 									{{ ligne_form.date }}
 								</td>
@@ -149,5 +164,5 @@
 				</tfoot>
 			</table>
 		</div>
-
+	</section>
 {% endblock %}

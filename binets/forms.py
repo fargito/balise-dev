@@ -4,6 +4,8 @@ from .models import Mandat, Binet, TagBinet, TypeBinet
 from django.contrib.auth.models import User
 from django.db.models import Q
 
+from django.core.exceptions import ObjectDoesNotExist
+
 
 
 class DescriptionForm(forms.ModelForm):
@@ -115,3 +117,19 @@ class SearchBinetForm(forms.Form):
 	active_only = forms.BooleanField(initial=False, required=False, label='Mandats actifs uniquement')
 	is_last_only = forms.BooleanField(initial=True, required=False, label='Plus récents uniquement')
 	public_only = forms.BooleanField(initial=True, required=False, label='Publics uniquement')
+
+
+class MandatPickForm(forms.Form):
+	binet = forms.ModelChoiceField(queryset=Binet.objects.all())
+	promotion = forms.ModelChoiceField(queryset=Promotion.objects.all())
+
+	def clean(self):
+		cleaned_data = super(MandatPickForm, self).clean()
+		binet = cleaned_data['binet']
+		promotion = cleaned_data['promotion']
+
+		try:
+			mandat = Mandat.objects.get(binet=binet, promotion=promotion)
+		except ObjectDoesNotExist:
+			msg = "Ce mandat n'existe pas"
+			self.add_error('binet', msg)

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{# cette page récupère le menu de la page journal #}
+{% load static %}
+
+
+{% block content %}
+<div id="compta-table-container">
+	<section class='binet-title-and-return-container'>
+		<div class="binets-return-button">
+			<form action="{{ operation.operation_url }}">
+				<input type="submit" value="Retour" />
+			</form>
+		</div>
+		<h3>Importer des lignes sur {{ operation }}</h3>
+		<div class='binets-side-button'>
+		</div>
+	</section>
+	<div class='txtcentre'>
+		<p>Vous pouvez ici importer des opérations comptables via excel. Attention, pour être accepté, votre fichier doit être au format .xls ou .xlsx avec comme colonnes "Binet|Promotion|Date|Référence|Description|Poste|Débit|Crédit" (écrites en haut des colonnes). Voir exemple ci-dessous :</p>
+	</div>
+	<div class="import-form-container">
+		<form enctype="multipart/form-data" method="post" action="">
+		    {% csrf_token %}
+		    {{ import_form.as_p }}
+			<input type="submit" name="validation" value="Upload" />
+		</form>
+	</div>
+</div>
+{% endblock %}

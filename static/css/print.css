@@ -285,3 +285,11 @@ th.nom-binet {
 .padding-4 {
 	padding-left: 4em;
 }
+
+.compta-binet {
+	min-width: 12em;
+	text-align: center;
+	padding-left: 1em;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+}
