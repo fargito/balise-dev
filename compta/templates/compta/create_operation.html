@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+	<div class='binet-title-and-return-container'>
+		<div class="binets-return-button print-hidden">
+			<form action=".">
+				<input type="submit" value="Retour" />
+			</form>
+		</div>
+		<h3>Nouvelle opération</h3>
+		<div class='binets-side-button print-hidden'>
+		</div>
+	</div>
+
+	<form method='post' action=''>
+		<div id="poste-form-container">
+			<table>
+				{{ operation_form.as_table }}
+			{% csrf_token %}
+			</table>
+			<input type="submit" name="validation" value="Valider" />
+			
+		</div>
+	</form>
+
+{% endblock %}

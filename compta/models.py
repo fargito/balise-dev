@@ -52,6 +52,11 @@ class LigneCompta(models.Model):
 		return ('view_ligne', [self.id])
 
 	@models.permalink
+	def kick_self_link(self):
+		"""retourne le lien vers la vue qui modifie cette ligne"""
+		return ('kick_ligne', [self.id])
+
+	@models.permalink
 	def lock_unlock_self_link(self):
 		"""permet de passer is_locked à sa valeur contraire"""
 		return ('lock_unlock_ligne', [self.id])
@@ -199,15 +204,47 @@ class HiddenOperation(models.Model):
 	"""permet de relier entre elles de façon uniquement accessible par les kessiers money des opérations.
 	Permet notamment de faire les subventions banque.
 	En gros permet de verser via un excel des opérations sur plusieurs binets"""
-	title = models.CharField(max_length=100)
-	date = models.DateTimeField(auto_now_add=True, auto_now=False,
+	title = models.CharField(max_length=100, verbose_name='Nom')
+	add_date = models.DateTimeField(auto_now_add=True, auto_now=False,
 								verbose_name="ajoutée le")
-	creator = models.ForeignKey(User)
+	close_date = models.DateTimeField(auto_now_add=False, auto_now=True,
+								verbose_name="fermée le")
+	creator = models.ForeignKey(User, verbose_name='ajoutée par', related_name='createur')
+	closer = models.ForeignKey(User, verbose_name='fermée par', related_name='dernier_utilisateur')
+	operation_type = models.ForeignKey('HiddenOperationType', verbose_name='Type')
 
 	def __str__(self):
-		return self.title
+		return str(self.operation_type) + ' : ' + self.title
+
+	class Meta:
+		ordering = ('-close_date',)
 
 	@models.permalink
 	def operation_url(self):
 		"""retourne la page de l'opération"""
 		return ('operation_details', [self.id])
+
+	def get_totals(self):
+		"""retourne la somme des dépenses et des recettes propres des lignes sur l'opération"""
+		lignes = LigneCompta.objects.filter(hidden_operation=self)
+		debit, credit = 0, 0
+		for ligne in lignes:
+			if ligne.debit:
+				debit += ligne.debit
+			if ligne.credit:
+				credit += ligne.credit
+		return debit, credit
+
+	def get_lignes(self):
+		"""retourne le queryset des lignes de l'opération """
+		return LigneCompta.objects.filter(hidden_operation=self)
+
+
+class HiddenOperationType(models.Model):
+	"""sert à définir un type de HiddenOperation, comme par exemple remise de chèques ou subvention banque ou vague Polymédia
+	Il y a possibilité de relier les HiddenOperationType à des postes de dépense génériques pour les ajouter en sous-main (cf Polymédia)"""
+	nom = models.CharField(max_length=100)
+	poste_depense = models.OneToOneField('PosteDepense', blank=True, null=True)
+
+	def __str__(self):
+		return self.nom

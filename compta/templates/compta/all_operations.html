@@ -6,9 +6,9 @@
 	<div class='binet-title-and-return-container'>
 		<div class="binets-return-button print-hidden">
 		</div>
-		<h3>Opérations</h3>
+		<h3>Opérations groupées</h3>
 		<div class='binets-side-button print-hidden'>
-			<a href=#><img src="{% static 'img/add.png' %}" alt="Add icon large" class='add-icon-large' title="Nouveau binet"></a>
+			<a href={% url 'create_operation' %}><img src="{% static 'img/add.png' %}" alt="Add icon large" class='add-icon-large' title="Nouveau binet"></a>
 		</div>
 	</div>
 	<div class="txtcentre">
@@ -23,10 +23,35 @@
 		</div>
 	</div>
 
-	<ul>
-		{% for operation in operations %}
-			<li><a href="{{ operation.operation_url }}">{{ operation }}</a></li>
-		{% endfor %}
-	</ul>
+	<table id="liste-binets">
+		<thead>
+			<tr>
+				<th class="txtcentre">Opération</th>
+				<th class='txtcentre'>Type</th>
+				<th class='txtcentre'>Nombre de lignes</th>
+				<th class='compta-form-montant'>Débit</th>
+				<th class='compta-form-montant'>Crédit</th>
+				<th class='txtcentre'>Ouverte le</th>
+				<th class='txtcentre'>Fermée le</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for operation in operations %}
+				<tr class="mandat">
+					<td class="nom-binet">
+						<div class="txtcentre">
+							<strong><a href="{{ operation.operation_url }}">{{ operation.title }}</a></strong>
+						</div>
+					</td>
+					<td class='txtcentre'>{{ operation.operation_type }}</td>
+					<td class='txtcentre'>{{ operation.get_lignes.count }}</td>
+					<td class='compta-form-montant'>{{ operation.get_totals.0 }}</td>
+					<td class='compta-form-montant'>{{ operation.get_totals.1 }}</td>
+					<td class='txtcentre'>{{ operation.add_date }}</a></td>
+					<td class='txtcentre'>{{ operation.close_date }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 
 {% endblock %}

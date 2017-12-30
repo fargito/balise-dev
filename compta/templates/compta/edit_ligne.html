@@ -139,7 +139,7 @@
 					<li>Création : {{ ligne.add_date }} par <a href={{ ligne.auteur.eleve.get_infos_url }}>{{ ligne.auteur }}</a></li>
 					<li>Dernière modification : {{ ligne.edit_date }} par <a href={{ ligne.modificateur.eleve.get_infos_url }}>{{ ligne.modificateur }}</a></li>
 					{% if request.user.is_staff %}
-						<li>Ajout lors de <a href=#>{{ ligne.hidden_operation }}</a></li>
+						<li>Ajout lors de <a href={{ ligne.hidden_operation.operation_url }}>{{ ligne.hidden_operation }}</a></li>
 					{% endif %}
 				</ul>
 

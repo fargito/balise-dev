@@ -1,7 +1,7 @@
 from django import forms
 from decimal import Decimal
 from django.db.models import Q
-from .models import LigneCompta, PosteDepense, Evenement
+from .models import LigneCompta, PosteDepense, Evenement, HiddenOperation
 from subventions.models import DeblocageSubvention
 from accounts.models import Promotion
 from binets.models import Binet, Mandat
@@ -310,3 +310,9 @@ class SearchLigneFormPolymedia(forms.Form):
 	montant_haut = forms.FloatField(required=False, label='Montant haut')
 	montant_bas = forms.FloatField(required=False, label='Montant bas')
 	include_locked = forms.BooleanField(initial=False, required=False, label='Inclure les opérations verrouillées')
+
+
+class HiddenOperationForm(forms.ModelForm):
+	class Meta:
+		model = HiddenOperation
+		fields = ('title', 'operation_type',)

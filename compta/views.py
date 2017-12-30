@@ -12,7 +12,7 @@ from django.db.models import Q
 
 from django import forms
 from .forms import LigneComptaForm, DeblocageSubventionForm, BaseDeblocageSubventionFormSet, CustomDeblocageSubventionFormSet
-from .forms import PosteDepenseForm, SearchLigneForm, SearchLigneFormPolymedia, EvenementForm, PosteAndCommentForm
+from .forms import PosteDepenseForm, SearchLigneForm, SearchLigneFormPolymedia, EvenementForm, PosteAndCommentForm, HiddenOperationForm
 from binets.forms import DescriptionForm
 from django.forms import formset_factory, inlineformset_factory
 from imports.forms import ImportFileForm
@@ -142,6 +142,9 @@ def mandat_journal(request):
 				deblocage.save()
 			deblocage_formset = DeblocageSubventionFormSet(None)
 
+		else:
+			print(ligne_form.errors)
+
 	else:
 		request.session['edit'] = False
 
@@ -192,21 +195,46 @@ def delete_ligne(request, id_ligne):
 	next = request.GET.get('next', '../')
 
 	try:
-		mandat = Mandat.objects.get(
-			id = request.session['id_mandat'])
+		ligne =	LigneCompta.objects.get(id=id_ligne)
+		mandat = ligne.mandat
 	except KeyError:
 		return redirect('../')
 	# on récupère la liste des utilisateurs habilités
 	# à supprimer la ligne
 	authorized = mandat.get_authorized_users()
 	if request.user in authorized['edit'] or request.user.is_staff:
-		ligne =	LigneCompta.objects.get(id=id_ligne)
+		# nécessaire si l'appel n'est pas effectué depuis le journal
+		# on met en mémoire le mandat de cette ligne
+		request.session['id_mandat'] = mandat.id
+		request.session['edit'] = True
 		if not ligne.is_locked or request.user.is_staff:
 			# si l'écriture est locked, seuls les admins peuvent la supprimer
 			# de même si des déblocages versés ont été fait dessus
-			
 			if not(ligne.has_versed_deblocage()) or request.user.is_staff:
 				ligne.delete()
+	return redirect(next)
+
+
+@staff_member_required
+def kick_ligne(request, id_ligne):
+	"""enlève une ligne d'une opération"""
+	next = request.GET.get('next', '../')
+
+	try:
+		ligne =	LigneCompta.objects.get(id=id_ligne)
+		mandat = ligne.mandat
+	except KeyError:
+		return redirect('../')
+	# on récupère la liste des utilisateurs habilités
+	# à supprimer la ligne
+	authorized = mandat.get_authorized_users()
+	if request.user in authorized['edit'] or request.user.is_staff:
+		# on met en mémoire le dernier mandat modifié
+		request.session['id_mandat'] = mandat.id
+		# on met l'opération de la ligne à 0
+		ligne.hidden_operation = None
+		ligne.save()
+		
 	return redirect(next)
 
 
@@ -279,6 +307,8 @@ def edit_ligne(request, id_ligne):
 
 	# nécessaire si l'appel n'est pas effectué depuis le journal
 	request.session['id_mandat'] = mandat.id
+	request.session['previous'] = request.GET.get('previous', '../')
+
 
 	if request.method == 'POST':
 		# comme le champ poste_depense a besoin du mandat pour être instancié, on doit le créer juste avant l'instanciation
@@ -1125,7 +1155,9 @@ def all_operations(request):
 		# on transfome la chaine brute en liste pour traiter séparément les mots
 		search_arguments_list = search_arguments.split()
 		# on construit une liste d'argments Q
-		search_list = [Q(title__icontains=q) for q in search_arguments_list]
+		search_list = [Q(Q(title__icontains=q) |
+						Q(operation_type__nom__icontains=q)
+						)for q in search_arguments_list]
 		# on concatène ces arguments
 		search = search_list.pop()
 		for item in search_list:
@@ -1147,9 +1179,19 @@ def operation_details(request, operation_id):
 	except KeyError:
 		return redirect('.')
 
+	ligne_form = LigneComptaForm(request.POST or None)
+
+
+
+
+
+
+
+
+
 	# paramètre d'ordonnance
 	ordering = request.GET.get('o', None)
-	attributes = ['mandat__binet__nom', 'mandat__promotion__nom', 'facture_ok', 'date', 'reference', 'description', 'debit', 'credit']
+	attributes = ['mandat__binet__nom', 'mandat__promotion__nom', 'date', 'reference', 'description', 'debit', 'credit']
 	# on génère les arguments d'ordonnance de la liste
 	arguments = generate_ordering_arguments(ordering, attributes)
 	# on récupère toutes les lignes du mandat
@@ -1157,7 +1199,7 @@ def operation_details(request, operation_id):
 	if arguments:
 		lignes = LigneCompta.objects.filter(hidden_operation=operation).order_by(*arguments)
 	else:
-		lignes = LigneCompta.objects.filter(hidden_operation=operation)
+		lignes = LigneCompta.objects.filter(hidden_operation=operation).order_by('mandat__binet__nom')
 
 	# on génère les liens qui serviront à l'ordonnance dans la page
 	# si aucun n'a été activé, par défault c'est par date (index 0)
@@ -1165,6 +1207,25 @@ def operation_details(request, operation_id):
 	links_base = '?o='
 	ordering_links = list(reversed(generate_ordering_links(ordering, attributes, links_base)))
 
-	
+	debit_total, credit_total = operation.get_totals()
+	balance = credit_total - debit_total
+	is_positive = balance >= 0
 
 	return render(request, 'compta/operation_details.html', locals())
+
+
+@staff_member_required
+def create_operation(request):
+	"""permet de créer une HiddenOperation"""
+	next = request.GET.get('next', 'all_operations')
+
+	operation_form = HiddenOperationForm(request.POST or None)
+
+	if operation_form.is_valid():
+		operation = operation_form.save(commit=False)
+		operation.creator = request.user
+		operation.closer = request.user
+		operation.save()
+		return redirect(next)
+
+	return render(request, 'compta/create_operation.html', locals())

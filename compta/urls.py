@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^journal/delete_ligne/(?P<id_ligne>\d+)$', views.delete_ligne, name='delete_ligne'),
     url(r'^journal/edit_ligne/(?P<id_ligne>\d+)$', views.edit_ligne, name='edit_ligne'),
     url(r'^journal/view_ligne/(?P<id_ligne>\d+)$', views.view_ligne, name='view_ligne'),
+    url(r'^journal/kick_ligne/(?P<id_ligne>\d+)$', views.kick_ligne, name='kick_ligne'),
     url(r'^journal/pass_ligne_to_next/(?P<id_ligne>\d+)$', views.pass_ligne_to_next, name='pass_ligne_to_next'),
     url(r'^journal/pass_ligne_to_previous/(?P<id_ligne>\d+)$', views.pass_ligne_to_previous, name='pass_ligne_to_previous'),
     url(r'^journal/lock_unlock_ligne/(?P<id_ligne>\d+)$', views.lock_unlock_ligne, name='lock_unlock_ligne'),
@@ -32,4 +33,5 @@ urlpatterns = [
     url(r'^bilan/$', views.binet_bilan),
     url(r'^operations/$', views.all_operations, name='all_operations'),
     url(r'^operations/(?P<operation_id>\d+)$', views.operation_details, name='operation_details'),
+    url(r'^operations/create', views.create_operation, name='create_operation'),
 ]
